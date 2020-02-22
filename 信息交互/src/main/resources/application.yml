@@ -1,0 +1,71 @@
+c3p0:
+  user: root
+  password: root
+  driverClass: com.mysql.cj.jdbc.Driver
+  jdbcUrl: jdbc:mysql://127.0.0.1:3306/test
+
+
+# -----------------  freemerker 配
+
+
+#-----------------------------------------------------------------------
+  # logging:
+    # config:
+   #  classpath: log4j.yml
+
+# ----------------------   微信配置  -----------------------
+parameterapp:
+  appid: wxb8dbd13cd6ce1ee9 #小程序appid
+  appsecrect: 2d7d04fb3bad390978805aac2c2f0183  #小程序appSecrect
+
+#-------------------------------------------------------------
+server:
+  servlet:
+    context-path: /msg
+  port: 8888
+#-------------------------------------------------------------
+
+mybatis:
+  #mapper资源路径
+  mapperLocations: classpath:/mybatis/*.xml
+  lazyLoadingEnabled: true #延迟加载
+
+#-------------------------------------------------------------
+
+spring:
+ # freemarker:
+  #模板资源路径
+   # template-loader-path: classpath:/templates
+  #flyway:  #freemarker文件的后缀名
+   #  placeholder-suffix:
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/msghub?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC
+    username: root
+    password: root
+    driver-class-name: com.mysql.jdbc.Driver
+    #  type:  com.alibaba.druid.pool.DruidDataSource
+  application:
+    name: hooguan-service
+
+  redis:
+    database: 0
+    ## Redis��������ַ
+    host: 127.0.0.1
+    ## Redis���������Ӷ˿�
+    port: 6379
+    ## Redis�������������루Ĭ��Ϊ�գ�
+    password:
+    ## ���ӳ������������ʹ�ø�ֵ��ʾû�����ƣ�
+    max-active: 8
+    ## ���ӳ���������ȴ�ʱ�䣨ʹ�ø�ֵ��ʾû�����ƣ�
+    max-wait: -1
+    ## ���ӳ��е�����������
+    max-idle: 8
+    ## ���ӳ��е���С��������
+    min-idle: 0
+    ## ���ӳ�ʱʱ�䣨���룩
+    timeout: 2000
+
+    testOnBorrow: true
+
+#-------------------------------------------------------------

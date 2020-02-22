@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.msghub.msghub.mapper.CellphoneMsgMapper">
+
+
+    <!--测试老身 阿里云  mysql -->
+    <select id="getuser" resultType="com.msghub.msghub.model.user">
+		select * from  user
+	</select>
+
+
+    <!--查询公司的账号密码-->
+    <select id="queryCompany" resultType="com.msghub.msghub.model.Msgconfig"
+            parameterType="com.msghub.msghub.model.Msgconfig">
+		select * from msg_config where client_id = #{client_id} and affiliation = #{affiliation}
+	</select>
+    <!--查询模板-->
+    <select id="queryTemplate" resultType="com.msghub.msghub.model.Template"
+            parameterType="com.msghub.msghub.model.Template">
+		select * from template where template_id = #{templateId} AND affiliation=1
+	</select>
+
+    <!--查询业务是否开通-->
+    <select id="queryBusiness" resultType="com.msghub.msghub.model.Business" parameterType="String">
+		select  *  from  business where client_id = #{client_id}
+	</select>
+    <!--查询账单-->
+    <select id="queryisMoney" parameterType="String" resultType="com.msghub.msghub.model.Bill">
+		select * from bill where  client_id = #{client_id}
+	</select>
+    <!--修改账单-->
+    <update id="charge" parameterType="com.msghub.msghub.model.Bill" flushCache="true">
+		update bill set money = #{money},number = #{number} where id = #{id}
+	</update>
+    <!-- 暂未开放 -->
+    <!--<cache/>-->
+    <!-- <cache eviction="FIFO" flushInterval="10800000" size="512" readOnly="true"/>-->
+   <!-- <cache eviction="FIFO" flushInterval="60000" readOnly="false" size="1024"/>-->
+    <!--eviction：可用的收回策略有：
+     LRU【默认】——最近最少使用的：移除最长时间不被使用的对象
+     FIFO——先进先出的：按对象进入缓存的顺序来移除他们
+     SOFT——软引用：移除基于垃圾回收器状态和软引用规则的对象
+     WEAK——弱引用：更积极地移除基于垃圾收集器状态和弱引用规则的对象。
+    flushInterval（刷新间隔）可以被设置为任意的正整数（60*60*1000这种形式是不允许的），而且它们代表一个合理的毫秒形式的时间段。默认情况是不设置，也就是没有刷新间隔，缓存仅仅调用语句时刷新。
+    size（引用数目）可以被设置为任意正整数，要记住你缓存的对象数目和你运行环境的可用内存资源数目。默认值是1024.
+    readOnly（只读）属性可以被设置为true或false。只读的缓存会给所有调用者返回缓存对象的相同实例，因此这些对象不能被修改，这提供了很重要的性能优势。可读写的缓存会返回缓存对象的拷贝（通过发序列化）。这会慢一些，但是安全，因此默认是false。
+    -->
+    <!--二级缓存 -->
+  <!--  <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+    <cache type="com.msghub.msghub.utils.RedisCache"/>-->
+    <!-- 暂未开放 -->
+</mapper>
