@@ -1,0 +1,239 @@
+package cn.baisee.oa.controller;
+
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import cn.baisee.oa.annotation.Role;
+import cn.baisee.oa.exception.OAServiceException;
+import cn.baisee.oa.model.BaiseeClazz;
+import cn.baisee.oa.model.IcipBusDict;
+import cn.baisee.oa.model.Insurance.BaiseeInsurance;
+import cn.baisee.oa.model.student.BaiseeStudent;
+import cn.baisee.oa.page.pagehelper.PageInfo;
+import cn.baisee.oa.service.ClazzService;
+import cn.baisee.oa.service.DictionariesService;
+import cn.baisee.oa.service.InsuranceHandleService;
+import cn.baisee.oa.service.InsuranceInputService;
+import cn.baisee.oa.service.StudentService;
+import cn.baisee.oa.utils.DateUtil;
+import cn.baisee.oa.utils.ParamUtils;
+import cn.baisee.oa.utils.StringUtil;
+
+
+/**
+ * 学生保险录入
+ * @author
+ */
+@Controller
+@RequestMapping(value = "insurance/input")
+public class InsuranceInputController {
+
+	/**
+	 *保险录入service
+	 */
+	@Autowired
+	private InsuranceInputService inputService;
+	
+
+	/**
+	 *字典service
+	 */
+	@Autowired
+	private DictionariesService dictionariesService;
+	
+
+	/**
+	 *班级service
+	 */
+	@Autowired
+	private ClazzService clazzService;
+
+	/**
+	 *保险办理service
+	 */
+	@Autowired
+	private InsuranceHandleService stuInsuranceHandleSerice;
+	@Autowired
+	private StudentService studentService;
+	
+	
+	
+	/**
+	 * 跳转到保险信息列表
+	 * @param model 用户往前台传参数
+	 * @param insurance 查询列表时的条件
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/toSelectPageIns")
+	@Role("BXGL_LR")
+	public ModelAndView toSelectPageIns(ModelAndView model,BaiseeInsurance insurance,HttpServletRequest request ) {
+		Integer pageNum = ParamUtils.getPageNumParameters(request);								/*当前页*/
+		Integer pageSize = ParamUtils.getPageSizeParameters(request);
+		/*String operationSuccess = request.getParameter("operationSuccess");
+		if(!StringUtil.isEmpty(operationSuccess)){
+			model.addObject("operationSuccess", operationSuccess);
+		}*/
+		//insurance.setStuId("");//防止其他页面跳转时携带不必要的参数
+		if(insurance.getStuStatus() == null) {
+			insurance.setStuStatus("2");
+		}
+		PageInfo<BaiseeInsurance> pageResult = inputService.selectPageInsurance(insurance,pageNum,pageSize);
+		if(insurance.getiComName() == null) {
+			insurance = new BaiseeInsurance();
+			insurance.setiComName("1");
+			insurance.setStatus("a");
+			insurance.setClassName("b");
+			insurance.setStuStatus("2");
+		}
+		List<BaiseeClazz>  clazzs = clazzService.selectClass(new HashMap<String, Object>());
+		List<IcipBusDict> dicts = dictionariesService.selectIcipBusDictByDictName("保险公司");
+		String week = DateUtil.getDateWeek();  /* 获取当前时间的后一周*/
+		model.addObject("condition", insurance);
+		model.addObject("week", week);
+		model.addObject("pageResult", pageResult);//保险信息
+		model.addObject("clazzs", clazzs);//班级
+		model.addObject("dicts", dicts);//字典中所有的保险公司
+		model.setViewName("insurance/insurance_Input_list");
+		return model;
+	}
+	/**
+	 * 跳转到保险录入页面
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "toAddInsurance")
+	@Role("BXGL_LRXZ")
+	public ModelAndView toAddInsurance(ModelAndView model,String id){
+		try {
+			BaiseeStudent student = studentService.selectByStudentId(id);
+			model.addObject("stu", student);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		model.setViewName("insurance/insurance_add");
+		return model;
+	}
+	
+	/**
+	 * 保险录入
+	 * @param insurance
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "addInsurance")
+	@Role("BXGL_LRXZ")
+	public String addInsurance(BaiseeInsurance insurance,ModelMap model){
+		String operationSuccess = "信息填写错误";//默认是信息错误
+		model.addAttribute("operationSuccess", operationSuccess);
+		model.addAttribute("stu",insurance);
+		//判断保险属性是否填写完整
+		//判断学生id是否为空
+		if(StringUtil.isEmpty(insurance.getStuId())){
+			return "insurance/insurance_add";
+		}
+		if(!isTrue(insurance)){
+			//保险信息有误时返回录入页面
+			return "insurance/insurance_add";
+		};
+		operationSuccess = inputService.addInsurance(insurance);//标识是否添加成功
+		model.addAttribute("operationSuccess", operationSuccess);
+		if(operationSuccess.equals("操作成功")){
+			//保险信息录入成功之后返回保险列表页面
+			return "forward: /toSelectPageIns.ht";
+		}
+		//保险信息录入失败时返回录入页面
+		return "insurance/insurance_add";
+	}
+	/**
+	 * 保险信息是否正确
+	 * @param insurance
+	 * @return
+	 */
+	private boolean isTrue(BaiseeInsurance insurance){
+		//判断 是否包含学费 选择
+		if(StringUtil.isEmpty(insurance.getIsConTuition())){
+			return false;
+		}
+			//判断当不包含学费时，是否填写保险金额 0为不包含学费
+		if(insurance.getIsConTuition().equals("0")){
+			if(insurance.getiMoney() == 0 ){//未填写保险金额
+				return false;
+			}
+		}
+		return true;
+	}
+	/**
+	 * 删除一条保险信息
+	 * @param request
+	 * @return
+	 * @throws OAServiceException
+	 */
+	@RequestMapping(value="delInsurance")
+	@ResponseBody
+	@Role("BXGL_LRSC")
+	public Object delInsurance(HttpServletRequest request) throws OAServiceException{
+		String id = ParamUtils.getParameter(request, "id");
+		return  inputService.delInsurance(id);
+	}
+	/**
+	 * 跳转到修改页面
+	 * @param request
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value="toUpdInsurance")
+	@Role("BXGL_LRXG")
+	public ModelAndView toUpdInsurance(HttpServletRequest request,ModelAndView model){
+		String id = ParamUtils.getParameter(request, "id");
+		BaiseeInsurance insurance = stuInsuranceHandleSerice.getStuInsuInfo(id);//根据id得到保险
+		if(insurance == null ){
+			model.addObject("operationSuccess", "无对应的保险信息");
+			model.setViewName("forward: /toSelectPageIns.ht");
+			return model;
+		}
+		model.addObject("insurance", insurance);
+		model.setViewName("insurance/insurance_update");
+		return model;
+	}
+	
+	/**
+	 * 修改方法
+	 * @param request
+	 * @param ins
+	 * @param model
+	 * @param attr
+	 * @return
+	 */
+	@RequestMapping("updInsurance")
+	@Role("BXGL_LRXG")
+	public ModelAndView updInsurance(HttpServletRequest request,BaiseeInsurance ins,ModelAndView model,RedirectAttributes attr ){
+		//保险信息不完整时，返回列表页面
+		if(StringUtil.isEmpty(ins.getId()) || !isTrue(ins)){
+			attr.addFlashAttribute("operationSuccess", "保险信息不完整,不能进行修改");
+			model.setViewName("redirect:insurance/input/toSelectPageIns.ht");
+			return model;
+		}
+		Boolean bool = inputService.updInsurance(ins);//修改
+		if(bool){
+			attr.addFlashAttribute("operationSuccess", "修改信息已成功");
+			model.setViewName("redirect:insurance/input/toSelectPageIns.ht");
+		}else{		
+			attr.addFlashAttribute("operationSuccess", "修改信息失败,该状态下不能进行修改");
+			model.setViewName("redirect:insurance/input/toSelectPageIns.ht");		
+		}
+		return model;
+	}
+}

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="commonTemplate :: header">
+</head>
+
+<body>
+	<div class="lyear-layout-web">
+		<div class="lyear-layout-container">
+
+			<!--左侧导航-->
+			<div th:replace="commonTemplate :: leftMenus"></div>
+			<!--End 左侧导航-->
+
+			<!--头部信息-->
+			<div th:replace="commonTemplate :: headerDiv"></div>
+			<!--End 头部信息-->
+
+			<!-- ============================= 页面内容 开始============================= -->
+			<main class="lyear-layout-content">
+
+			<div class="container-fluid">
+				<form th:action="@{eva/selectListPage.ht}" id="frm" name="frm"
+					method="post" th:object="${notice}" onsubmit="return check();">
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="card">
+								<div class="card-toolbar clearfix ">
+									<div class="toolbar-btn-action">
+										<a class="btn btn-success m-r-5" th:href="@{eva/selectTgesPage.ht}" baisee:ctrl="PJXX_TJPJXX" ><i class="mdi mdi-check"></i> 新增</a> 
+											<a class="btn btn-danger" bms:ctrl="PJXX_SCPJXX" href="javascript:void(0);" onclick="deleteEvas()"><i class="mdi mdi-block-helper"></i> 删除</a> <a
+											class="btn btn-warning m-r-5" th:href="@{eva/selectEvaConPage.ht}" bms:ctrl="PJXX">查看所有开启评价表</a>
+									</div>
+								</div>
+								<div class="card-body">
+
+									<div class="table-responsive">
+										<table class="table table-bordered">
+											<thead>
+												<tr>
+													<th>
+														<div class="JsW control-checkbox"
+															data-control-type="checkboxall">
+															<input type="checkbox"
+																onclick="selectAllCheckBox(document.frm.ids,document.frm.checkbox,this);" />
+														</div>
+													</th>
+													<th>评论表</th>
+													<th>创建人</th>
+													<th>创建时间</th>
+													<th>操作</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr th:each="info:${pageResult.list}"
+													th:if="${pageResult.list != null &amp;&amp; pageResult.list.size() > 0}">
+													<td>
+														<div class="JsW control-checkbox"
+															data-control-type="checkbox">
+															<input type="checkbox" name="ids" th:value="${info.spID}" />
+														</div> <input type="hidden" name="state"
+														th:value="${info.state}" /> <input type="hidden"
+														name="suID" th:value="${info.suID}" /> <input
+														type="hidden" name="spID" th:value="${info.spID}" />
+													</td>
+													<td th:text="${info.TitleName}">索引</td>
+													<td th:text="${info.creationName}">标题</td>
+													<td baisee:fmt="yyyy-MM-dd HH:mm:ss,${info.creationTime}">发送人</td>
+													<td>
+														<div class="btn-group">
+															<a class="btn btn-xs btn-default" href="javascript:void(0);" title="预览"
+																data-toggle="tooltip"  th:onclick="'preview(\'' + ${info.suID} + '\')'" ><i class="mdi mdi-twitch"></i></a>
+															<a class="btn btn-xs btn-default"  href="javascript:void(0);" title="开启评价"
+																data-toggle="tooltip" th:onclick="'openaOrcloseEva(\'' + ${info.spID} + '\',\'' + ${info.state} + '\')'"><i class="mdi mdi-battery-70"></i></a>
+														</div>
+													</td>
+												</tr>
+
+											</tbody>
+										</table>
+									</div>
+									<ul class="pagination" th:if="${pageResult != null}"
+										th:object="${pageResult}">
+										<li><a href="javascript:void(0);"
+											th:onclick="*{hasPreviousPage} ? 'go(1)' : 'return false;'">首页</a></li>
+										<li><a href="javascript:void(0);"
+											th:onclick="*{hasPreviousPage} ? 'go(' + *{prePage} + ')' : 'return false;'">上一页</a></li>
+										<li><a href="javascript:void(0);"
+											th:onclick="*{hasNextPage} ? 'go(' + *{nextPage} + ')' : 'return false;'">下一页</a></li>
+										<li><a href="javascript:void(0);"
+											th:onclick="*{hasNextPage} ? 'go(' + *{pages} + ')' : 'return false;'">末页</a></li>
+										<li><a href="javascript:void(0);"
+											onclick="go($('#pagenumber').val());">跳转至</a></li>
+										<li><a href="javascript:void(0)"><input name="pageNum"
+												id="pagenumber" th:value="*{pageNum}" />/<span id="_pages"
+												th:text="*{pages == 0} ? 1 : *{pages}"></span></a></li>
+										<li><a href="javascript:void(0)">页</a></li>
+									</ul>
+
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</form>
+			</div>
+
+			</main>
+			<!-- ============================= 页面内容 结束============================= -->
+		</div>
+	</div>
+
+	<script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+	<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+	<script type="text/javascript" src="js/bootstrap-3.0.0/js/bootstrap-datepicker.min.js" th:src="@{js/bootstrap-3.0.0/js/bootstrap-datepicker.min.js}"></script>
+	<script type="text/javascript" src="js/bootstrap-3.0.0/js/bootstrap-datepicker.zh-CN.min.js" th:src="@{js/bootstrap-3.0.0/js/bootstrap-datepicker.zh-CN.min.js}"></script>
+	<script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+	<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+	<script type="text/javascript" th:src="@{js/plugins/layer/layer.js}"></script>
+	<script type="text/javascript" th:src="@{js/plugins/comm/bmsAjax.js}"></script>
+	<script type="text/javascript" th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+	
+	function preview(iId){
+		tamp = "mailFrom";
+		layer.open({
+			type : 2,
+			title : "查询综合评价信息",
+			shadeClose : true,
+			shade : 0.8,
+			area : [ '500px', '400px' ],
+			content : '/BaiseeOA/eva/getIdProblemInfos.ht?suID='+iId
+		});
+	}
+	
+	
+	 function openaOrcloseEva(id,state) {
+		 var selectUrl = [[@{'/eva/selectClassEmp.ht'}]];
+		$.ajax({
+			url: selectUrl,
+			type:'post',
+			success:function(data){
+				 layer.open({
+					title: '评价',
+					area:['400px'],
+					content:"<span  style='margin-left: 10px;'>" 
+								+"<select name='claName' id='claName' class='m-select' style='width: 130px;margin-left: 30px;' onchange='ValidaClaName(\""+id+"\")'>"
+									+"<option value=''>--选择评价班级--</option>"
+								+"</select>"
+							+"</span>"
+							
+							+"<span  style='margin-left: 10px;'>" 
+								+"<select name='empName' id='empName' class='m-select' style='width: 130px;margin-left: 30px;' >"
+									+"<option value=''>--选择评价对象--</option>"
+								+"</select>"
+							+"</span>",
+					yes:function(index,layero){
+					  var claName = $("#claName").val();  /* 选择的评价班级 */
+					  var empName = $("#empName").val();  /* 选择评价的对象 */
+					  if(claName==""){
+						  _alert("评价班级不能为空");
+						  return false;
+					  }
+					  if(empName==""){
+						  _alert("评价对象不能为空");
+						  return false;
+					  }
+					  
+					  var logUrl = [[@{'/eva/saveEvaAndEvaControlTable.ht?spID='}]]+ id+"&claName="+claName+"&empName="+empName;
+						$.ajax({
+							url: logUrl,
+							type:'post',
+							data: $('#frm').serialize(),
+							success:function(data){
+								if (data.flag == "success") {
+									_alert("生成表成功");
+									 var succ=[[@{'/eva/selectListPage.ht'}]]; 
+									locationHref(succ);
+								}  else {
+									_alert("生成表失败");
+								}
+							}
+						})
+					  layer.close(index); //关闭弹出框
+					  }		
+				}); 
+				 
+				 for(var key in data){
+					  for(var i = 0; i< data.claList.length;i++){
+						 var cla = data.claList[i];
+						 $("#claName").append("<option value='"+cla.cName+"'>"+cla.cName+"</option>");
+					 }
+					 
+					 for(var j = 0; j < data.empList.length;j++){
+						 var emp = data.empList[j];
+						 $("#empName").append("<option value='"+emp.userName+"'>"+emp.userName+"</option>");
+					 } 
+					 break;
+				 }
+				
+			}
+		})
+		
+	}
+	
+	function closeEva(id,state) {
+		var logUrl = [[@{'/eva/updateEvaGenState.ht?suID='}]]+id+"&state="+state;
+		$.ajax({
+			url: logUrl,
+			type:'post',
+			success:function(data){
+				if (data.flag == "success") {
+					 var succ=[[@{'/eva/selectListPage.ht'}]]; 
+					locationHref(succ);
+					_alert("设置评价成功");
+				}  else {
+					_alert("设置评价失败");
+				}
+			}
+		}) 
+	}
+	
+	function edit(stId) {
+		var url = [[@{'/eva/toAddEvaGen.ht?spID='}]] + stId;
+		locationHref(url);
+	}
+	
+	 function ValidaClaName(id){
+		var claName = $("#claName").val();
+		var logUrl = [[@{'/eva/validaClaName.ht?claName='}]]+ claName+"&spID="+id;
+		$.ajax({
+			url: logUrl,
+			type:'post',
+			success:function(data){
+				if (data.flag == "success") {
+					_alert("评价班级已存在")
+					$("#claName").val("");
+				}
+			}
+		})
+	} 
+	 
+	 function deleteEvas() {
+		 var ids = document.getElementsByName("ids");
+		 var suID = document.getElementsByName("suID");
+		 var str="";
+		 var par="";
+		 for(var i=0;i<ids.length;i++){
+				if(ids[i].checked == true){
+					str += ids[i].value+",";
+					par += suID[i].value+",";
+				}
+			}
+		 if(str == ""){
+			 _alert("请选择要删除的评价！")
+		 }else{
+			 var logUrl  = [[@{'/eva/getEvaCons.ht?ids='}]]+str+"&suID="+par;
+			 $.ajax({
+					url: logUrl,
+					type:'post',
+					success:function(data){
+						if (data.flag == "success") {
+							_alert("删除成功");
+							 var succ=[[@{'/eva/selectListPage.ht'}]]; 
+							locationHref(succ);
+						}  else {
+							_alert("请选择没有开启的评价进行删除！");
+						}
+					}
+				})			 
+		 }
+	}
+	/*]]>*/
+	
+	
+	
+		//form表单提交事件
+		function check() {
+
+		}
+	</script>
+</body>
+</html>

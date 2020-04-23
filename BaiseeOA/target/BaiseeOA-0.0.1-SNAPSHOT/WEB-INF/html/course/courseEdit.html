@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+	<head th:include="commonTemplate :: header">
+	</head>
+	<body class="bgcolor-body">
+		<div id="page">
+			<div th:include="commonTemplate :: headerDiv"></div>
+			<div id="content" class="layout">
+				<div class="grid-s5m0">
+					<div class="col-main">
+						<div class="main-wrap">
+							<div class="skin-box">
+								<div class="skin-box-bd">
+									<div class="cur-position">
+										<span><a th:href="@{user/toUserList.ht}">课程信息</a> </span>
+										<span>&gt;</span>
+										<span><a href="javascript:void(0)">编辑信息</a> </span>
+									</div>
+									<!-- ==================================== 页面内容开始 ============================= -->
+									<div class="cont-box">
+										<div class="JsW skin-box-bd" data-widget-type="tab" data-widget-config="{'activeIndex':0}">
+											<div class="skin-bd-box">
+												<div class="content-box-menu">
+													<ul >
+														<li class="active">
+															<a href="javascript:void(0)"> <span >填写信息</span> <span class="separator"></span> </a>
+														</li>
+													</ul>
+												</div>
+												<div class="list-table">
+													<div class="list-table-cont">
+														<div class="table6">
+															<form id="basefrm" name="basefrm"   method="post" th:action="@{course/addOrUpdateCourse.ht}"  >
+																<!-- th:action="@{course/addOrUpdateCourse.ht}" -->
+																<table>
+																<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span class="red">*</span><span>课程类型：</span>
+																				</div>
+																				<div class="td2">
+																				<span> 
+																					<select  
+																						name="courseType" id="courseType" class="radius3 input" >
+																						<option value="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---课程类型---</option>
+																						<option th:each="name:${dicts}" th:text="${name.dictDestination}" th:value="${name.dictId}"></option>
+																					</select>
+																				</span> 
+																				</div>
+																			</div>		
+																		</td>
+																	</tr>
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span class="red">*</span><span>课程名称：
+<!-- 																						<input type="hidden" class="radius3 input" id="lastUpdateTime" name="lastUpdateTime" th:value="${baiseeUser.lastUpdateTime}"/>
+ -->																					</span>
+																				</div>
+																				<div class="td2">
+																					<span >
+																							<input type="hidden" name="ciId" id="ciId" th:value="${course.ciId}"/>
+																							<input type="hidden" name="operationSuccess" id="operationSuccess" th:value="${operationSuccess}"/>
+																							<input class="radius3 input" type="text" name="courseTtitle" id="courseTtitle" th:value="${course.courseTtitle}" />
+																					</span>
+																				</div>
+																			</div>		
+																		</td>
+																	</tr>
+																	
+																	
+																	
+																</table>
+																<div class="redbutton control-button JsW"  >
+																<span class="grey"> 
+																	<input value="返回上级" type="button" onclick="returnBack();" class="radius5 button ks-pop-close1" /> 
+																</span>
+																<span> 
+																	<input value="确定保存" type="button" onclick="Validate();" class="radius5 button ks-pop-close1" /> 
+																	
+																</span>
+																	
+																</div>
+															</form>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!-- ============================= 页面内容 结束============================= -->
+								</div>
+							</div>
+						</div>
+					</div>
+					<div th:include="commonTemplate :: leftMenus"></div>
+				</div>
+			</div>
+			<div th:include="commonTemplate :: footer"></div>
+		</div>
+		<div th:include="commonTemplate :: processBar" />
+		<script th:inline="javascript">
+	
+			$(function(){
+				var aa = [[${course.courseType}]];
+				if(aa !=null ){
+					$("#courseType").val(aa) ;
+				}
+				var operationSuccess = $("#operationSuccess").val();
+				if(operationSuccess != ""){
+					_alert(operationSuccess);
+				}
+			});
+			function Validate(){
+				var seType= $("#courseType").val();
+				var seTtitle=$("#courseTtitle").val();
+				var ciId=$("#ciId").val();
+				if(seType==null||seType==""){
+					_alert("课程类型不能为空！");
+				}else{
+					/*<![CDATA[*/
+					 $.ajax({
+							url:[[@{/course/validateCourse.ht}]],
+							type: 'post', 
+							data: {courseType: seType,courseTtitle: seTtitle,ciId: ciId},
+							success:function(data){
+								 var t =true; var f = false;
+								if(data == t){
+									$("#courseType").submit();
+								}else if(data == f){
+									_alert("已有相同的课程名称,请重新填写");
+								} 
+							}  
+						}); 	
+					 /*]]>*/
+					
+				}
+				
+			}
+			$(function(){
+				
+				setValidate($("#basefrm"),{
+					rules: {
+						courseTtitle:{required: true ,maxlength: 21,minlength:2,chinese:true,
+							remote:{
+								url:[[@{/course/validateCourse.ht}]],
+								type: "post",
+								dataType: "json", 
+								cache:true,
+								data:{"courseTtitle":function(){return $('#courseTtitle').val();},
+									"ciId":function(){return $('#ciId').val();},
+									"courseType":function(){return $('#courseType').val();}
+								},
+							}						
+						},
+						courseType:{required: true}
+					},
+					messages:{
+						ciId: {maxlength: "最大长度32位"},
+						courseTtitle:{required: "*请填写课程名称",maxlength: "*最多输入21位字符",minlength:"*最少2位字符",remote:"*同类型下名称不能一致"},
+						courseType:{required: "*请选择课程类型"},
+					}
+					
+				});
+				$.validator.addMethod("chinese", function(value, element) { 
+					var chinese = /^[\u4e00-\u9fa5_a-zA-Z0-9]+$/;
+					return this.optional(element) || (chinese.test(value));
+				}, "*题目不能输入非法字符!");
+			});
+			
+			
+			function returnBack(){
+				var url = [[@{'/course/toCourseList.ht'}]];
+				locationHref(url);
+			};
+			
+		</script>
+		
+	</body>
+</html>

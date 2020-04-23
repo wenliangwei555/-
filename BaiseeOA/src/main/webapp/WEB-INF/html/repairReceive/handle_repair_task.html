@@ -1,0 +1,243 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+	<head th:include="commonTemplate :: header">
+	</head>
+	<body class="bgcolor-body">
+		<div id="page">
+			<div th:include="commonTemplate :: headerDiv"></div>
+			<div id="content" class="layout">
+				<div class="grid-s5m0">
+					<div class="col-main">
+						<div class="main-wrap">
+							<div class="skin-box">
+								<div class="skin-box-bd">
+									<div class="cur-position">
+										<span><a href="javascript:void(0)">报修/申领管理</a> </span>
+										<span>&gt;</span>
+										<span><a th:href="@{repair/repairList.ht}">报修任务</a> </span>
+										<span>&gt;</span>
+										<!-- <span><a href="javascript:void(0)" th:if="${#strings.equals(flag,'1')}">新增业务字典</a></span> -->
+										<span><a href="javascript:void(0)">处理报修</a></span>
+									</div>
+									<!-- ==================================== 页面内容开始 ============================= -->
+									<div class="cont-box">
+										<div class="JsW skin-box-bd" data-widget-type="tab" data-widget-config="{'activeIndex':0}">
+											<div class="skin-bd-box">
+												<div class="list-table">
+													<div class="list-table-cont">
+														<div class="table6">
+															<form id="busRepairForm" th:action="@{repair/repairComplete.ht}"  method="post" >
+																<input type="hidden" name="id" th:value="${repair.id}" />
+																<table>
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span class="require red"></span><span>报修人：</span>
+																				</div>
+																				<div class="td2">
+																					<span><input type="text" class="radius3 input" id="cName" name="cName" th:value="${repair.cName}" readonly="readonly" /></span>
+																				</div>
+																			</div>
+																		</td>
+																	</tr>
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span class="require red"></span><span>所属部门：</span>
+																				</div>
+																				<div class="td2">
+																					<div class="control-css3select css3select-icon-hide">
+																						<select disabled="disabled" id="deptId" name="deptId" th:value="${repair.deptId}" onchange="changeDeptVal()">
+																							<option value = "0" 
+																							th:selected="${repair.deptId == '0'}">初中部</option>
+																							<option value = "1" 
+																							th:selected="${repair.deptId == '1'}">高中部</option>
+																							 <option value = "2" 
+																							th:selected="${repair.deptId == '2'}">百思部</option>
+																						</select>
+																					</div>
+																					<input type="hidden" id="deptName" name="deptName" />
+																				</div>
+																			</div>
+																		</td>
+																	</tr>
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span class="require red"></span><span>所属校区：</span>
+																				</div>
+																				<div class="td2">
+																					<span><input type="text" readonly="readonly" class="radius3 input" id="pName" name="pName" th:value="${repairItem.pName}" /></span>
+																				</div>
+																			</div>
+																		</td>
+																	</tr>
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span class="require red"></span><span>故障地点：</span>
+																				</div>
+																				<div class="td2">
+																					<span><input type="text" readonly="readonly" class="radius3 input" id="tName" name="tName" th:value="${repairItem.tName}" /></span>
+																				</div>
+																			</div>
+																		</td>
+																	</tr>
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span class="require red"></span><span>故障类型：</span>
+																				</div>
+																				<div class="td2">
+																					<span><input type="text" readonly="readonly" class="radius3 input" id="goodsName" name="goodsName" th:value="${repair.goodsName}" /></span>
+																				</div>
+																			</div>
+																		</td>
+																	</tr>
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span class="require red"></span><span>数量：</span>
+																				</div>
+																				<div class="td2">
+																					<span><input type="text" class="radius3 input" id="goodsCount" name="goodsCount" th:value="${repair.goodsCount}" readonly="readonly" /></span>
+																				</div>
+																			</div>
+																		</td>
+																	</tr>
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span class="require red"></span><span>备注：</span>
+																				</div>
+																				<div class="td2">
+																					<textarea rows="3" cols="32" name="remarks" id="remarks" th:text="${repair.remarks}" style="resize: none" disabled="disabled"></textarea>
+																				</div>
+																			</div>
+																		</td>
+																	</tr>
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span class="require red"></span><span>维修人：</span>
+																				</div>
+																				<div class="td2">
+																					<span><input type="text" class="radius3 input" id="workerName" name="workerName" th:value="${repair.workerName}" readonly="readonly" /></span>
+																				</div>
+																			</div>
+																		</td>
+																	</tr>
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span class="red"></span><span>报修图片：</span>
+																				</div>
+																				<div class="td2" id="divImg">
+																					
+																				</div>
+																			</div>
+																		</td>
+																	</tr>
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span class="red">*</span><span>最终处理人：</span>
+																				</div>
+																				<div class="td2">
+																					<div class="control-css3select css3select-icon-hide">
+																						<!-- 这里将写所有的员工以及他的ID -->
+																						<select id="lastPersonId" name="lastPersonId"  class="radius3" onchange="changeVal()">
+																							<option th:each="info:${employees}" th:selected="${info.empId == repair.workerId}"
+																							 th:value="${info.empId}" th:text="${info.empName}"></option>
+																						</select>
+																						<input type="hidden" id="lastPerson" name="lastPerson" />
+																					</div>
+																				</div>
+																			</div>
+																		</td>
+																	</tr>
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span class="require red">*</span><span>维修意见：</span>
+																				</div>
+																				<div class="td2">
+																					<textarea rows="3" cols="32" name="views" id="views" style="resize: none"></textarea>
+																				</div>
+																			</div>
+																		</td>
+																	</tr>
+																</table>
+																<div class="redbutton control-button JsW" data-control-type="button" data-control-config="{'buttonCls':'button'}">
+																	<span> <input value="保存" type="submit" class="radius5 button ks-pop-close1" /> </span>
+																	<span class="grey"> <input value="取消" type="button" class="radius5 button ks-pop-close1" onclick="returnBack();"/> </span>
+																	<span id="del"></span>
+																</div>
+															</form>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!-- ============================= 页面内容 结束============================= -->
+								</div>
+							</div>
+						</div>
+					</div>
+					<div th:include="commonTemplate :: leftMenus"></div>
+				</div>
+			</div>
+			<div th:include="commonTemplate :: footer"></div>
+		</div>
+		<div th:include="commonTemplate :: processBar" />
+		<script th:inline="javascript"> 
+		
+		$(function(){
+			var url = [[${repair.imgUrl}]];
+			if (url) {
+				$("#divImg").children("img").remove();
+				var width = "188px;";
+				var height = "188px;";
+				var img = "<img src="+url+" width="+width+" height="+height+" />"
+				$("#divImg").append(img);
+			}
+			setValidate($("#busRepairForm"),{
+				rules: {
+					views:{required: true, maxlength: 50},
+					lastPersonId:{required: true, maxlength: 50}
+				},
+				messages:{
+					views:{required: "必填",maxlength: "超过50，太长"},
+					lastPersonId:{required: "必填",maxlength: "超过50，太长"}
+				}
+			});
+		});	
+		function returnBack(){
+			var url = [[@{'/repair/repairTask.ht'}]];
+			locationHref(url);
+		};
+		function changeVal() {
+			$("#lastPerson").val($("#lastPersonId option:selected").text());
+		};
+		
+		 $(function(){
+			$("#lastPersonId").select2({
+				placeholder : "请选择"
+			});
+			
+		});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+	<head th:include="commonTemplate :: header">
+	</head>
+	<body class="bgcolor-body">
+		<div id="page">
+			<div th:include="commonTemplate :: headerDiv"></div>
+			<div id="content" class="layout">
+				<div class="grid-s5m0">
+					<div class="col-main">
+						<div class="main-wrap">
+							<div class="skin-box">
+								<div class="skin-box-bd">
+									<div class="cur-position">
+										<span><a href="javascript:void(0)">百思信息管理</a> </span>
+										<span>&gt;</span>
+										<span><a href="javascript:void(0)">角色管理</a> </span>
+										<span>&gt;</span>
+										<span><a href="javascript:void(0)">新增角色</a></span>
+									</div>
+									<!-- ==================================== 页面内容开始 ============================= -->
+									<div class="cont-box">
+										<div class="JsW skin-box-bd" data-widget-type="tab" data-widget-config="{'activeIndex':0}">
+											<div class="skin-bd-box">
+												<div class="list-table">
+													<div class="list-table-cont">
+														<div class="table6">
+															<form id="roleForm" th:action="@{dic/addRole.ht}" autocomplete="off"  method="post" th:object="${info}" >
+																<input type="hidden" name="dictId"  />
+																<table>
+																<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span class="red">*</span><span>所属部门：</span>
+																				</div>
+																				<div class="td2">
+																					<div class="control-css3select css3select-icon-hide">
+																						<select id="dId" name="dId"  class="radius3" >
+																							<option></option>
+																							<option th:each="info:${departments}" th:value="${info.dictValue}" th:text="${info.dictDestination}"></option>
+																						</select>
+																					</div>
+																					<span style="color: red;display: none" id="dmessage" >请选择所属部门！</span>
+																				</div>
+																				<input type="hidden" id="dName" name="dName" />
+																			</div>		
+																		</td>
+																	</tr>
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span class="require red">*</span><span>角色名称：</span>
+																				</div>
+																				<div class="td2">
+																					<span><input type="text" class="radius3 input" id="dictDestination" name="dictDestination" maxlength="30"  /></span>
+																					<span style="color: red;display: none" id="message" >此角色已存在！</span>
+																				</div>
+																				<input type="hidden" id="parentId" name="parentId" th:value="${parentId}" />
+																				<input type="hidden" id="dictName" name="dictName" th:value="deptRole" />
+																				<input type="hidden" id="dictValue" name="dictValue" th:value="JSGL" />
+																			</div>
+																		</td>
+																	</tr>
+																
+																</table>
+																<div class="redbutton control-button JsW" data-control-type="button" data-control-config="{'buttonCls':'button'}">
+																	<span> <input value="保存" type="button" onclick="submitForm()"  class="radius5 button ks-pop-close1" /> </span>
+																	<span class="grey"> <input value="取消" type="button" class="radius5 button ks-pop-close1" onclick="returnBack();"/> </span>
+																	<span id="del"></span>
+																</div>
+															</form>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!-- ============================= 页面内容 结束============================= -->
+								</div>
+							</div>
+						</div>
+					</div>
+					<div th:include="commonTemplate :: leftMenus"></div>
+				</div>
+			</div>
+			<div th:include="commonTemplate :: footer"></div>
+		</div>
+		<div th:include="commonTemplate :: processBar" />
+		<script th:inline="javascript">
+		
+		function returnBack(){
+			var url = [[@{'/dic/roleList.ht'}]];
+			locationHref(url);
+		}
+		/*
+		角色新增:表单同步提交时走的方法
+		*/
+		$("#roleForm").submit(function(){
+			if ($("#dId").val()) {
+				$("#dName").val($("#dId option:selected").text());
+			}else {
+				$("#dmessage").show();
+				$("#dmessage").css("color","red");
+				event.preventDefault();
+			}
+		});
+		/*
+		角色新增:表单同异步提交时走的方法
+		*/
+		function submitForm() {
+			if ($("#dId").val()) {
+				$("#dName").val($("#dId option:selected").text());
+			}else {
+				$("#dmessage").show();
+				$("#dmessage").css("color","red");
+				return;
+			}
+			$("#dmessage").hide();
+			if ($("#dictDestination").val()) {
+				$("#message").hide();
+				$.ajax({
+					url: [[@{/dic/checkRoleName.ht}]],
+					type:'GET',
+				    dataType: "json",//预期服务器返回的数据类型
+				    data: {"dictDestination": $("#dictDestination").val()},
+					success:function(data){
+						if (data.codes == "000") {
+							$("#message").hide();
+							$.ajax({
+								url: [[@{/dic/addRole.ht}]],
+								type:'POST',
+							    dataType: "json",//预期服务器返回的数据类型
+							    data: $('#roleForm').serialize(),
+								success:function(data){
+									
+								}
+							});
+							returnBack();
+							returnBack();
+						}else {
+							$("#message").show();
+							$("#message").text("此角色名称已存在！");
+							$("#message").css("color","red");	
+							return;
+						}
+					}
+				});
+			}else {
+				$("#message").show();
+				$("#message").text("必填！");
+				$("#message").css("color","red");				
+			}
+		
+						
+		}
+		
+		$(function(){
+			$("#dId").select2({
+				placeholder : "请选择所属部门"
+			});
+			
+		});
+		</script>
+	</body>
+</html>

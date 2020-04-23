@@ -1,0 +1,332 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:include="commonTemplate :: header">
+</head>
+<body class="bgcolor-body">
+	<div id="page">
+		<div th:include="commonTemplate :: headerDiv"></div>
+		<div id="content" class="layout">
+			<div class="grid-s5m0">
+				<div class="col-main">
+					<div class="main-wrap">
+						<div class="skin-box">
+							<div class="skin-box-bd">
+								<div class="cur-position">
+									<span><a href="javascript:void(0)">考试信息管理</a> </span>
+									<span>&gt;</span>
+									<span><a href="javascript:void(0);">试卷管理</a> </span>
+									<span>&gt;</span>
+									<span><a href="javascript:void(0)">新增试卷</a> </span>
+								</div>
+								<!-- ==================================== 页面内容开始 ============================= -->
+								<div class="cont-box">
+									<div class="JsW skin-box-bd" data-widget-type="tab" data-widget-config="{'activeIndex':4}">
+										<div class="skin-bd-box">
+											<div class="list-table">
+												<div class="list-table-cont">
+										 		<div class="table2">
+													<form action="" style="word-break: break-all">
+														<table class="ks-inputall" id="test">
+														<thead>
+															<tr class='th' > <td class='col3'>题目</td> <td class='col4'>试题类别</td> <td class='col6'>创建时间</td><td class='col6'>操作</td></tr>
+														</thead>
+														<tbody id='tdy' >
+															<tr th:each="item:${itemBanks}">
+																	
+																	<!-- <div class="JsW control-checkbox"
+																		data-control-type="checkbox">
+																		<input type="checkbox" name="iId" class="check_ids"
+																			th:value="${info.iId}" />
+																	</div> -->
+																<td id="subject" th:text="${item.subject}"><input type="hidden" id="ids1" name="ids1" class="ids1" th:value="${item.did}"/>
+																<input type="hidden" id="iId" name="iId" th:value="${item.iId}"/>
+																</td>
+																<td id="createName" th:text="${item.createName}"></td>
+																<td id="createTs" th:text="${item.createTs}"></td>
+																<td class='col6' style="color: red;" th:onclick="'del(\'' + ${item.iId} + '\')'">删除</td>
+															</tr>
+														</tbody>
+													</table>
+													<div th:include="commonTemplate :: pageBox"></div>
+													</form>
+												</div>
+											</div>
+										</div>
+							<div class="list-table">
+								<div class="list-table-cont">
+									<div class="table6">
+										<form id="basefrm" name="basefrm"  th:action="@{testPaper/addedOrModified.ht}" method="post" enctype="multipart/form-data">
+											<table>
+												<tr>
+													<td>当前选题数量 : <span id="count" style="color: red;"></span></td>
+												</tr>
+												<tr>
+													<td>
+														<div class="left">
+															<div class="td1">
+																<input type="hidden" id="iIds" name="iIds" />
+																<span class="red">*</span><span>试卷名称：</span>
+															</div>
+															<div class="td2">
+																<span>
+																	<input type="text" class="radius3 input" id="paperName" name="paperName" th:value="${testpaper.paperName}"/>
+																</span>
+															</div>
+														</div>		
+													</td>
+												</tr>
+												<tr>
+													<td>
+														<div class="left">
+															<div class="td1">
+																<span class="red">*</span><span>试卷类型：</span>
+															</div>
+															<div class="td2">
+																<span>
+																	<input type="text" class="radius3 input" id="examinationType" name="examinationType" th:value="${testpaper.examinationType}"/>
+																</span>
+															</div>
+														</div>		
+													</td>
+												</tr>
+												<tr>
+													<td>
+														<div class="left">
+															<div class="td1">
+																<span class="require red"></span><span>搜索类型：</span>
+															</div>
+															<div class="td2">
+																<div class="control-css3select css3select-icon-hide" >
+																	<select class="select" id="did" name="did" onchange="choiceCourse()" >
+																		<option>- - - - - 搜索 - - - - -</option>
+																		<option th:each="info:${course}" 
+																			th:value="${info.ciId}" 
+																			th:text="${info.courseTtitle}"></option>
+																	</select> 
+																</div>
+															</div>
+														</div><!--  th:onclick="'choiceCourse(\'' + ${info.ciId} + '\')'" -->
+													</td>
+												</tr>
+													</table>
+														<div class="redbutton control-button JsW"  >
+														<span class="grey"> <input value="返回上级" type="button" onclick="returnBack();" class="radius5 button ks-pop-close1" /> </span>
+														<span baisee:ctrl="ZSXYGL_XYXG"> <input value="确定保存" type="button" onclick="confirm()" class="radius5 button ks-pop-close1" /> </span>
+														</div>
+													</form>
+												</div>
+												
+											</div>
+										</div>
+									</div>
+									<div class="table2" style="background-color: white;">
+											<table class="ks-inputall" id="succ" style="word-break: break-all">
+											</table>
+											<div th:include="commonTemplate :: pageBox"></div>
+									</div>
+										
+								</div>
+							</div>
+							<!-- ============================= 页面内容 结束============================= -->
+						</div>
+					</div>
+				</div>
+			</div>
+			<div th:include="commonTemplate :: leftMenus"></div>
+		</div>
+	</div>
+	<div th:include="commonTemplate :: footer"></div>
+</div>
+<div th:include="commonTemplate :: processBar" />
+		<script th:inline="javascript">
+			var splicing = ""; 
+			function choice(){
+				var succ = "";
+				/*<![CDATA[*/
+					var did = $("#did").val();
+					succ+="<tr class='th'><td class='col1'></td><td class='col3'>题目</td><td class='col4'>创建人</td> <td class='col6'>创建时间</td></tr>";
+					$.ajax({
+						url:[[@{/itemBank/typeQuery.ht}]],
+						data:{did:did},
+						type:"get",
+						dataType:"json",
+						success:function(data){
+							if(data == null){
+								_alert("题库数量为零!");
+							}
+							var ids = $("input[name='idss']");
+							$.each(data,function(i,result){ 
+								var boole = false;
+								  for ( k in ids) {
+									  //console.log(data[i].iId);
+									  if(ids[k].value == data[i].iId){
+										 
+										  boole = true;
+										  succ += "<tr class='"+i+"'> <td class='col1' ><input type='checkbox' checked='checked' id='ids' name='ids' onclick=checkeds(this,this.checked,\'"+i+"','" + data[i].iId + "','" + data[i].did + "','" + data[i].createTs + "','" + data[i].subject + "') value="+data[i].iId+" /></td><td class='col2' ><span class='test' style='cursor:pointer;width:10px;'>"+data[i].subject+"</span></td>";
+									  }
+								  }
+								  if( boole == false){
+										succ += "<tr class='"+i+"'> <td class='col1' ><input type='checkbox' id='ids' name='ids' onclick=checkeds(this,this.checked,\'"+i+"','" + data[i].iId + "','" + data[i].did + "','" + data[i].createTs + "','" + data[i].subject + "') value="+data[i].iId+" /></td><td class='col2'><span class='test' style='width:10px;'>"+data[i].subject+"</span></td>";
+							   	   }
+								  succ += "<td class='col2'><span class='test' style='cursor:pointer'>"+data[i].createName+"</span></td>";
+								  succ += "<td class='col2'><span class='test' style='cursor:pointer'>"+data[i].createTs+"</span></td></tr>";
+							})
+							document.getElementById('succ').innerHTML=succ;
+						}
+					});
+				/*]]>*/
+			}
+			// 选中方法
+			function checkeds(obj,ches, k, idss, createName, createTs,subject){ 
+				/*<![CDATA[*/
+					if(ches == true){
+						splicing = ""; 
+						splicing +="<tr class="+idss+"><td class='col3'> "+ subject +"</td>";
+			   			splicing +="<td class='col3'>"+ createName +"</td>";
+			   			splicing +="<td class='col3'>"+ createTs +" <input type='hidden' class='radius3 input' id='idss' name='idss' value="+idss+"  /></td><td class='col6' style='color: red;' onclick=del(\'" + idss+"')>删除</td></tr>"; 
+			   			$("#test tbody").append(splicing);  
+			   			var ids = $("input[name='idss']");
+			   			$("#count").html(ids.length);
+					}else{
+						// 遍历所有数据 判断是否已经选中了,选中之后就不能在选中
+						var ids = $("input[name='idss']");
+						  for ( k in ids) {
+							  if(ids[k].value ==  idss){
+								  _alert("该题已被选中");
+								// 状态再设置成选中状态
+								 $(obj).prop("checked",true);
+								//ids[k].checked = 'true';
+								return;
+							  }
+						  }
+					}			
+				/*]]>*/
+			 } 
+			
+			
+			function choiceCourse(){
+				var did = $("#did").val();
+				layer.open({
+					  type: 2,
+					  area: ['800px', '500px'],
+					  shadeClose : true,
+					  shade : 0.8,
+					  content: [[@{'/testPaper/testPaperInfo.ht'}]]+"?did="+did,
+					  end: function () {
+							/*<![CDATA[*/
+							$(window.top.document).find("#_proccesBar").css("visibility", "hidden");
+					    	 /*]]>*/
+			            }
+				});
+			}
+			
+			/* function openWin(f, n, w, h, s) {
+				sb = s == "1" ? "1" : "0";
+				l = (screen.width - w)/2;
+				t = (screen.height - h)/2;
+				sFeatures = "left="+l+",top="+t+",status=0,directories=0,channelmode=0";
+				openwin = window.open(f, n, sFeatures);
+				if (!openwin.opener) {
+					openwin.opener=self;
+					openwin.focus();
+					return openwin;
+				}
+			} */
+			
+		//  返回上级
+			function returnBack(){
+				var url = [[@{'/testPaper/testPaperList.ht?'}]];
+				locationHref(url);
+			}
+			
+			function confirm(){
+				/*<![CDATA[*/
+					var ids = $("input[name='iId']");
+					var paperName = $("#paperName").val();
+					var tid = $("#tid").val();
+					var examinationType = $("#examinationType").val();
+					if(paperName.trim() == '' || paperName.trim() ==  null){
+						_alert("试卷名称不能为空!");
+					}else if( examinationType.trim() == '' || examinationType.trim() == null){
+						_alert("必须输入考试类型(如果多个,请输入综合)!");
+					}else{
+						var judge = false;
+						$.ajax({
+							url:[[@{/testPaper/checkName.ht}]],
+							data:{paperName:paperName, tid:tid},
+							type:"post",
+							dataType:"json",
+							success:function(obj){
+									debugger;
+								if(obj == false){
+									_alert("名称重复");
+									judge = true;
+								}else{
+									var id = "";
+									for (var i = 0; i < ids.length; i++) {
+										id +=ids[i].value+","; 
+									}
+									$.ajax({
+										url:[[@{/testPaper/checkId.ht}]],
+										data:{paperName:paperName, tid:tid, id:id},
+										type:"post",
+										dataType:"json",
+										success:function(obj){
+											if(obj.code == 0){
+												_alert(obj.message);
+											}else{
+												$("#iIds").val(id);
+												$("#basefrm").submit();
+											}	
+										}
+									});
+								}
+							}
+						});
+						
+					}
+				/*]]>*/
+			}
+			
+			/* $(function (){ */
+				/*<![CDATA[*/
+					/* var itemBank = [[${itemBankList}]];
+					if(itemBank != '' && itemBank != null){
+						for (var i = 0; i < itemBank.length; i++) {
+							splicing +="<tr class="+itemBank[i].iId+i+"><td class='col3'> "+ itemBank[i].subject +"</td>";
+				   			splicing +="<td class='col3'>"+ itemBank[i].dictValue +"</td>";
+				   			splicing +="<td class='col3'>"+ itemBank[i].createTs +" <input type='hidden' class='radius3 input' id='idss' name='idss' value="+itemBank[i].iId+"  /></td><td class='col6' style='color: red;' onclick=del(\'" + itemBank[i].iId +i+"')>删除</td></tr>"; 
+				   			$("#test tbody").html(splicing); 
+						}
+					}
+					var ids = $("input[name='idss']");
+					$("#count").html(ids.length); */
+				/*]]>*/
+			/* }); */
+			
+			var itemCount = [[${itemBankCount}]];
+			$(function() {
+				/*<![CDATA[*/
+					$("#count").html(itemCount);
+				/*]]>*/
+			})
+			
+			/* function del(iid){
+				$("."+iid).remove();
+				// 让他默认取消 未完成
+				var ids = $("input[name='idss']");
+				$("#succ tbody").find("input").each(function(i,n){
+					if(iid==$(n).val()){
+						$(n).prop("checked",false);
+					}
+				})
+	   			$("#count").html(ids.length);
+			} */
+			
+			function del(iId) {
+				var url = [[@{'/testPaper/delItemBankById.ht'}]]+"?iIds="+iId;
+				locationHref(url);
+			}
+		</script>
+	</body>
+</html>

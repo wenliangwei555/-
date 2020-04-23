@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.baisee.BaiseeStagesMapper">
+	<!-- 分期表 -->
+	<resultMap type="cn.baisee.oa.model.tuition.TuitionStages"
+		id="stages_map">
+		<id column="TU_ST_ID" jdbcType="VARCHAR" property="tuStId" />
+		<result column="TU_ST_NAME" jdbcType="VARCHAR"
+			property="tuStName" />
+		<result column="TU_ST_CYCLE" jdbcType="VARCHAR"
+			property="tuStCycle" />
+		<result column="UPDATE_TIME" jdbcType="VARCHAR"
+			property="tuStUpdateTime" />
+		<result column="TUMONET" jdbcType="VARCHAR" property="tuMonet" />
+	</resultMap>
+
+	<select id="getStagesList" resultMap="stages_map">
+		select a.TU_ST_ID,a.TU_ST_NAME,
+		a.TU_ST_CYCLE from baisee_tuition_by_stages a;
+	</select>
+	<!-- 新增学费分期 -->
+	<insert id="insertStages"
+		parameterType="cn.baisee.oa.model.tuition.TuitionStages">
+		<selectKey resultType="java.lang.String" order="AFTER"
+			keyProperty="tuStId">
+			SELECT TU_ST_ID FROM baisee_tuition_by_stages
+			ORDER BY TU_ST_ID DESC LIMIT 1
+		</selectKey>
+		INSERT INTO baisee_tuition_by_stages
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			TU_ST_ID,
+			<if test="tuStName != null and tuStName!= ''">
+				TU_ST_NAME,
+			</if>
+			<if test="tuStCycle != null and tuStCycle != ''">
+				TU_ST_CYCLE,
+			</if>
+			UPDATE_TIME
+		</trim>
+		<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+			pkval('TUST'),
+			<if test="tuStName != null and tuStName!= ''">
+				#{tuStName, jdbcType=VARCHAR},
+			</if>
+			<if test="tuStCycle != null and tuStCycle != ''">
+				#{tuStCycle, jdbcType=VARCHAR},
+			</if>
+			DATE_FORMAT(now(),'%Y%m%d%H%i%m')
+		</trim>
+	</insert>
+	<!-- 新增学费 分期 关联 -->
+	<insert id="insertTuitionStages" parameterType="map">
+		INSERT INTO baisee_tuition_rule_stages
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="tuStId != '' and tuStId != null">
+				TU_ST_ID,
+			</if>
+			<if test="tuId != '' and tuId != null">
+				TU_ID
+			</if>
+		</trim>
+		<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+			<if test="tuStId != '' and tuStId != null">
+				#{tuStId,jdbcType=VARCHAR},
+			</if>
+			<if test="tuId != '' and tuId != null">
+				#{tuId,jdbcType=VARCHAR}
+			</if>
+		</trim>
+	</insert>
+	<!-- 修改关联表 -->
+	<update id="updateTuitionStages" parameterType="map">
+		UPDATE baisee_tuition_rule_stages
+		<set>
+			<if test="tuStId != '' and tuStId != null">
+				TU_ST_ID=#{tuStId,jdbcType=VARCHAR},
+			</if>
+		</set>
+		<where>
+			<if test="tuId != '' and tuId != null">
+				TU_ID=#{tuId,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</update>
+	<!-- 修改分期 -->
+	<update id="updateStages"
+		parameterType="cn.baisee.oa.model.tuition.TuitionStages">
+		UPDATE baisee_tuition_by_stages
+		<set>
+			<if test="tuStName != null and tuStName!= ''">
+				TU_ST_NAME=#{tuStName, jdbcType=VARCHAR},
+			</if>
+			<if test="tuStCycle != null and tuStCycle != ''">
+				TU_ST_CYCLE=#{tuStCycle, jdbcType=VARCHAR},
+			</if>
+			UPDATE_TIME=DATE_FORMAT(now(),'%Y%m%d%H%i%m')
+		</set>
+		<where>
+			<if test="tuStId != null and tuStId != ''">
+				TU_ST_ID=#{tuStId, jdbcType=VARCHAR}
+			</if>
+		</where>
+
+	</update>
+	<!-- 分期规则 -->
+	<resultMap
+		type="cn.baisee.oa.model.tuition.TuitionStagesRule"
+		id="stagesRule_map">
+		<id column="TU_ST_RULE_ID" jdbcType="VARCHAR" property="tuStRuleId" />
+		<result column="TU_ST_ID" jdbcType="VARCHAR" property="tuStId" />
+		<result column="TU_ST_RULE_MINIMUM_TUITION" jdbcType="VARCHAR"
+			property="tuStRuleMinimumTuition" />
+		<result column="TU_ST_RULE_HIGHEST_TUITION" jdbcType="VARCHAR"
+			property="tuStRuleHighestTuition" />
+		<result column="TU_ST_RULE_TIME_LIMIT" jdbcType="VARCHAR"
+			property="tuStRuleTimeLimit" />
+		<result column="UPDATE_TIME" jdbcType="VARCHAR"
+			property="tuStRuleUpdateTime" />
+	</resultMap>
+	<insert id="insertStagesRule" parameterType="map">
+		INSERT INTO baisee_tuition_by_stages_rule
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			TU_ST_RULE_ID,
+			<if test="tuStId != '' and tuStId != null">
+				TU_ST_ID,
+			</if>
+			<if
+				test="tuStRuleMinimumTuition != '' and tuStRuleMinimumTuition != null">
+				TU_ST_RULE_MINIMUM_TUITION,
+			</if>
+			<if
+				test="tuStRuleHighestTuition != '' and tuStRuleHighestTuition != null">
+				TU_ST_RULE_HIGHEST_TUITION,
+			</if>
+			<if test="tuStRuleTimeLimit != '' and tuStRuleTimeLimit != null">
+				TU_ST_RULE_TIME_LIMIT,
+			</if>
+			UPDATE_TIME
+		</trim>
+		<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+			pkval('STRU'),
+			<if test="tuStId != '' and tuStId != null">
+				#{tuStId, jdbcType=VARCHAR},
+			</if>
+			<if
+				test="tuStRuleMinimumTuition != '' and tuStRuleMinimumTuition != null">
+				#{tuStRuleMinimumTuition, jdbcType=VARCHAR},
+			</if>
+			<if
+				test="tuStRuleHighestTuition != '' and tuStRuleHighestTuition != null">
+				#{tuStRuleHighestTuition, jdbcType=VARCHAR},
+			</if>
+			<if test="tuStRuleTimeLimit != '' and tuStRuleTimeLimit != null">
+				#{tuStRuleTimeLimit, jdbcType=VARCHAR},
+			</if>
+			DATE_FORMAT(now(),'%Y%m%d%H%i%m')
+		</trim>
+	</insert>
+	<!-- 据根据学费规则id获取分期ID -->
+	<select id="getTuStIdByTuId" parameterType="map"
+		resultType="java.lang.String">
+		SELECT TU_ST_ID AS tuStId FROM baisee_tuition_rule_stages
+		<where>
+			<if test="tuId != null and tuId != ''">
+				TU_ID=#{tuId, jdbcType=VARCHAR}
+			</if>
+			<if test="tuStId != null and tuStId != ''">
+				TU_ST_ID=#{tuStId,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	<!-- 根据ID删除分期 -->
+	<delete id="delStages" parameterType="map">
+		<if test="tuStId != null and tuStId != ''">
+			DELETE FROM baisee_tuition_by_stages
+			<where>
+				TU_ST_ID=#{tuStId,jdbcType=VARCHAR}
+			</where>
+		</if>
+	</delete>
+	<!-- 根据分期ID删除学费规则表 -->
+	<delete id="delStagesRule" parameterType="map">
+		<if test="tuStId != null and tuStId != ''">
+			DELETE FROM baisee_tuition_by_stages_rule
+			<where>
+				TU_ST_ID=#{tuStId,jdbcType=VARCHAR}
+			</where>
+		</if>
+	</delete>
+	<!-- 删除学费 分期关联 -->
+	<delete id="delTuitionStages" parameterType="map">
+		<if test="tuId != null and tuId != ''">
+			DELETE FROM baisee_tuition_rule_stages
+			<where>
+				TU_ID=#{tuId, jdbcType=VARCHAR}
+			</where>
+		</if>
+	</delete>
+	<!-- 根据分期ID删除 学费 分期关联 -->
+	<delete id="delStagesByStId" parameterType="map">
+		<if test="tuStId != null and tuStId != ''">
+			DELETE FROM baisee_tuition_rule_stages
+			<where>
+				TU_ST_ID=#{tuStId, jdbcType=VARCHAR}
+			</where>
+		</if>
+	</delete>
+	<!-- 根据分期ID查询 -->
+	<select id="getStagesById" parameterType="map"
+		resultType="cn.baisee.oa.model.tuition.TuitionStages">
+		SELECT TU_ST_ID as tuStId,TU_ST_NAME as tuStName,TU_ST_CYCLE as tuStCycle FROM
+		baisee_tuition_by_stages
+		<where>
+			<if test="tuStId != null and tuStId != ''">
+				TU_ST_ID=#{tuStId,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	<!-- 根据分期ID查询分期详情 -->
+	<select id="getStagesRuleById" parameterType="map"
+		resultMap="stagesRule_map">
+		SELECT TU_ST_RULE_ID,TU_ST_ID,TU_ST_RULE_MINIMUM_TUITION,
+		TU_ST_RULE_HIGHEST_TUITION,TU_ST_RULE_TIME_LIMIT FROM
+		baisee_tuition_by_stages_rule
+		<where>
+			<if test="tuStId != null and tuStId != ''">
+				TU_ST_ID=#{tuStId,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	<!-- 修改分期规则 -->
+	<update id="updateStagesRule" parameterType="map">
+		UPDATE baisee_tuition_by_stages_rule
+		<set>
+			<if
+				test="tuStRuleMinimumTuition != '' and tuStRuleMinimumTuition != null">
+				TU_ST_RULE_MINIMUM_TUITION=#{tuStRuleMinimumTuition,
+				jdbcType=VARCHAR},
+			</if>
+			<if
+				test="tuStRuleHighestTuition != '' and tuStRuleHighestTuition != null">
+				TU_ST_RULE_HIGHEST_TUITION=#{tuStRuleHighestTuition,
+				jdbcType=VARCHAR},
+			</if>
+			<if test="tuStRuleTimeLimit != '' and tuStRuleTimeLimit != null">
+				TU_ST_RULE_TIME_LIMIT=#{tuStRuleTimeLimit,
+				jdbcType=VARCHAR},
+			</if>
+			UPDATE_TIME=DATE_FORMAT(now(),'%Y%m%d%H%i%m')
+		</set>
+		<where>
+			<if test="tuStRuleId != null and tuStRuleId != ''">
+				TU_ST_RULE_ID=#{tuStRuleId,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</update>
+
+	<select id="getTuStCycleList" resultMap="stages_map">
+		select
+		a.TU_ST_NAME,a.tu_st_cycle as TU_ST_CYCLE , c.Tu_monet as TUMONET, a.TU_ST_ID as
+		TU_ST_ID from
+		baisee_tuition_by_stages a LEFT JOIN baisee_tuition_rule_stages b on a.TU_ST_ID = b.TU_ST_ID
+		LEFT JOIN baisee_tuition_rule c
+		on b.tu_id = c.tu_id
+	</select>
+
+</mapper>

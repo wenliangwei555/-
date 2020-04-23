@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="commonTemplate :: header">
+</head>
+<body>
+    <div class="lyear-layout-web">
+        <div class="lyear-layout-container">
+            <!-- 左侧导航开始 -->
+            <div th:replace="commonTemplate :: leftMenus"></div>
+            <!-- 左侧导航结束 -->
+            <!-- 头部信息 -->
+            <div th:replace="commonTemplate :: headerDiv"></div>
+            <!-- 头部信息结束 -->
+            <!-- 页面主要内容 -->
+            <!--页面主要内容-->
+
+            <!--页面主要内容-->
+            <main class="lyear-layout-content">
+
+                <div class="container-fluid">
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-body">
+
+                                    <form  class="row" id="noticeViewForm" th:action="@{notice/handle.ht}"  method="post" th:object="${b}">
+
+                                        <div class="form-group col-md-12">
+                                            <label>标题</label>
+                                            <input type="text" class="form-control" th:value="*{t_title}" readonly="readonly" />
+                                        </div>
+                                        <div class="form-group col-md-12">
+                                            <label>内容</label>
+                                            <textarea class="form-control" th:text="*{t_content}" rows="5" readonly="readonly"></textarea>
+                                        </div>
+                                        <div class="form-group col-md-12">
+                                            <label>发送人</label>
+                                            <input type="text" class="form-control" th:value="*{name}" readonly="readonly" />
+                                        </div>
+                                        <div class="form-group col-md-12">
+                                            <label>通知状态</label>
+                                            <div class="form-controls">
+                                                <div th:switch="*{type1}">
+                                                    <span  th:case="'0'">未读</span>
+                                                    <span  th:case="'1'">已读</span>
+                                                    <span  th:case="'2'">已处理</span>
+                                                    <span  th:case="'3'">已关闭</span>
+                                                    <span  th:case="*">未知状态</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-md-12">
+                                            <label>发送时间</label>
+                                            <div class="form-controls">
+                                                <input type="text" class="form-control" th:value="${#dates.format(b.sending_time,'yyyy-MM-dd HH:mm:dd')}" readonly="readonly" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-md-12">
+                                            <label>更新时间</label>
+                                            <div class="form-controls">
+                                                <input type="text" class="form-control" th:value="${#dates.format(b.update_time,'yyyy-MM-dd HH:mm:dd')}" readonly="readonly" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-md-12">
+                                            <button type="button" class="btn btn-primary ajax-post"  th:onclick="'closeNotice()'" >关闭通知</button>
+                                            <button type="button" class="btn btn-default" th:onclick="'returnBack()'">返 回</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <!--End 页面主要内容-->
+        </div>
+    </div>
+
+    <script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js" th:src="@{static/js/bootstrap.min.js}"></script>
+    <script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+    <script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+    <script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+    var basePath = /*[[@{/}]]*/;
+    /*]]>*/
+</script>
+<script th:inline="javascript">
+
+    function returnBack(){
+        // var url = [[@{'/notice/staffList.ht'}]];
+        // locationHref(url);
+        location.href=basePath+"/notice/staffList.ht";
+    }
+</script>
+<script>
+    function handle(){
+        var id = $("#notice_id").val();
+        $.ajax({
+            url:basePath + "notice/handle1.ht",
+            data:{noticeId:id},
+            dataType:'json',
+            type:'post',
+            success:function(res){
+                alert(res.msg);
+                if(res.code == "SUCCESS"){
+                    returnBack();
+                }
+            }
+        })
+    }
+    function closeNotice(){
+        var id = $("#notice_id").val();
+        $.ajax({
+            url:basePath + "notice/closeNotice1.ht",
+            data:{noticeId:id},
+            dataType:'json',
+            type:'post',
+            success:function(res){
+                console.log(res);
+                alert(res.msg);
+                if(res.code == "SUCCESS"){
+                    returnBack();
+                }
+            }
+        })
+    }
+</script>
+</body>
+</html>

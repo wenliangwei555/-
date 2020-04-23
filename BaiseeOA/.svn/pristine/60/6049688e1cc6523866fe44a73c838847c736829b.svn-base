@@ -1,0 +1,259 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head th:include="commonTemplate :: header">
+</head>
+<body class="bgcolor-body">
+
+<div class="lyear-layout-container">
+
+	<!--左侧导航-->
+	<div th:replace="commonTemplate :: leftMenus"></div>
+	<!--End 左侧导航-->
+
+	<!--头部信息-->
+	<div th:replace="commonTemplate :: headerDiv"></div>
+	<!--End 头部信息-->
+
+	<!--页面主要内容-->
+	<main class="lyear-layout-content">
+
+		<div class="container-fluid" style="margin-top: -90px">
+			<!--<form  th:action="@{disc/toDisList.ht}"  id="frm" name="frm" method="post" th:object="${notice}" onsubmit="return check();">-->
+			<div class="row">
+					<div class="col-lg-12">
+						<div class="card">
+							<div class="card-body">
+								<div class="table-responsive">
+									<div class="cont-box">
+										<div class="list-table">
+											<div class="list-table-cont">
+												<div class="table2">
+													<table class="ks-inputall table table-bordered">
+														<tr class="th">
+															<td class="col5">最低缴费</td>
+															<td class="col6">最高缴费</td>
+															<td class="col6">时间限制</td>
+														</tr>
+														<tr th:if="${stagesList == null || stagesList.size() == 0}">
+														</tr>
+
+														<tr th:each="info:${stagesList}"
+															th:if="${stagesList != null &amp;&amp; stagesList.size() > 0}"
+															onmouseover="this.style.backgroundColor='#e3f1ff'"
+															onmouseout="this.style.backgroundColor='#ffffff'">
+															<!-- <td class="col3">
+                                                                <span style="cursor:pointer"   title="点击进行修改" th:onclick="'edit(\''+${info.rrid}+'\',\''+${info.returnType}+'\',\''+${info.returnValue}+'\')'" th:text="${retu.rName}"></span>
+                                                            </td> -->
+															<td class="col5"><span style="cursor: pointer"
+																				   title="点击进行修改"
+																				   th:onclick="'edit(\''+${info.tuStRuleId}+'\',\''+${info.tuStRuleMinimumTuition}+'\',\''+${info.tuStRuleHighestTuition}+'\',\''+${info.tuStRuleTimeLimit}+'\')'"
+																				   th:text="${info.tuStRuleMinimumTuition}"></span></td>
+															<td class="col6"><span style="cursor: pointer"
+																				   title="点击进行修改"
+																				   th:onclick="'edit(\''+${info.tuStRuleId}+'\',\''+${info.tuStRuleMinimumTuition}+'\',\''+${info.tuStRuleHighestTuition}+'\',\''+${info.tuStRuleTimeLimit}+'\')'"
+																				   th:text="${info.tuStRuleHighestTuition}"></span></td>
+															<td class="col10"><span style="cursor: pointer"
+																					title="点击进行修改"
+																					th:onclick="'edit(\''+${info.tuStRuleId}+'\',\''+${info.tuStRuleMinimumTuition}+'\',\''+${info.tuStRuleHighestTuition}+'\',\''+${info.tuStRuleTimeLimit}+'\')'"
+																					th:text="${info.tuStRuleTimeLimit}" ></span>个月</td>
+														</tr>
+													</table>
+												</div>
+											</div>
+										</div>
+										<div class="cont-box">
+											<div class="JsW skin-box-bd" data-widget-type="tab"
+												 data-widget-config="{'activeIndex':0}">
+												<div class="skin-bd-box">
+													<div class="list-table">
+														<div class="list-table-cont">
+															<div class="table6">
+																<form id="StagesForm"
+																	  th:action="@{stages/saveOrUpdate.ht}" method="post">
+																	<input type="hidden" name="prompt" id="prompt"
+																		   th:value="${prompt}" />
+																	<table id="stagesTab" class="table table-borderedsss">
+																		<tr id="StagesTr">
+																			<!-- 分期选择 -->
+																			<td>
+																				<div class='left'>
+																					<div class='td1'>
+																						<span style="color: red;">*</span><span>分期名称：</span>
+																					</div>
+																					<div class='td2 col-xs-5'>
+																						<input type="text" class="form-control" id="tuStName" name="tuStName" th:value="${stages.tuStName}" onkeyup="check();" />
+																					</div>
+																				</div>
+																			</td>
+																		</tr>
+																		<tr id="StagesTr">
+																			<!-- 分期选择 -->
+																			<td>
+																				<div class='left'>
+																					<div class='td1'>
+																						<input type="hidden" name="tuStId" id="tuStId" th:value="${stages.tuStId}" />
+																						<span style="color: red;">*</span><span>选择分期期数：</span>
+																					</div>
+																					<div class='td2'>
+																						<div class="control-css3select css3select-icon-hide col-xs-5">
+																							<select class="form-control" id="tuStCycle" name="tuStCycle"
+																									onchange="StagesTypeChice(this.value)">
+																								<option></option>
+																								<option value="2">2期</option>
+																								<option value="3">3期</option>
+																								<option value="4">4期</option>
+																								<option value="5">5期</option>
+																								<option value="6">6期</option>
+																							</select>
+																						</div>
+																					</div>
+																				</div>
+																			</td>
+																		</tr>
+																		<tr>
+																			<td>
+																				<div class='left'>
+																					<div class='td1'>
+																						<input type="hidden" name="tuStRuleId" id="tuStRuleId" value="" />
+																						<span style="color: red;">*</span><span>最低缴费:</span>
+																					</div>
+																					<div class='td2 col-xs-5'>
+																						<input type="text"
+																							   onKeypress="javascript:if(event.keyCode == 32)event.returnValue = false;"
+																							   class="form-control"
+																							   id="tuStRuleMinimumTuition"
+																							   name="tuStRuleMinimumTuition"
+																							   onkeyup="check();" />
+																					</div>
+																				</div>
+																			</td>
+																		</tr>
+																		<tr>
+																			<td>
+																				<div class='left'>
+																					<div class='td1'>
+																						<span style="color: red;">*</span><span>最高缴费:</span>
+																					</div>
+																					<div class='td2 col-xs-5'>
+																						<input type="text"
+																							   onKeypress="javascript:if(event.keyCode == 32)event.returnValue = false;"
+																							   class="form-control"
+																							   id="tuStRuleHighestTuition"
+																							   name="tuStRuleHighestTuition"
+																							   onkeyup="check();" />
+																					</div>
+																				</div>
+																			</td>
+																		</tr>
+																		<tr>
+																			<td>
+																				<div class='left'>
+																					<div class='td1'>
+																						<span style="color: red;">*</span><span>时间限制(月):</span>
+																					</div>
+																					<div class='td2 col-xs-5'>
+																						<input type="text"
+																							   onKeypress="javascript:if(event.keyCode == 32)event.returnValue = false;"
+																							   class="form-control" id="tuStRuleTimeLimit"
+																							   name="tuStRuleTimeLimit"
+																							   onkeyup="check();" />
+																					</div>
+																				</div>
+																			</td>
+																		</tr>
+																	</table>
+																	<div class="redbutton control-button JsW" data-control-type="button" data-control-config="{'buttonCls':'button'}">
+																<span> <input value="保存" type="submit"
+																			  class="btn btn-success btn-w-lg" />
+																</span>
+																		<span class="grey">
+																	<input value="返回上一级" type="button" class="btn btn-secondary btn-w-lg" onclick="returnBack();" />
+																</span>
+																		<span id="del"></span>
+																	</div>
+																</form>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+								</div>
+
+							</div>
+						</div>
+					</div>
+
+				</div>
+				</div>
+		</div>
+
+	</main>
+	<!--End 页面主要内容-->
+</div>
+
+
+<script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap.min.js" th:src="@{static/js/bootstrap.min.js}"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+<script type="text/javascript" th:src="@{js/jconfirm/jquery-confirm.min.js}"></script>
+	<script th:inline="javascript"> 
+	$(function(){
+		setValidate($("#StagesForm"),{
+			rules: {
+				tuStName:{required: true, maxlength: 10},
+				tuStCycle:{required: true},
+				tuStRuleMinimumTuition:{required: true},
+				tuStRuleHighestTuition:{required: true},
+				tuStRuleTimeLimit:{required: true},
+			},
+			messages:{
+				tuStName:{required: "必填",maxlength: "最长30位"},
+				tuStCycle:{required: "必选"},
+				tuStRuleMinimumTuition:{required: "必填"},
+				tuStRuleHighestTuition:{required: "必填"},
+				tuStRuleTimeLimit:{required: "必填"}
+			}
+		});
+	});
+		
+		$(function(){
+			var prompt=$("#prompt").val();
+			if(prompt != ""){
+				_alert(prompt);
+			}
+			
+		})
+		
+		function returnBack(){
+			// var url = [[@{'/stages/toStagesList.ht'}]];
+			// locationHref(url);
+			location.href=basePath+"/stages/toStagesList.ht";
+		} 
+		
+		$(function () {
+			var tuStCycle=[[${stages.tuStCycle}]];
+			$("#tuStCycle").val(tuStCycle);
+		});
+		
+		$(function(){
+			$("#tuStCycle").select2({
+				placeholder : "请选择分期期数"
+			});
+			
+		});
+		function edit(tuStRuleId,tuStRuleMinimumTuition,tuStRuleHighestTuition,tuStRuleTimeLimit){
+			debugger;
+			$("#tuStRuleId").val(tuStRuleId);
+			$("#tuStRuleMinimumTuition").val(tuStRuleMinimumTuition);
+			$("#tuStRuleHighestTuition").val(tuStRuleHighestTuition);
+			$("#tuStRuleTimeLimit").val(tuStRuleTimeLimit);
+			
+		}
+		
+		</script>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head th:include="commonTemplate :: header">
+</head>
+<body class="bgcolor-body">
+	<div id="page">
+		<div th:include="commonTemplate :: headerDiv"></div>
+		<div id="content" class="layout">
+			<div class="grid-s5m0">
+				<div class="col-main">
+					<div class="main-wrap">
+						<div class="skin-box">
+							<div class="skin-box-bd">
+								<div class="cur-position">
+									<span><a href="javascript:void(0)">考试信息管理</a> </span> <span>&gt;</span>
+									<span><a href="javascript:void(0);">试题管理</a> </span> <span>&gt;</span>
+									<span><a href="javascript:void(0)">新增试题信息</a></span>
+								</div>
+								<!-- ==================================== 页面内容开始 ============================= -->
+								<div class="cont-box">
+									<div class="JsW skin-box-bd" data-widget-type="tab"
+										data-widget-config="{'activeIndex':0}">
+										<div class="skin-bd-box">
+											<div class="list-table">
+												<div class="list-table-cont">
+													<div class="table6">
+														<form id="ClaForm" name="ClaForm" th:action="@{examination/addExamination.ht}"
+															method="post" th:object="${examination}">
+															<input type="hidden" name="eid" id="eid" th:value="*{eid}" />
+															<table>
+																<tr>
+																	<td>
+																		<div class="left">
+																			<div class="td1">
+																				<span class="require red">*</span><span>选择班级：</span>
+																			</div>
+																			<div class="td2">
+																				<div class="control-css3select css3select-icon-hide">
+																					<select class="radius3" id="cid"
+																						name="cid">
+																						<option> &nbsp;&nbsp;&nbsp;- - - - - 选择班级 - - - - - </option>
+																						<option th:each="info1:${clazzs}"
+																							th:value="${info1.cId}"
+																							th:text="${info1.cName}"></option>
+																					</select> 
+																				</div>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+																<tr>
+																	<td>
+																		<div class="left">
+																			<div class="td1">
+																				<span class="require red">*</span><span>选择试卷：</span>
+																			</div>
+																			<div class="td2">
+																				<div class="control-css3select css3select-icon-hide">
+																					<select class="radius3" id="tid"
+																						name="tid">
+																						<option> &nbsp;&nbsp;&nbsp;- - - - - 选择试卷 - - - - - </option>
+																						<option th:each="info2:${testpapers}"
+																							th:value="${info2.tid}"
+																							th:text="${info2.paperName}"></option>
+																					</select> 
+																				</div>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+																<tr>
+																	<td>
+																		<div class="left">
+																			<div class="td1">
+																				<span class="require red">*</span><span>选择监考老师：</span>
+																			</div>
+																			<div class="td2">
+																				<div class="control-css3select css3select-icon-hide">
+																					<select class="radius3" id="teacher"
+																						name="teacher">
+																						<option> &nbsp;&nbsp;&nbsp;- - - - - 选择老师 - - - - - </option>
+																						<option th:each="info3:${employee}"
+																							th:value="${info3.empId}"
+																							th:text="${info3.empName}"></option>
+																					</select> 
+																				</div>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+																<tr>
+																	<td>
+																		<div class="left">
+																			<div class="td1">
+																				<span class="require red">*</span><span>选择考试场地：</span>
+																			</div>
+																			<div class="td2">
+																				<div class="control-css3select css3select-icon-hide">
+																					<select class="radius3" id="examinationPlace"
+																						name="examinationPlace">
+																						<option> &nbsp;&nbsp;&nbsp;- - - - - 选择场地 - - - - - </option>
+																						<option th:each="info4:${classrooms}"
+																							th:value="${info4.crId}"
+																							th:text="${info4.roomName}"></option>
+																					</select> 
+																				</div>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+																<tr>
+																	<td>
+																		<div class="left">
+																			<div class="td1">
+																				<span class="require red">*</span><span>开始时间：</span>
+																			</div>
+																			<div class="td2">
+																				<span><span><input type="text" id="startTime" placeholder="开始时间" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',readOnly:true})" name="startTime" th:value="*{startTime}" /></span></span>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+																<tr>
+																	<td>
+																		<div class="left">
+																			<div class="td1">
+																				<span class="require red">*</span><span>结束时间：</span>
+																			</div>
+																			<div class="td2">
+																				<span><input type="text" placeholder="结束时间" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',readOnly:true})" id="endTime" name="endTime" th:value="*{endTime}" /></span>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+															</table>
+															<div class="redbutton control-button JsW"
+																data-control-type="button"
+																data-control-config="{'buttonCls':'button'}">
+																 <span class="grey"> <input value="取消"
+																	type="button" class="radius5 button ks-pop-close1"
+																	onclick="returnBack();" />
+																</span> <span id="del"></span>
+																<span> <input value="保存" type="submit"
+																	class="radius5 button ks-pop-close1" />
+																</span>
+															</div>
+														</form>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<!-- ============================= 页面内容 结束============================= -->
+							</div>
+						</div>
+					</div>
+				</div>
+				<div th:include="commonTemplate :: leftMenus"></div>
+			</div>
+		</div>
+		<div th:include="commonTemplate :: footer"></div>
+	</div>
+	<div th:include="commonTemplate :: processBar" />
+	<script th:inline="javascript">
+	$(function(){
+		/*<![CDATA[*/
+		//班級默认选中
+		var cid = [[${examination.cid}]];
+		if(cid != '' && cid != null){
+			$("#cid").val( cid);
+		}
+		// 试卷默认选中
+		var tid = [[${examination.tid}]];
+		if(tid !='' && tid != null){
+			$("#tid").val( tid);
+		}
+		// 监考老师默认选中
+		var teacher = [[${examination.teacher}]];
+		if(teacher !='' && teacher != null){
+			$("#teacher").val( teacher);
+		}
+		// 考试场地默认选中
+		var examinationPlace = [[${examination.examinationPlace}]];
+		if(examinationPlace != '' && examinationPlace != null){
+			$("#examinationPlace").val( examinationPlace);
+		}
+		/*]]>*/
+	})
+	
+	$(function(){
+		setValidate($("#ClaForm"),{
+			rules: {
+				cid:{required: true},
+				tid:{required: true},
+				teacher:{required: true},
+				examinationPlace:{required: true, 
+					remote:{       
+			              type : "POST",
+			              url : [[@{'/examination/whetherToOccupyOrNot.ht'}]],
+			              cache:false,
+			              async: false,
+			              data : {
+			            	 "eid" : function(){return $("#eid").val();},
+			              	},
+			        }	
+				},
+				startTime:{required: true},
+				endTime:{required: true, endTime:true}
+			},
+			messages:{
+				cid:{required: "必选"},
+				tid:{required: "必选"},
+				teacher:{required: "必选"},
+				examinationPlace:{required: "必选", remote:"考试已经被使用,不能修改信息!"},
+				startTime:{required: "必填"},
+				endTime:{required: "必填"}
+			}
+		});
+		$.validator.addMethod("endTime", function(value, element) { 
+			var startTime =$("#startTime").val();
+			var endTime =$("#endTime").val();
+			return this.optional(element) || (endTime > startTime); 
+		}, "*开始时间不能小于结束时间!");
+	})
+	
+		// 点击取消跳转列表页面
+		function returnBack(){
+			var url = [[@{'/examination/eInformationList.ht'}]];
+			locationHref(url);
+		} 
+		</script>
+</body>
+</html>

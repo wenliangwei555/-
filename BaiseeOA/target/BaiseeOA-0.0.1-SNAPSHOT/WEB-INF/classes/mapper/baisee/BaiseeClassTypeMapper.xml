@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.baisee.BaiseeClassTypeMapper">
+
+	<resultMap type="cn.baisee.oa.model.fileupload.BaiseeClassType" id="BaseResultMap">
+		<id column="id" property="id"/>				<!-- 主键 -->
+		<result column="type" property="type"/>	<!-- 部门类型 (高中 初中) -->
+		<result column="name" property="name"/>	<!-- 科目类型 (开发 测试)  -->
+		<result column="pid" property="pid"/>		<!-- 父节点编号 -->
+		<result column="ordernum" property="orderNum"/>		<!-- 排序编号 -->
+		<result column="updatetime" property="updateTime"/>  <!-- 更新时间 -->
+	</resultMap>
+
+	<select id="getClassTypeList" parameterType="map" resultMap="BaseResultMap">
+		SELECT
+			`id`,
+			`type`,
+			`name`,
+			`pid`,
+			`ordernum`,
+			`updatetime` 
+		FROM
+			`baisee_class_type` 
+		<where>
+			<if test="type != null and type != '' ">
+				`type` = #{type} 
+			</if>
+			<if test="pid != null and pid != '' ">
+				AND `pid` = #{pid}
+			</if>
+		</where>	
+	</select>
+	
+	<select id="getVideoDetails" parameterType="string" resultType="cn.baisee.oa.model.fileupload.BaiseeVideoDetails">
+		SELECT
+			v.`id` id,
+			v.`video_name` videoName,
+			v.`url` videoUrl,
+			t.`name` name,
+			i.`lecturer_name` lecturerName
+		FROM
+			`baisee_class_video` v,
+			`baisee_class_info` i,
+			`baisee_class_type` t 
+		WHERE
+			v.`info_id` = i.`id` 
+		AND i.`type_id` = t.`id`
+		AND t.`id` = #{typeID}
+	</select>
+	
+	
+	
+	<select id="findByName" parameterType="string" resultType="string">
+		select
+			USER_NAME
+			from
+			baisee_user
+			where
+			USER_ID = #{value}
+	</select>
+	
+	
+	<select id="findByOrderNum" parameterType="map" resultType="long">
+		select
+			max(video.ordernum)
+		from
+			baisee_class_info info,
+			baisee_class_video video
+		where
+			info.id = video.info_id
+		and
+			info.type_id=#{typeId}
+		and
+			info.lecturer_id = #{userId}
+	</select>
+	
+
+
+
+
+	<insert id="insertByInfo" parameterType="cn.baisee.oa.model.fileupload.BaiseeClassInfo">
+	insert into baisee_class_info values(#{id},#{typeId},#{lecturerId},#{lecturerName},#{updateTime})
+	</insert>
+	
+	
+	<insert id="insertByVideo" parameterType="cn.baisee.oa.model.fileupload.BaiseeClassVideo">
+	insert into baisee_class_video values(#{id},#{infoId},#{url},#{orderNum},#{updateTime},#{bigTypeId},#{videoName});
+	</insert>
+	
+	<select id="findCoursesName" parameterType="string" resultType="string">
+	select
+		name
+	from
+		baisee_class_type
+	where
+	 	id=#{id}
+	
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+</mapper>

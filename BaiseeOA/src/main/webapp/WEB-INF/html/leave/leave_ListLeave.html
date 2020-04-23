@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="commonTemplate :: header">
+
+</head>
+
+<body>
+<div class="lyear-layout-web">
+    <div class="lyear-layout-container">
+
+        <!--左侧导航-->
+        <div th:replace="commonTemplate :: leftMenus"></div>
+        <!--End 左侧导航-->
+
+        <!--头部信息-->
+        <div th:replace="commonTemplate :: headerDiv"></div>
+        <!--End 头部信息-->
+
+        <!--页面主要内容-->
+        <main class="lyear-layout-content">
+
+            <div class="container-fluid">
+                <form  th:action="@{leave/leaveList.ht}"  id="frm" name="frm" method="post" >
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+
+                                <div class="card-toolbar clearfix " >
+
+
+                                    <div class="pull-right search-bar" >
+
+
+                                        <div class="input-group">
+                                            <input type="text"  name="student_name" class="form-control" value="" placeholder="请输入姓名/班级号"/>
+                                            <div class="input-group-btn">
+                                                <div class="btn btn-success" onclick="stuAuditionStartTime()" th:onclick="'stuAuditionStartTime()'" id="search-btn1" type="button" aria-haspopup="true" aria-expanded="false">
+                                                    查询
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="pull-right search-bar">
+                                        <span>
+                                            <input
+                                                    class="form-control" name="c_name"
+                                                    th:value="${c_name}" id="c_name"
+                                                    type="text" placeholder="班级名称" style="width: 126px" />
+                                        </span>
+                                    </div>
+                                    <div class="pull-right search-bar">
+                                        <span th:if="${#strings.isEmpty(userType)}"
+                                        > <select
+                                                name="type" id="type" class="form-control">
+															<option value="0" th:selected="${type == '0'}">--请假类型--</option>
+															<option value="1" th:selected="${type == '1'}">事假</option>
+															<option value="2" th:selected="${type == '2'}">病假</option>
+														</select>
+													</span>
+                                    </div>
+                                    <div class="pull-right search-bar" >
+                                        <span style="">
+                                        <input
+                                                class="form-control" name="check_user_name"
+                                                th:value="${check_user_name}" id="check_user_name"
+                                                type="text" placeholder="审核人名称" style="width: 126px" />
+                                                    </span>
+                                    </div>
+                                    <div class="pull-right search-bar" >
+                                    	<div class="input-daterange input-group">
+												<input class="form-control js-datepicker" data-date-format="yyyy-mm-dd" type="text" id="stuStartTime"
+													name="stuStartTime" th:value="${stuStartTime}" placeholder="开始时间" /> 
+													
+												<span class="input-group-addon"><i class="mdi mdi-chevron-right"></i></span>
+												 
+												<input class="form-control js-datepicker" data-date-format="yyyy-mm-dd" type="text" id="stuEndTime"
+													name="stuEndTime" th:value="${stuEndTime}" placeholder="结束时间" />
+										</div>
+<!--                                         <span> -->
+<!--                                             <input class="form-control js-datepicker m-b-10" type="text"  th:value="${end_time}" name="end_time" placeholder="结束时间" data-date-format="yyyy-mm-dd" /> -->
+<!--                                         </span> -->
+                                    </div>
+
+                                    <div class="pull-right search-bar" >
+                                        <div class="input-group">
+                                           <span style=""> <select
+                                                   name="status" id="status" class="form-control">
+															<option value="0" th:selected="${status == '0'}">--状态--</option>
+															<option value="1" th:selected="${status == '1'}">审核中</option>
+															<option value="2" th:selected="${status == '2'}">审核通过</option>
+															<option value="3" th:selected="${status == '3'}">审核拒绝</option>
+															<option value="4" th:selected="${status == '4'}">取消</option>
+														</select>
+													</span>
+                                        </div>
+                                    </div>
+                                    <div class="toolbar-btn-action">
+                                    </div>
+                                </div>
+                                <div class="card-body">
+
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered" style="table-layout: fixed;">
+                                            <thead>
+                                            <tr class="th">
+                                                <td class="col3">班级名称</td>
+                                                <td class="col4">学生姓名</td>
+                                                <td class="col5">请假类型</td>
+                                                <td class="co25">请假天数</td>
+                                                <td class="col6">请假原因</td>
+                                                <td class="col7">开始时间</td>
+                                                <td class="col8">结束时间</td>
+                                                <td class="co19">状态</td>
+                                                <td class="co20">拒绝原因</td>
+                                                <td class="co21">审批人</td>
+                                                <td class="co22">审批人姓名</td>
+                                                <td class="co23">审核时间</td>
+                                                <td class="co24">创建时间</td>
+                                                <td class="co26">操作</td>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr th:each="info:${pageResult.list}"
+                                                th:if="${pageResult.list != null &amp;&amp; pageResult.list.size() > 0}"
+                                                onmouseover="this.style.backgroundColor='#e3f1ff'"
+                                                onmouseout="this.style.backgroundColor='#ffffff'">
+
+
+                                                <input type="hidden" id="id" name="id" th:value="${info.id}"  />
+                                                <td class="col3"><span style="cursor: pointer"
+                                                                       title="" th:text="${info.c_name}"></span></td>
+                                                <td class="col4"><span style="cursor: pointer"
+                                                                       title="" th:text="${info.student_name}"></span></td>
+                                                <td class="col5">
+                                                    <div th:switch="${info.type}">
+                                                        <div th:case="'1'">
+                                                            事假
+                                                        </div>
+                                                        <div th:case="'2'">
+                                                            病假
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="co25"><span
+                                                        style="cursor: pointer"
+                                                        title="" th:text="${info.days}+'天'"></span></td>
+
+                                                <td class="co16" style="width: 205px;white-space: nowrap;text-overflow: ellipsis;overflow: hidden;">
+                                                    <span type="button"   onclick="lookContent(this)" data-toggle="modal" data-target=".bs-example-modal-lg" th:text="${info.reason}"></span>
+                                                </td>
+                                                <td class="col7"><span th:text="${#dates.format(info.start_time,'yyyy-MM-dd HH:mm:dd')}"></span></td>
+                                                <td class="col8"><span th:text="${#dates.format(info.end_time,'yyyy-MM-dd HH:mm:dd')}"></span></td>
+                                                <td class="col9">
+                                                    <div th:switch="${info.status}">
+                                                        <div th:case="'1'">
+                                                            审核中
+                                                        </div>
+                                                        <div th:case="'2'">
+                                                            审核通过
+                                                        </div>
+                                                        <div th:case="'3'">
+                                                            审核拒绝
+                                                        </div>
+                                                        <div th:case="'4'">
+                                                            审核取消
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="co20" style="width: 205px;white-space: nowrap;text-overflow: ellipsis;overflow: hidden;">
+                                                    <span type="button"  onclick="lookContent(this)" data-toggle="modal" data-target=".bs-example-modal-lg" th:text="${info.reject_reason}"></span>
+                                                </td>
+                                                <td class="co21" style="width: 205px;white-space: nowrap;text-overflow: ellipsis;overflow: hidden;">
+                                                    <span style="cursor:pointer" th:title="${info.check_user}" th:text="${info.check_user}"></span>
+                                                </td>
+                                                <td class="co22"><span
+                                                        style="cursor: pointer"
+                                                        title="" th:text="${info.check_user_name}"></span></td>
+                                                <td class="co23">
+                                                    <div th:switch="${info.check_time}">
+                                                        <div th:case="''">
+                                                            <span style="cursor:pointer" th:title="${info.check_time}" th:text="${info.check_time}"></span>
+                                                        </div>
+                                                        <div th:case="null">
+                                                            <span style="cursor:pointer" th:title="${info.check_time}" th:text="${info.check_time}"></span>
+                                                        </div>
+                                                        <div th:case="*">
+                                                            <span th:text="${#dates.format(info.check_time,'yyyy-MM-dd HH:mm:dd')}"></span>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="co24"><span th:text="${#dates.format(info.create_time,'yyyy-MM-dd HH:mm:dd')}"></span></td>
+                                                <td class="co26">
+                                                    <div th:switch="${info.status}">
+                                                        <div th:case="'1'">
+                                                            <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#gridSystemModal" th:onclick="'completeReceive(\'' + ${info.id} + '\',\'' + ${info.status} + '\')'">
+                                                                审核
+                                                            </button>
+                                                        </div>
+                                                        <div th:case="'2'">
+                                                            <a style="cursor:pointer;color:blue" th:onclick="'completeReceive(\'' + ${info.id} + '\',\'' + ${info.status} + '\')'" href="#" >----</a>
+                                                        </div>
+                                                        <div th:case="'3'">
+                                                            <a style="cursor:pointer;color:blue" th:onclick="'completeReceive(\'' + ${info.id} + '\',\'' + ${info.status} + '\')'" href="#" >----</a>
+                                                        </div>
+                                                        <div th:case="'4'">
+                                                            <a style="cursor:pointer;color:blue" th:onclick="'completeReceive(\'' + ${info.id} + '\',\'' + ${info.status} + '\')'" href="#" >----</a>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <ul class="pagination" th:if="${pageResult != null}" th:object="${pageResult}">
+                                        <li><a href="javascript:void(0);" th:onclick="*{hasPreviousPage} ? 'go(1)' : 'return false;'">首页</a></li>
+                                        <li><a href="javascript:void(0);" th:onclick="*{hasPreviousPage} ? 'go(' + *{prePage} + ')' : 'return false;'">上一页</a></li>
+                                        <li><a href="javascript:void(0);" th:onclick="*{hasNextPage} ? 'go(' + *{nextPage} + ')' : 'return false;'">下一页</a></li>
+                                        <li><a href="javascript:void(0);" th:onclick="*{hasNextPage} ? 'go(' + *{pages} + ')' : 'return false;'">末页</a></li>
+                                        <li><a href="javascript:void(0);" onclick="go($('#pagenumber').val());">跳转至</a></li>
+                                        <li><a href="javascript:void(0);"><input name="pageNum" id="pagenumber" th:value="*{pageNum}" />/<span id="_pages" th:text="*{pages == 0} ? 1 : *{pages}"></span></a></li>
+                                        <li><a href="javascript:void(0);">页</a></li>
+                                    </ul>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+
+        </main>
+        <!--End 页面主要内容-->
+    </div>
+</div>
+
+
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel" id="gridSystemModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="height: 40px;line-height: 40px;">
+                <h4 class="modal-title" id="gridSystemModalLabel" style="font-size: 15px;">档案管理</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row" style="padding: 0px 20px;">
+                    <form action="#!" method="post" class="row">
+                        <div class="form-group col-md-12">
+                            <input type="hidden" id="ids" name="ids" value=""  />
+                            <label for="type">请假学生</label>
+                            <div class="form-controls">
+                                <input type="text" disabled="disabled" class="form-control" id="sname" name="title" value="" placeholder="请输入标题" />
+                            </div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label for="title">请假天数</label>
+                            <input type="text" class="form-control"  disabled="disabled" id="sday" name="title" value="" placeholder="请输入标题" />
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label for="seo_keywords">请假类型</label>
+                            <input type="text" class="form-control"  disabled="disabled" id="qjtype" name="seo_keywords" value="" placeholder="关键词" />
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label for="seo_description">请假原因</label>
+                            <textarea class="form-control" id="tongyi" disabled="disabled" name="seo_description" rows="3" value="" placeholder="描述"></textarea>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label for="seo_description">拒绝原因</label>
+                            <textarea class="form-control" id="jujue" name="jujue" rows="3" value="" placeholder="描述"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="row" style="text-align: center">
+
+                    <span> <input type="button" value="同意"  id="radius5"  class="btn btn-danger"  onclick="save()" /></span>
+                    <span class="grey"> <input value="拒绝" id="radius6"  type="button" class="btn btn-secondary" onclick="returnBack();" /></span>
+                    <span id="del"></span>
+                </div>
+                <div class="row">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title" id="myLargeModalLabel"></h4>
+            </div>
+            <div class="modal-body" id="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:inline="javascript">
+
+
+</script>
+<script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap.min.js" th:src="@{static/js/bootstrap.min.js}"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+<script type="text/javascript" src="js/jquery.min.js" th:src="@{js/jquery.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"  th:src="@{js/bootstrap.min.js}"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap-3.0.0/js/bootstrap-datepicker.min.js" th:src="@{js/bootstrap-datepicker.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap-3.0.0/js/bootstrap-datepicker.zh-CN.min.js" th:src="@{js/bootstrap-datepicker.zh-CN.min.js}"></script>
+<script type="text/javascript" src="js/main.min.js" th:src="@{js/main.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/layer/layer.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/bmsAjax.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/My97DatePicker/WdatePicker.js}"></script>
+<script type="text/javascript">
+    function stuAuditionStartTime(){
+        document.getElementById("frm").submit();
+    }
+</script>
+<script th:inline="javascript">
+    function lookContent(obj) {
+        $("#modal-body").text($(obj).text())
+    }
+    function save() {
+        var id = $("#ids").val();
+        $.ajax({
+            async: false,
+            url:[[@{/leave/completeReceive.ht}]],
+        data:{
+            "id":id
+        },
+        type:'get',
+            success:function(data){
+            console.log(data)
+            if (data.code == "000") {
+                stuAuditionStartTime();
+            }else {
+                _alert("请假失败！")
+            }
+        }
+    })
+    }
+    function returnBack() {
+        var reject_reason = $("#jujue").val();
+        var id = $("#ids").val();
+        if (reject_reason) {
+            // $("#msg").hide();
+            $.ajax({
+                async: false,
+                url:basePath+"/leave/cancelReceive.ht",
+            data: {"id":id, "reject_reason":reject_reason},
+            type:'post',
+                success:function(data){
+                if (data.code == "000") {
+                    stuAuditionStartTime();
+                }
+            }
+        })
+        }else {
+            _alert("请输入拒绝原因！")
+            // $("#msg").show();
+        }
+
+    }
+
+    function onCancel() {
+        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+        parent.layer.close(index); //再执行关闭
+    }
+    function stuAuditionStartTime(){
+        document.getElementById("frm").submit();
+    }
+    function edit(id, status){
+        if (status == '2') {
+            _alert("审核已通过，不可编辑！");
+        }else if (status == '3') {
+            _alert("审核已拒绝，不可编辑！");
+        } else if (status == '4') {
+            _alert("审核已取消，不可编辑！");
+        }
+
+    }
+
+
+
+    function completeReceive(id, status){
+        console.log(status)
+        $.post(basePath+"leave/leave.ht?id="+id,function (data) {
+            $("#sname").val(data.student_name)
+            $("#sday").val(data.days)
+            $("#qjtype").val(data.type)
+            $("#tongyi").val(data.reason)
+            $("#jujue").val(data.reject_reason)
+            $("#ids").val(data.id)
+        })
+        if (status != 1) {
+        //     layer.open({
+        //         type:2, //弹出层现实的样式
+        //         closeBtn:1,    //不显示关闭按钮
+        //         shadeClose:true,//开启遮罩关闭        就是点击其他地方，弹框消失
+        //         title:"审批",//title:false 不显示标题
+        //         area: ['1100px', '400px'], //弹出层宽高
+        //         content:basePath+"leave/leave.ht?id="+id,   //捕获的元素
+        //         end:function () {
+        //         location.href = basePath+"/leave/leaveList.ht";
+        //     }
+        // });
+        //     // }else {
+        //     //     _alert("现在这个时间您不能审核")
+        //     // }
+        //     //     }
+        //     // })
+        // }else{
+            _alert("申请已同意/已取消/已拒绝，不可编辑！");
+        }
+
+    }
+
+
+    function edit(cause){
+        layer.open({
+            type:2, //弹出层现实的样式
+            closeBtn:1,    //不显示关闭按钮
+            shadeClose:true,//开启遮罩关闭        就是点击其他地方，弹框消失
+            title:false,//title:false
+            area: ['1100px', '230px'], //弹出层宽高
+            content:basePath+"/leave/edit.ht?cause="+cause,   //捕获的元素
+            end: function () {
+            // locationHref([[@{/leave/leaveList.ht}]]);
+        }
+    });
+    }
+
+</script>
+</body>
+</html>

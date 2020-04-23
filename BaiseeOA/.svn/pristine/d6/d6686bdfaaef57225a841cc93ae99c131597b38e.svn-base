@@ -1,0 +1,92 @@
+package cn.baisee.oa.controller;
+
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import cn.baisee.oa.annotation.Role;
+import cn.baisee.oa.exception.OAServiceException;
+import cn.baisee.oa.model.student.BaiseeStudentReturn;
+import cn.baisee.oa.model.student.BaiseeStudentReturnRule;
+import cn.baisee.oa.service.ReturnService;
+/**
+ * 
+ * 返费规则管理Controller
+ * @author WANGBAOXIANG
+ *http://127.0.0.1:8080/stu/toAudStuList.ht
+ */
+@RequestMapping(value="retu")
+@Controller
+public class ReturnController {
+	@Autowired
+	private ReturnService retService;
+	/**
+	 * 分页查询返费规则
+	 * @param request
+	 * @return
+	 * @throws OAServiceException
+	 */
+	@RequestMapping(value="toReturnList")
+	@Role(value="FFGL_FFCK")
+	public ModelAndView toReturnList(HttpServletRequest request) throws OAServiceException {
+		return retService.getReturnList(request);
+	}
+	/**
+	 * 删除返费规则
+	 * @param request
+	 * @return
+	 * @throws OAServiceException
+	 */
+	@RequestMapping(value="delReturn")
+	@ResponseBody
+	@Role(value="FFGL_FFSC")
+	public Object delReturn(HttpServletRequest request) throws OAServiceException {
+		return retService.delReturn(request);
+	}
+	@RequestMapping(value="toReturnInfo")
+	@Role(value="FFGL")
+	public ModelAndView toReturnInfo(HttpServletRequest request) throws OAServiceException {
+		return retService.toReturnInfo(request);
+	}
+	/**
+	 * 添加或修改返费规则
+	 * @param request
+	 * @param retu
+	 * @param retuRule
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="saveOrUpdateRetu")
+	@Role(value="FFGL_FFXZ")
+	public ModelAndView saveOrUpdate(HttpServletRequest request,BaiseeStudentReturn retu,BaiseeStudentReturnRule retuRule) throws Exception {
+		return retService.saveOrUpdate(request, retu, retuRule);
+	}
+	/**
+	 * 添加或修改时查询是否已有规则类型
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value="checkUpdRetu")
+	@Role(ignore=true)
+	@ResponseBody
+	public Object checkUpdRetu(HttpServletRequest request) {
+		return retService.getRetuByRtId(request);
+	}
+	/**
+	 * 根据返费ID查询详细规则
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value="getRetuRule")
+	@Role(ignore=true)
+	@ResponseBody
+	public Map<String, Object> getRetuRule(HttpServletRequest request){
+		return retService.getRetuRule(request);
+	}
+}

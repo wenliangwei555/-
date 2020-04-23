@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<link th:href="@{static/css/bootstrap.min.css}" rel="stylesheet" />
+	<link th:href="@{static/css/materialdesignicons.min.css}" rel="stylesheet"/>
+	<link th:href="@{static/css/style.min.css}" rel="stylesheet"/>
+	<link th:href="@{static/js/jquery-treegrid/jquery.treegrid.min.css}" rel="stylesheet"/>
+	<link th:href="@{static/js/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.min.css}" rel="stylesheet"/>
+</head>
+<body>
+<!-- ==================================== 页面内容开始 ============================= -->
+<form th:action="@{leave/toLeave.ht}" method="post" id="frm" name="frm">
+	<input type="hidden" id="sid" name="sid" th:value="${info.sid}" />
+	<input type="hidden" id="evid" name="evid" th:value="${info.evid}" />
+	<div style="border:1px solid #696969;background-color: #696969;line-height: 40px;padding-left: 30px;">
+		<!-- <a style="color: white;" href="javascript:void(0);" th:onclick="'showStu()'" title="选择学生"
+		   onmouseover="javascript:this.style.color='#dbdbdb'"
+		   onmouseout="javascript:this.style.color='#ffffff'">选择学生</a> -->
+	</div>
+	<div style="line-height: 40px;">
+		学生:<span id="selsname" th:text="${info.name}"></span>
+		班级:<span id="selcname" th:text="${info.cName}"></span>
+	</div>
+	<div style="width: 98%;margin: auto;">
+		<div style="width: 100%;border: 1px solid #DDDDDD;margin: 0px;padding: 0px;">
+			<div style="width:100%;text-align: center;">
+				<span style="color:red">*</span>
+				<span>评论：</span>
+			</div>
+			<div style="width:100%;text-align: center;">
+			<!-- 评价内容 -->
+				<textarea type="text" style="width:350px;height:120px;" rows="3" id="reason" name="reason" th:text="${info?.evInfo}" th:value="${info?.evInfo}"></textarea>
+			</div>
+		</div>
+		<div align="center">
+			<input value="保存" type="button" onclick="saveStu()"  style="width: 350px;line-height: 45px;background-color: #FF2A48;color: white;border: 1px solid red;margin-top: 10px;border-radius: 7px;" />
+		</div>
+	</div>
+</form>
+<!-- ============================= 页面内容 结束 ============================= -->
+
+<script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap.min.js" th:src="@{static/js/bootstrap.min.js}"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+<script type="text/javascript" src="js/bootstrap-datepicker.min.js" th:src="@{js/bootstrap-datepicker.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap-datepicker.zh-CN.min.js" th:src="@{js/bootstrap-datepicker.zh-CN.min.js}"></script>
+<script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/layer/layer.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/bmsAjax.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/form/jquery.form.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/validate/jquery.validate.min.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+	/*<![CDATA[*/
+	var basePath = /*[[@{/}]]*/;
+	/*]]>*/
+</script>
+<script type="text/javascript">
+function showStu(){
+	layer.open({
+		type : 2,
+		title : "选择评价学生",
+		shadeClose : true,
+		shade : 0.8,
+		area : [ '700px', '400px' ],
+		content :
+			/*<![CDATA[*/
+			/* basePath+'/leave/toStu.ht', */
+			basePath+'/evaluate/toList.ht',
+			 /*]]>*/
+	    end: function () {
+			/*<![CDATA[*/
+			 $(window.top.document).find("#_proccesBar").css("visibility", "hidden");
+	    	 /*]]>*/
+        }
+	});
+}
+ function selstuinfo(sid,cname,sname){
+	 console.log(sid)
+	 $("#sid").val(sid);
+	 $("#selcname").html(cname);
+	 $("#selsname").html(sname);
+	 
+ }
+ 
+ 
+ function saveStu(){
+	 var sid = $("#sid").val();
+	 var reason = $("#reason").val();
+	 var evid = $("#evid").val();
+	 
+	 if(sid==null||sid==''){
+	     _alert("请填写必输项！");
+		 return false;
+	 }
+	 if(reason==null||reason==''){
+	     _alert("请填写必输项！");
+		 return false;
+	 }
+	 var param = {
+			 "sid":sid,
+			 "reason":reason,
+			 "evid":evid,
+	 	}
+	 _alert("成功");
+	 $.post(basePath+'/evaluate/add.ht',param,function(result){
+		 console.log(result);
+		 onCancel();
+	 })
+ }
+  function onCancel() {
+	  var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+	  parent.layer.close(index); //再执行关闭
+	  }
+
+$(function(){
+    var info = basePath+'info';
+    var sid = $("#sid").val();
+	if(sid!=null){
+		 $("#selsname").html(info.name);
+		 $("#selcname").html(info.cName);
+	}
+})
+</script>
+</body>
+</html>

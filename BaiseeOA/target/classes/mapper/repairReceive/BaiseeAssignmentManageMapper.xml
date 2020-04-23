@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.repairReceive.BaiseeAssigmentManageMapper">
+
+    <resultMap type="cn.baisee.oa.model.repairReceive.BaiseeAssignmentManage" id="results">
+       <id column="id" jdbcType="VARCHAR" property="id" />
+       <result column="assignment_person_id" jdbcType="VARCHAR" property="assignmentPersonId" />
+       <result column="assignment_person_name" jdbcType="VARCHAR" property="assignmentPersonName" />
+       <result column="create_person_id" jdbcType="VARCHAR" property="creaatePersonId" />
+       <result column="create_person_name" jdbcType="VARCHAR" property="creaatePersonName" />
+       <result column="update_person_id" jdbcType="VARCHAR" property="updatePersonId" />
+       <result column="update_person_name" jdbcType="VARCHAR" property="updatePersonName" />
+	   <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+	   <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+	   
+    </resultMap>
+
+    <!-- 查询所有的日期分页 -->
+    <select id="getAssignmentManage" resultMap="results" parameterType="map">
+		select * from baisee_assignment_manage 
+			<where>
+				<if test="itemlableSearch != null">
+					assignment_person_name LIKE "%"#{itemlableSearch}"%"
+				</if>
+			</where>
+		
+	</select>
+	
+	<select id="getAssignmentManageAll" resultType="java.lang.String">
+		SELECT
+			u.LOGIN_NAME 
+		FROM
+			baisee_assignment_manage a,
+			baisee_user u
+		WHERE
+			a.assignment_person_id = u.USER_ID
+		
+	</select>
+
+	<select id="getById" resultMap="results" parameterType="java.lang.String">
+	    select * from baisee_assignment_manage where id=#{id}
+ 	</select>
+	
+	<insert id="saveAssigmentManage" parameterType="cn.baisee.oa.model.repairReceive.BaiseeAssignmentManage">
+	    insert into baisee_assignment_manage  (id,assignment_person_id,assignment_person_name,create_person_id,create_person_name,
+	    update_person_id,update_person_name,create_time,update_time)
+	     values 
+	     (pkval('BXID'),#{assignmentPersonId},#{assignmentPersonName},#{creaatePersonId},#{creaatePersonName},
+	     #{updatePersonId},#{updatePersonName},#{createTime},#{updateTime})
+	</insert>
+	
+	<update id="updateAssigmentManage" parameterType="cn.baisee.oa.model.repairReceive.BaiseeAssignmentManage">
+	   update baisee_assignment_manage set 
+	   update_person_id=#{updatePersonId},
+	   update_person_name=#{updatePersonName},
+	   assignment_person_id=#{assignmentPersonId},
+	   assignment_person_name=#{assignmentPersonName},
+	   update_time=#{updateTime}
+	    where id=#{id}
+	</update>
+	
+	<delete id="delAssignmentManage" parameterType="java.lang.String">
+	    delete from baisee_assignment_manage where id in
+	    <foreach collection="array" open="(" close=")" item="id" separator=",">
+	        #{id}
+	    </foreach>
+	</delete>
+	
+	<select id="checkAssignmentPerson" resultMap="results" parameterType="java.lang.String">
+		SELECT
+			*
+		FROM
+			baisee_assignment_manage 
+		WHERE
+			assignment_person_id = #{assignmentId}
+	</select>
+	
+</mapper>

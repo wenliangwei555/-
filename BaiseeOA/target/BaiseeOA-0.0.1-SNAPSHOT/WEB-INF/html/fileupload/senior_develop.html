@@ -1,0 +1,300 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head th:include="commonTemplate :: header">
+<link rel="stylesheet" type="text/css" th:href="@{css/cla_list_css.css}" />
+</head>
+<body class="bgcolor-body">
+	<div id="page">
+		<div th:include="commonTemplate :: headerDiv"></div>
+		<div id="content" class="layout">
+			<div class="grid-s5m0">
+				<!-- ============================= 页面内容 开始============================= -->
+				<div class="col-main">
+					<div class="main-wrap">
+						<div class="skin-box">
+							<div class="skin-box-bd">
+								<div class="cur-position">
+									<span><a href="javascript:void(0);">文件管理</a> </span> <span>&gt;</span>
+									<span><a th:href="@{upload/toDevelopFile.ht}">高中部开发</a>
+									</span>
+								</div>
+								<div class="cont-box">
+									
+									<div class="cont-box">
+										<div class="search-box">
+											<div class="left">
+											    <span class="add JsW"><a th:href="@{videoSubject/toAddSubject.ht}" class="ks-pop-nav"  baisee:ctrl="SPKM_XZKM" title="添加科目" style="cursor:pointer;color: #ffffff" 
+												onmouseover="javascript:this.style.color='#dbdbdb'" 
+												onmouseout="javascript:this.style.color='#ffffff'">新增</a> </span>
+												<span class="del"><a bms:ctrl="busDict.delDict" href="javascript:void(0);" baisee:ctrl="DDGL_SCDD"  
+												th:onclick="'delRepairType(\'frm\', \''+ @{/repair/dictionaries/deleteType.ht} + '\')'" title="删除科目" style="cursor:pointer;color: #ffffff" 
+												onmouseover="javascript:this.style.color='#dbdbdb'" 
+												onmouseout="javascript:this.style.color='#ffffff'">删除</a> </span>
+											</div>
+											<input type="hidden" name="operationSuccess" id="operationSuccess" th:value="${#httpServletRequest.getAttribute('operationSuccess')}"/>
+											<div class="right">
+												<div class="search-box-cont">
+													<span> <input class="button" type="submit" value="搜索" /> </span>
+													<span> <input class="input radius3" name="itemlableSearch" th:value="${itemlableSearch}" type="text" placeholder="老师名称" style="width: 226px"  /> </span>
+													<input type="hidden" id="cid" th:value="${userId}" />
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="list-table">
+										<div class="list-table-cont">
+											<div class="table2">
+												<table class="ks-inputall" id="tb">
+													<tr class="th">
+														<td class="col3">老师名称</td>
+														<td class="col4">类别</td>
+														<td class="col5">科目</td>
+														<td class="co20">操作</td>
+														<!-- <td class="co20">上传操作</td> -->
+													</tr>
+													<tr th:each="fileVo,info:${fileVos}"
+														onmouseover="this.style.backgroundColor='#e3f1ff'"
+														onmouseout="this.style.backgroundColor='#ffffff'"
+														th:id="${fileVo.name}">
+														<td class="col3"><span style="cursor: pointer"
+															th:text="${fileVo.name}"
+															th:onclick="'findByName(\'' + ${fileVo.name} + '\')'"></span></td>
+														<td class="col4"><span style="cursor: pointer"
+															th:text="开发"></span></td>
+														<td class="col5"><span style="cursor: pointer"
+															th:text="${fileVo.subject}"></span></td>
+														<td class="co20"><span style="cursor: pointer"
+															class="see" title="点击可展开" th:text="展开"
+															th:onclick="'showDetails(\'' + ${fileVo.name} + '\',\'' + ${fileVo.subject} + '\')'"
+															th:id="${info.index}+a"></span></td>
+													</tr>
+													<tr style="display: none">
+														<td><input type="hidden" name="operationSuccess"
+															id="operationSuccess" th:value="${operationSuccess}" /></td>
+													</tr>
+												</table>
+											</div>
+										</div>
+
+									</div>
+									<div th:include="commonTemplate :: pageBox"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- ============================= 页面内容 结束============================= -->
+				<div th:include="commonTemplate :: leftMenus"></div>
+			</div>
+		</div>
+		<div th:include="commonTemplate :: footer"></div>
+	</div>
+	<div th:include="commonTemplate :: processBar" />
+
+	<!-- ===================上传框========================== -->
+	<div class="modal-box" id="ks-pop-box3">
+		<div class="JsW bg alpha60" data-position-type="fixed"
+			data-size-type="widescreen"
+			style="background-color: rgba(0, 0, 0, 0.5);"></div>
+		<div id="mainPopupLayer" class="pop-box JsW" data-align-type="align"
+			data-align-config="{'vertical':false,'offset':[120,0]}">
+			<form id="fromAjax" name="frm" method="post"
+				enctype="multipart/form-data">
+				<div style="width: 600px;">
+
+					<center>
+						<input type="hidden" name="typeID" id="typeID" />
+						<div
+							style="width: 100%; height: 50px; line-height: 50px; background-color: #eee; border-bottom: 1px dashed #ccc;">
+							<font style="margin-left: 190px" id="typeName"></font> <a
+								href="javascript:void(0);" th:onclick="|hideFileUpload()|"><font
+								style="font-size: 23px; font-weight: bolder; margin-left: 120px">×</font></a>
+						</div>
+						<div
+							style="width: 100%; height: 70px; line-height: 70px; font-size: 17px; background-color: #eee;">
+							<label style="margin-right: 30px;">视频名称:</label> <input
+								type="text" name="videName" id="" class="" />
+						</div>
+						<div
+							style="width: 100%; height: 70px; line-height: 70px; font-size: 17px; background-color: #eee;">
+							<label style="margin-left: 110px; margin-right: 30px;">选择视频:</label>
+							<input type="file" id="" class="" name="multipartFile" />
+						</div>
+						<div
+							style="width: 100%; height: 70px; line-height: 70px; font-size: 17px; background-color: #eee;">
+							<button type="button" id="clickSubmit"
+								style="width: 70px; height: 30px; margin-left: 400px;">上传</button>
+						</div>
+					</center>
+
+				</div>
+			</form>
+
+		</div>
+	</div>
+	<script type="text/javascript" th:inline="javascript">
+/*<![CDATA[*/
+var basePath = /*[[@{/}]]*/;
+/*]]>*/
+</script>
+
+	<script th:inline="javascript">
+	
+	 
+	//根据老师姓名获取老师的科目
+	findByName = function(name) {
+		
+		$.ajax({url : basePath +"/upload/findByName.ht",
+				data : "name=" + name+"/highDevelop",
+				type : "post",
+				dataType : "json",
+				processData : false,
+				success : function(obj) {
+					if (obj.data == "") {
+						return;
+					}	
+					$("#tb>tbody").html("");						
+					var tb=document.getElementById("tb");
+					var row1 = tb.insertRow(0);	
+					row1.setAttribute('id', "head1");
+					document.getElementById("head1").style.backgroundColor = "gainsboro";
+					var cell1 = row1.insertCell(0);
+					var cell2 = row1.insertCell(1);
+					var cell3 = row1.insertCell(2);
+					var cell4 = row1.insertCell(3);
+					cell1.innerHTML = "老师名称";
+					cell2.innerHTML = "类别";
+					cell3.innerHTML = "科目";
+					cell4.innerHTML = "操作";
+					
+					$.each(obj, function(i, item) {
+						var name = item.name;
+						var subject = item.subject;
+						var html = '<span onclick='showDetails(this)'>展开</span>';
+						var row = tb.insertRow(i+1);
+						row.setAttribute('id', subject);
+						row.setAttribute('onmouseover', "this.style.backgroundColor='#e3f1ff'");
+						row.setAttribute('onmouseout', "this.style.backgroundColor='#ffffff'");
+						var cell1 = row.insertCell(0);
+						var cell2 = row.insertCell(1);
+						var cell3 = row.insertCell(2);
+						var cell4 = row.insertCell(3);
+						cell1.innerHTML = name;
+						cell2.innerHTML = "开发";
+						cell3.innerHTML = subject;
+						cell4.innerHTML = html;
+					}) 
+					
+				}
+			})
+			
+		}
+	
+	
+		//展示文件详情
+		showDetails = function(obj) {
+			var name = $(obj).parent().parent().find("td:eq(0)").text();
+			var subject = $(obj).parent().parent().find("td:eq(2)").text();
+			var path = "highDevelop/"+name+"/"+subject;
+			
+			if ($(obj).text() == "展开") {
+				$(obj).text("收起");
+	
+				$.ajax({	url : basePath +"/upload/showVideoDetails.ht",
+							type : "post",
+							dataType : "json",
+							data : "path="+path,
+							processData : false,
+							success : function(obj) {
+								if (obj.data == "") {
+									return;
+								}
+								var d = '<tr id="a1" class="bb"><th colspan= "3">视频详情</th></tr><tr class="bb" id="b1" style="background-color:gray;"><td  class="lefttd">视频名称</td><td  class="lefttd">老师名称</td><td  class="lefttd">操作</td></tr>';
+								
+								$.each(		obj.data,
+											function(i, item) {
+											var videoName = item.videoName;
+											var videoUrl = item.videoUrl;
+											var lecturerName = item.lecturerName;
+											d += '<tr class="bb" style="background-color:#ccc;">'
+													+ '<td class="flowtd">'
+													+ videoName
+													+ '</td>'
+													+ '<td class="flowtd">'
+													+ lecturerName
+													+ '</td>'
+													+ '<td class="flowtd3">'
+													+ '<button  onclick="play(this)">播放</button>'
+													+ '</td><td style="display:none" id="hiddenVidenUrl">'+videoUrl+'</td></tr>';
+											})
+								$("#"+subject).after(d);
+							}
+						})
+				var bb = document.getElementsByClassName("bb");
+				/* bb.style.display == "none"; */
+			} else if ($(obj).text() == "收起") {
+				$(obj).text("展开");
+				$(".bb").remove();
+			}
+	
+		}
+		
+		//根据点击的不同显示上传界面
+		function showFileUpload(typeID, name){
+			$("#typeName").text("高中部 > 开发 > " + name + " > 文件上传");
+			$("#typeID").val(typeID);
+			$("#ks-pop-box3").show();
+		}
+		
+		//隐藏上传界面
+		function hideFileUpload(){
+			$("#typeName").text("");
+			$("#typeID").val("");
+			$("#ks-pop-box3").css("display", "none");
+		}
+		
+		$(function() {
+	
+			var operationSuccess = $("#operationSuccess").val();
+			if (operationSuccess != "") {
+				_alert(operationSuccess);
+			}
+		});
+		function play(_that){
+			var url = $(_that).parent(".flowtd3").next().text();
+			/* window.open(url, '-blank','width=800,height=800').location; */
+			window.open(basePath +"/upload/play.ht?url="+url);
+		}
+		
+		
+		$("#clickSubmit").click(function(){
+			if($("input[name=multipartFile]").val()==null ||$("input[name=multipartFile]").val()==""){
+				alert("请选择MP4视频");
+				return false;
+			}else if($("input[name=videName]").val()==null ||$("input[name=videName]").val()==""){
+			alert("请输入视频名称");
+				return false;
+		}else{
+			$("#fromAjax").ajaxSubmit({
+				type:"post",
+				contentType: "application/json",
+				data:{"grade":"seniorDevelop"},
+				url:"upload/fileUpload.ht",
+				enctype: "multipart/form-data",
+				success:function(data){
+					if(data){
+						alert("上传成功");
+						window.location.reload();//刷新页面
+					}else{
+						alert("上传失败");
+					}
+				}
+			});
+		}
+		})
+		
+	</script>
+
+</body>
+</html>

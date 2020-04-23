@@ -1,0 +1,795 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.baisee.BaiseeEmployeeMapper">
+	
+	<resultMap type="cn.baisee.oa.model.empinfo.Employee" id="EmployeeMap">
+		<id column="EID" property="empId"/>
+		<result column="E_NAME" property="empName"/>
+		<result column="E_SEX" property="empSex"/>
+		<result column="E_NATION" property="empNation"/>
+		<result column="E_HIRE_DATE" property="empHireDate"/>
+		<result column="E_REG_TIME" property="empRegTime"/>
+		<result column="E_LEAVE_TIME" property="empLeaveTime"/>
+		<result column="HEAD_PHOTO_DIR" property="empHeadPhotoDir"/>
+		<result column="MOBILE" property="empMobile"/>
+		<result column="E_ID_NUMBER" property="empIdNumber"/>
+		<result column="E_STATUS" property="empStatus"/>
+		<result column="E_JOB" property="empJob"/>
+		<result column="E_GRADATION" property="empDept"/>
+		<result column="E_HOME_ADDRESS" property="empHomeAddress" />
+	</resultMap>
+	<resultMap type="cn.baisee.oa.model.empinfo.EmployeeFamily" id="EmployeeFamilyMap">
+		<id column="PK_BEFI" property="PK_BEFI"/>
+		<result column="EID" property="empId"/>
+		<result column="E_FAM_NAME" property="empFamName"/>
+		<result column="E_FAM_SEX" property="empFamSex"/>
+		<result column="E_FAM_TEL" property="empFamTel"/>
+		<result column="E_FAM_RELATION" property="empFamRelation"/>
+		<result column="UPDATE_TIME" property="famUpdateTime"/>
+	</resultMap>
+	<resultMap type="cn.baisee.oa.model.empinfo.EmployeeWork" id="EmployeeWorkMap">
+		<id column="PK_BEWI" property="PK_BEWI" />
+		<result column="EID" property="empId"/>
+		<result column="START_TIME" property="workStartTime"/>
+		<result column="END_TIME" property="workEndTime"/>
+		<result column="E_HIS_COMPANY" property="empHisCompany"/>
+		<result column="E_POSITION" property="empPosition"/>
+		<result column="UPDATE_TIME" property="workUpdateTime"/>
+	</resultMap>
+	<resultMap type="cn.baisee.oa.model.empinfo.EmployeeEducation" id="EmployeeEducationMap">
+		<id column="PK_BEGI" property="PK_BEGI"/>
+		<result column="EID" property="empId"/>
+		<result column="START_TIME" property="educStartTime"/>
+		<result column="END_TIME" property="educSendTime"/>
+		<result column="E_GRADUATED_SCHOOL" property="empGraduatedSchool"/>
+		<result column="E_DEGREE" property="empDegree"/>
+		<result column="E_MAJOR" property="empMajor"/>
+		<result column="UPDATE_TIME" property="educUpdateTime"/>
+	</resultMap>
+	<resultMap type="cn.baisee.oa.model.empinfo.EmployeeSupplement" id="EmployeeSupplementMap">
+		<id column="PK_BESI" property="PK_BESI"/>
+		<result column="EID" property="empId"/>
+		<!-- <result column="E_STATUS" property="empStatus"/> -->
+		<result column="E_SEAT_NUMBER" property="empSeatNumber"/>
+		<result column="E_MAILBOX" property="empMailbox"/>
+		<result column="E_QQ_NUMBER" property="empQQNumber"/>
+		<result column="E_WECHAT_NUMBER" property="empWeChatNumber"/>
+		<result column="E_HOME_ADDRESS" property="empHomeAddress"/>
+		<result column="E_PLACE" property="empPlace"/>
+		<result column="E_POLITICAL_OUTLOOK" property="empPolicalOutlook"/>
+		<result column="E_REGISTERED_RESIDENCE" property="empRegisteredResidence"/>
+	</resultMap>
+	
+	<!-- =================================根据ID查询信息(查看某位员工的详细信息)======================================= -->
+	<!-- 根据员工主键查询员工信息表一条信息 -->
+	<select id="selectByEmployeeId" parameterType="map" resultMap="EmployeeMap">
+		select * from baisee_employee 
+		<where>
+			<if test="empId != null and empId != ''">
+				EID = #{empId, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	<select id="selectByEmployeeName" parameterType="map" resultMap="EmployeeMap">
+		select * from baisee_employee 
+		<where>
+			<if test="name != null and name != ''">
+				E_NAME = #{name, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	<!-- 根据员工主键查询员工家庭表信息 -->
+	<select id="selectByEmployeeIdQueryFamily" parameterType="map" resultMap="EmployeeFamilyMap">
+		select * from baisee_employee_family 
+		<where>
+			<if test="empId != null and empId != ''">
+				EID = #{empId, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	<!-- 根据员工主键查询工作经历表 -->
+	<select id="selectByEmployeeIdQueryWork" parameterType="map" resultMap="EmployeeWorkMap">
+		select * from baisee_employee_work 
+		<where>
+			<if test="empId != null and empId != ''">
+				EID = #{empId, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	<!-- 根据员工主键查询员工教育表 -->
+	<select id="selectByEmployeeIdQueryEducation" parameterType="map" resultMap="EmployeeEducationMap">
+		select * from baisee_employee_education 
+		<where>
+			<if test="empId != null and empId != ''">
+				EID = #{empId, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	<!-- 根据员工主键查询员工补充表 -->
+	<select id="selectByEmployeeIdQuerySupplement" parameterType="map" resultMap="EmployeeSupplementMap">
+		select * from baisee_employee_supplement 
+		<where>
+			<if test="empId != null and empId != ''">
+				EID = #{empId, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	<!-- ===============================身份证号校验======================================================== -->
+	<select id="selectEmployeeIDNumberVerification" parameterType="cn.baisee.oa.model.empinfo.Employee" resultType="java.lang.String">
+		SELECT
+			E_ID_NUMBER
+		FROM
+			baisee_employee
+		<where>
+			<if test="empIdNumber != null and empIdNumber != ''">
+				E_ID_NUMBER = #{empIdNumber, jdbcType=VARCHAR}
+			</if>
+			<if test="empId != null and empId != ''">
+				AND EID != #{empId, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	<!-- ================================手机号校验============================================================ -->
+	<select id="selectEmployeeMobileVerification" parameterType="cn.baisee.oa.model.empinfo.Employee" resultType="java.lang.String">
+		SELECT
+			MOBILE
+		FROM
+			baisee_employee
+			<where>
+				<if test="empMobile != null and empMobile != '' ">
+					MOBILE = #{empMobile, jdbcType=VARCHAR} 
+				</if>
+				<if test="empId != null and empId != '' ">
+					AND EID != #{empId, jdbcType=VARCHAR}
+				</if>
+			</where>
+	</select>
+	<!-- ================================分页查询==================================== -->
+	<!-- 分页查询  员工信息表里面的内容分页显示-->
+	<select id="selectEmployeePage"  resultMap="EmployeeMap" parameterType="map">
+		SELECT
+			baisee_employee.*,
+			baisee_employee_supplement.E_HOME_ADDRESS
+		FROM
+			baisee_employee
+		LEFT JOIN baisee_employee_supplement ON baisee_employee.EID = baisee_employee_supplement.EID
+		 <where>
+		 	<if test="itemlableSearch != '' and itemlableSearch != null">
+		 	   baisee_employee.E_NAME like "%"#{itemlableSearch, jdbcType=VARCHAR}"%"
+		 	</if>
+		 	<if test="status != '' and status != null">
+		 	 and  baisee_employee.E_STATUS =#{status, jdbcType=VARCHAR}
+		 	</if>
+		 	<if test="empJob != '' and empJob != null">
+		 	 and  baisee_employee.E_JOB=#{empJob, jdbcType=VARCHAR}
+		 	</if>
+		 	<if test="empDept != '' and empDept != null">
+		 	 and  baisee_employee.E_GRADATION=#{empDept, jdbcType=VARCHAR}
+		 	</if>
+		 	<if test="gender != '' and gender != null">
+		 	 and  baisee_employee.E_SEX=#{gender, jdbcType=VARCHAR}
+		 	</if>
+		 	
+		 </where>
+		ORDER BY E_REG_TIME DESC
+	</select>
+	<!-- =================================添加员工================================================ -->
+	<!-- 员工添加页面2018-9-5 不适用 -->
+	<insert id="addEmployee" parameterType="cn.baisee.oa.model.empinfo.Employee" >
+		<selectKey resultType="java.lang.String" order="AFTER" keyProperty="empId" >
+			SELECT
+				baisee_employee.EID
+			FROM
+				baisee_employee 
+				<where>
+					<if test="empName != null and empName != ''">
+						baisee_employee.E_NAME = #{empName, jdbcType=VARCHAR}
+					</if>
+					<if test="empMobile != null and empMobile != ''">
+						AND baisee_employee.MOBILE = #{empMobile, jdbcType=VARCHAR}
+					</if>
+					<if test="empHireDate != null and empHireDate != ''">
+						AND baisee_employee.E_HIRE_DATE = #{empHireDate, jdbcType=VARCHAR}
+					</if>
+					<if test="empIdNumber != null and empIdNumber != ''" >
+						AND baisee_employee.E_ID_NUMBER = #{empIdNumber, jdbcType=VARCHAR}
+					</if>
+				</where>
+		</selectKey>
+		INSERT INTO baisee_employee
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+					EID,
+				<if test="empName != null">
+					E_NAME,
+				</if>
+				<if test="empSex != null">
+					E_SEX,
+				</if>
+				<if test="empNation != null">
+					E_NATION,
+				</if>
+				<if test="empHireDate != null">
+					E_HIRE_DATE,
+				</if>
+				<if test="empStatus != null ">
+					E_STATUS,
+				</if>
+				<if test="empRegTime != null" >
+					E_REG_TIME,
+				</if>
+				<if test="empLeaveTime != null">
+					E_LEAVE_TIME,
+				</if>
+				<if test="empHeadPhotoDir != null">
+					HEAD_PHOTO_DIR,
+				</if>
+				<if test="empMobile != null">
+					MOBILE,
+				</if>
+				<if test="empJob != null">
+					E_JOB,
+				</if>
+				<if test="empDept != null">
+					E_GRADATION,
+				</if>
+				<if test="empIdNumber != null">
+					E_ID_NUMBER,
+				</if>
+				UPDATE_TIME
+			</trim>
+			<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+				 pkval ('EMID'),
+				<if test="empName != null">
+					#{empName, jdbcType=VARCHAR},
+				</if>
+				<if test="empSex != null">
+					#{empSex, jdbcType=VARCHAR},
+				</if>
+				<if test="empNation != null">
+					#{empNation, jdbcType=VARCHAR},
+				</if>
+				<if test="empHireDate != null">
+					#{empHireDate, jdbcType=VARCHAR},
+				</if>
+				<if test="empStatus != null ">
+					#{empStatus, jdbcType=VARCHAR},
+				</if>
+				<if test="empRegTime != null" >
+					#{empRegTime, jdbcType=VARCHAR},
+				</if>
+				<if test="empLeaveTime != null">
+					#{empLeaveTime, jdbcType=VARCHAR},
+				</if>
+				<if test="empHeadPhotoDir != null">
+					#{empHeadPhotoDir, jdbcType=VARCHAR},
+				</if>
+				<if test="empMobile != null">
+					#{empMobile, jdbcType=VARCHAR},
+				</if>
+				<if test="empJob != null">
+					#{empJob, jdbcType=VARCHAR},
+				</if>
+				<if test="empDept != null">
+					#{empDept, jdbcType=VARCHAR},
+				</if>
+				<if test="empIdNumber != null">
+					#{empIdNumber, jdbcType=VARCHAR},
+				</if>
+				DATE_FORMAT(NOW(), '%Y%m%d%H%i%s')
+			</trim>
+	</insert>
+	<!-- 添加员工补充表信息 -->
+	<insert id="addEmployeeSupplement" parameterType="cn.baisee.oa.model.empinfo.EmployeeSupplement" >
+		<selectKey order="AFTER" resultType="java.lang.Integer" keyProperty="PK_BESI">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO baisee_employee_supplement 
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+					EID,
+				<!-- <if test="empStatus != null ">
+					E_STATUS,
+				</if> -->
+				<if test="empSeatNumber != null ">
+					E_SEAT_NUMBER,
+				</if>
+				<if test="empMailbox != null">
+					E_MAILBOX,
+				</if>
+				<if test="empQQNumber != null">
+					E_QQ_NUMBER,
+				</if>
+				<if test="empWeChatNumber != null">
+					E_WECHAT_NUMBER,
+				</if>
+				<if test="empHomeAddress != null">
+					E_HOME_ADDRESS,
+				</if>
+				<if test="empPlace != null">
+					E_PLACE,
+				</if>
+				<if test="empPolicalOutlook != null">
+					E_POLITICAL_OUTLOOK,
+				</if>
+				<if test="empRegisteredResidence != null">
+					E_REGISTERED_RESIDENCE
+				</if>
+			</trim>
+			<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+				#{empId, jdbcType=VARCHAR},
+				<!-- <if test="empStatus != null ">
+					#{empStatus, jdbcType=VARCHAR},
+				</if> -->
+				<if test="empSeatNumber != null ">
+					#{empSeatNumber, jdbcType=VARCHAR},
+				</if>
+				<if test="empMailbox != null">
+					#{empMailbox, jdbcType=VARCHAR},
+				</if>
+				<if test="empQQNumber != null">
+					#{empQQNumber, jdbcType=VARCHAR},
+				</if>
+				<if test="empWeChatNumber != null">
+					#{empWeChatNumber, jdbcType=VARCHAR},
+				</if>
+				<if test="empHomeAddress != null">
+					#{empHomeAddress, jdbcType=VARCHAR},
+				</if>
+				<if test="empPlace != null">
+					#{empPlace, jdbcType=VARCHAR},
+				</if>
+				<if test="empPolicalOutlook != null">
+					#{empPolicalOutlook, jdbcType=VARCHAR},
+				</if>
+				<if test="empRegisteredResidence != null">
+					#{empRegisteredResidence, jdbcType=VARCHAR}
+				</if>
+			</trim>
+	</insert>
+	<!-- 添加员工教育表信息 -->
+	<insert id="addEmployeeEducation" parameterType="cn.baisee.oa.model.empinfo.EmployeeEducation">
+		<selectKey order="AFTER" resultType="java.lang.Integer" keyProperty="PK_BEGI">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO baisee_employee_education
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+				EID,
+			<if test="educStartTime != null">
+				START_TIME,
+			</if>	
+			<if test="educSendTime != null">
+				END_TIME,
+			</if>
+			<if test="empGraduatedSchool != null">
+				E_GRADUATED_SCHOOL,
+			</if>
+			<if test="empDegree != null">
+				E_DEGREE,
+			</if>
+			<if test="empMajor != null">
+				E_MAJOR,
+			</if>
+				UPDATE_TIME
+		</trim>
+		<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+			#{empId, jdbcType=VARCHAR},
+			<if test="educStartTime != null">
+				#{educStartTime, jdbcType=VARCHAR},
+			</if>	
+			<if test="educSendTime != null">
+				#{educSendTime, jdbcType=VARCHAR},
+			</if>
+			<if test="empGraduatedSchool != null">
+				#{empGraduatedSchool, jdbcType=VARCHAR},
+			</if>
+			<if test="empDegree != null">
+				#{empDegree, jdbcType=VARCHAR},
+			</if>
+			<if test="empMajor != null">
+				#{empMajor, jdbcType=VARCHAR},
+			</if>
+			DATE_FORMAT(NOW(), '%Y%m%d%H%i%s')
+		</trim>
+	</insert>
+	<!-- 添加员工工作经历表 -->
+	<insert id="addEmployeeWork" parameterType="cn.baisee.oa.model.empinfo.EmployeeWork">
+		<selectKey order="AFTER" resultType="java.lang.Integer" keyProperty="PK_BEWI">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO baisee_employee_work
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+				EID,
+			<if test="workStartTime != null">
+				START_TIME,			
+			</if>
+			<if test="workEndTime != null">
+				END_TIME,
+			</if>
+			<if test="empHisCompany != null">
+				E_HIS_COMPANY,
+			</if>
+			<if test="empPosition != null">
+				E_POSITION,
+			</if>
+			UPDATE_TIME
+		</trim>
+		<trim prefix="VALUES (" suffixOverrides="," suffix=")">
+			#{empId, jdbcType=VARCHAR},
+			<if test="workStartTime != null">
+				#{workStartTime, jdbcType=VARCHAR},
+			</if>
+			<if test="workEndTime != null">
+				#{workEndTime, jdbcType=VARCHAR},
+			</if>
+			<if test="empHisCompany != null">
+				#{empHisCompany, jdbcType=VARCHAR},
+			</if>
+			<if test="empPosition != null">
+				#{empPosition, jdbcType=VARCHAR},
+			</if>
+			DATE_FORMAT(NOW(), '%Y%m%d%H%i%s')
+		</trim>
+	</insert>
+	<!-- 添加员工家庭信息表 -->
+	<insert id="addEmployeeFamily" parameterType="cn.baisee.oa.model.empinfo.EmployeeFamily">
+		<selectKey order="AFTER" resultType="java.lang.Integer" keyProperty="PK_BEFI">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO baisee_employee_family 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+				EID,
+			<if test="empFamName != null">
+				E_FAM_NAME,
+			</if>
+			<if test="empFamSex != null">
+				E_FAM_SEX,
+			</if>
+			<if test="empFamTel != null">
+				E_FAM_TEL,
+			</if>
+			<if test="empFamRelation != null">
+				E_FAM_RELATION,
+			</if>
+			UPDATE_TIME
+		</trim>
+		<trim prefix="VALUES (" suffixOverrides="," suffix=")">
+				#{empId, jdbcType=VARCHAR},
+			<if test="empFamName != null">
+				#{empFamName, jdbcType=VARCHAR},
+			</if>
+			<if test="empFamSex != null">
+				#{empFamSex, jdbcType=VARCHAR},
+			</if>
+			<if test="empFamTel != null">
+				#{empFamTel, jdbcType=VARCHAR},
+			</if>
+			<if test="empFamRelation != null">
+				#{empFamRelation, jdbcType=VARCHAR},
+			</if>
+			DATE_FORMAT(NOW(), '%Y%m%d%H%i%s')
+		</trim>
+	</insert>
+	
+	<!--=======================================修改员工信息========================================== -->
+	<update id="updateEmployeeByID" parameterType="cn.baisee.oa.model.empinfo.Employee" >
+		UPDATE baisee_employee 
+			<set>
+				<if test="empName != null">
+					E_NAME = #{empName, jdbcType=VARCHAR},
+				</if>
+				<if test="empSex != null">
+					E_SEX = #{empSex, jdbcType=VARCHAR},
+				</if>
+				<if test="empNation != null">
+					E_NATION = #{empNation, jdbcType=VARCHAR},
+				</if>
+				<if test="empHireDate != null">
+					E_HIRE_DATE = #{empHireDate, jdbcType=VARCHAR},
+				</if>
+				<if test="empStatus != null">
+					E_STATUS = #{empStatus, jdbcType=VARCHAR},
+				</if>
+				
+				<if test="empRegTime != null">
+					E_REG_TIME = #{empRegTime, jdbcType=VARCHAR},
+				</if>
+				<if test="empLeaveTime != null">
+					E_LEAVE_TIME = #{empLeaveTime, jdbcType=VARCHAR},
+				</if>
+				<if test="empHeadPhotoDir != null">
+					HEAD_PHOTO_DIR = #{empHeadPhotoDir, jdbcType=VARCHAR},
+				</if>
+				<if test="empMobile != null">
+					MOBILE = #{empMobile, jdbcType=VARCHAR},
+				</if>
+				<if test="empJob != null">
+					E_JOB=#{empJob, jdbcType=VARCHAR},
+				</if>
+				<if test="empDept != null">
+					E_GRADATION=#{empDept, jdbcType=VARCHAR},
+				</if>
+				<if test="empIdNumber != null">
+					E_ID_NUMBER = #{empIdNumber, jdbcType=VARCHAR},
+				</if>
+				UPDATE_TIME=(SELECT DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'))
+			</set>
+			<where>
+				<if test="empId != null">
+					EID = #{empId, jdbcType=VARCHAR}
+				</if>
+			</where>
+	</update>
+	<!-- 修改补充信息 -->
+	<update id="updateEmployeeSupByID" parameterType="cn.baisee.oa.model.empinfo.EmployeeSupplement">
+		UPDATE baisee_employee_supplement
+			<set>
+				<!-- <if test="empStatus != null">
+					E_STATUS = #{empStatus, jdbcType=VARCHAR},
+				</if> -->
+				<if test="empSeatNumber != null">
+					E_SEAT_NUMBER = #{empSeatNumber, jdbcType=VARCHAR},
+				</if>
+				<if test="empMailbox != null">
+					E_MAILBOX = #{empMailbox, jdbcType=VARCHAR},
+				</if>
+				<if test="empQQNumber != null">
+					E_QQ_NUMBER = #{empQQNumber, jdbcType=VARCHAR},
+				</if>
+				<if test="empWeChatNumber != null">
+					E_WECHAT_NUMBER = #{empWeChatNumber, jdbcType=VARCHAR},
+				</if>
+				<if test="empHomeAddress != null">
+					E_HOME_ADDRESS = #{empHomeAddress, jdbcType=VARCHAR},
+				</if>
+				<if test="empPlace != null">
+					E_PLACE = #{empPlace, jdbcType=VARCHAR},
+				</if>
+				<if test="empPolicalOutlook != null">
+					E_POLITICAL_OUTLOOK = #{empPolicalOutlook, jdbcType=VARCHAR},
+				</if>
+				<if test="empRegisteredResidence != null">
+					E_REGISTERED_RESIDENCE = #{empRegisteredResidence, jdbcType=VARCHAR}
+				</if>
+			</set>
+			<where>
+				<if test="empId != null">
+					EID = #{empId, jdbcType=VARCHAR};
+				</if>
+			</where>
+	</update>
+	<!-- 修改教育信息 -->
+	<update id="updateEmployeeEduByID" parameterType="cn.baisee.oa.model.empinfo.EmployeeEducation">
+		UPDATE baisee_employee_education
+			<set>
+				<if test="educStartTime != null">
+					START_TIME = #{educStartTime, jdbcType=VARCHAR},
+				</if>
+				<if test="educSendTime != null">
+					END_TIME = #{educSendTime, jdbcType=VARCHAR},
+				</if>
+				<if test="empGraduatedSchool != null">
+					E_GRADUATED_SCHOOL = #{empGraduatedSchool, jdbcType=VARCHAR},
+				</if>
+				<if test="empDegree != null">
+					E_DEGREE = #{empDegree, jdbcType=VARCHAR},
+				</if>
+				<if test="empMajor != null">
+					E_MAJOR = #{empMajor, jdbcType=VARCHAR},
+				</if>
+				 UPDATE_TIME = (SELECT DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'))
+			</set>
+			<where>
+				<if test="empId != null">
+					EID = #{empId, jdbcType=VARCHAR}
+				</if>
+			</where>
+	</update>
+	<!-- 修改员工工作经历表 -->
+	<update id="updateEmployeeWorkByID" parameterType="cn.baisee.oa.model.empinfo.EmployeeWork">
+		UPDATE baisee_employee_work
+			<set>
+				<if test="workStartTime != null">
+					START_TIME = #{workStartTime, jdbcType=VARCHAR},
+				</if>
+				<if test="workEndTime != null">
+					END_TIME = #{workEndTime, jdbcType=VARCHAR},
+				</if>
+				<if test="empHisCompany != null">
+					E_HIS_COMPANY = #{empHisCompany, jdbcType=VARCHAR},
+				</if>
+				<if test="empPosition != null">
+					E_POSITION = #{empPosition, jdbcType=VARCHAR},
+				</if>
+				UPDATE_TIME = (SELECT DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'))
+			</set>
+			<where>
+				<if test="empId != null">
+					EID = #{empId, jdbcType=VARCHAR}
+				</if>
+			</where>
+	</update>
+	<!-- 修改员工家庭信息表 -->
+	<update id="updateEmployeeFamByID" parameterType="cn.baisee.oa.model.empinfo.EmployeeFamily">
+		UPDATE baisee_employee_family
+			<set>
+				<if test="empFamName != null">
+					E_FAM_NAME = #{empFamName, jdbcType=VARCHAR},
+				</if>
+				<if test="empFamSex != null">
+					E_FAM_SEX = #{empFamSex, jdbcType=VARCHAR},
+				</if>
+				<if test="empFamTel != null">
+					E_FAM_TEL = #{empFamTel, jdbcType=VARCHAR},
+				</if>
+				<if test="empFamRelation != null">
+					E_FAM_RELATION = #{empFamRelation, jdbcType=VARCHAR},
+				</if>
+				 UPDATE_TIME = (SELECT DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'))
+			</set>
+			<where>
+				<if test="empId != null">
+					EID = #{empId, jdbcType=VARCHAR}
+				</if>
+			</where>
+	</update>
+	<!-- ==================================删除员工======================================= -->
+	<!-- 根据eid删除员工的五张表信息 -->
+	<delete id="deleteCheckEmployee" parameterType="list">
+		<if test="list != null and list.size > 0">
+			DELETE FROM
+				baisee_employee
+				<where>
+					and EID IN
+					<foreach collection="list" open="(" close=")" item="eid" separator=",">
+						#{eid}
+					</foreach>
+				</where>
+		</if>
+	</delete>
+	<delete id="deleteCheckEmployeeSupplement" parameterType="list" >
+		<if test="list != null and list.size > 0">
+			DELETE
+			FROM
+				baisee_employee_supplement
+			<where>
+				and EID IN
+				<foreach collection="list" open="(" close=")" item="eid" separator=",">
+					#{eid}
+				</foreach>
+			</where>
+		</if>
+	</delete>
+	
+	<delete id="deleteCheckEmployeeEducation" parameterType="list">
+		<if test="list != null and list.size > 0">
+		DELETE
+		FROM
+			baisee_employee_education
+			<where>
+				and EID IN
+				<foreach collection="list" open="(" close=")" item="eid" separator=",">
+					#{eid}
+				</foreach>
+			</where>
+		</if>
+	</delete>
+	
+	<delete id="deleteCheckEmployeeFamily" parameterType="list">
+		<if test="list != null and list.size > 0">
+		DELETE
+		FROM
+			baisee_employee_family
+			<where>
+				and EID IN
+				<foreach collection="list" open="(" close=")" item="eid" separator=",">
+					#{eid}
+				</foreach>
+			</where>
+		</if>
+	</delete>
+	
+	<delete id="deleteCheckEmployeeWork" parameterType="list">
+		<if test="list != null and list.size > 0">
+		DELETE
+		FROM
+			baisee_employee_work
+			<where>
+				and EID IN
+				<foreach collection="list" open="(" close=")" item="eid" separator=",">
+					#{eid}
+				</foreach>
+			</where>
+		</if>
+	</delete>
+	<!-- ==============================修改员工状态======================================= -->
+	<update id="updateEmployeeStatus" parameterType="cn.baisee.oa.model.empinfo.Employee"  >
+		UPDATE baisee_employee
+		SET E_STATUS = #{empStatus},E_LEAVE_TIME=#{empLeaveTime}
+		WHERE
+			EID = #{empId}
+	</update>
+	<!-- 删除员工-->
+	<update id="deleteEmployeeRole" parameterType="cn.baisee.oa.model.empinfo.Employee">
+		DELETE
+		FROM
+			baisee_role_user
+		WHERE
+			USER_ID = #{empId}
+	</update>
+	<!-- List<PhoneAndID> selectPhoneAndID();获得员工的手机号和身份证 -->
+	<select id="selectPhoneAndID" resultType="cn.baisee.oa.model.PhoneAndID">
+	SELECT MOBILE phone,E_ID_NUMBER ID FROM baisee_employee
+	</select>
+	<!-- void insetImportExcel(List<ImportEmpModel> list);批量导入员工信息 -->
+	<insert id="insetImportExcel" parameterType="list">
+	<if test="list != null and list.size() > 0">
+	INSERT INTO baisee_employee
+		(EID,E_NAME,E_SEX,E_NATION,E_HIRE_DATE,E_STATUS,
+		E_REG_TIME,MOBILE,		
+		E_ID_NUMBER,UPDATE_TIME)values
+		<foreach collection="list" item="emp" separator=",">
+		( pkval ('EMID'),
+		#{emp.empName},
+		${emp.empSex==emp.nan?0:1},
+		#{emp.empNation},
+		#{emp.startDate},'1',#{emp.timeOfEntry},#{emp.phone},
+		#{emp.ID},DATE_FORMAT(NOW(), '%Y%m%d%H%i%s')
+		)
+		
+		</foreach>
+	</if>
+	</insert>
+	
+	<select id="getEmpName" resultType="java.lang.String" parameterType="java.lang.String">
+	SELECT E_NAME from baisee_employee WHERE EID=#{empID}
+	</select>
+	
+	<!-- 根据用户类型查询对应的员工列表 -->
+	<select id="selectEmpByType" resultMap="EmployeeMap" parameterType="map">
+		SELECT
+			eid, 
+			case e_gradation when '0' then concat(e_NAME, '(初中)') else concat(e_NAME,'(高中)') end as e_name
+		FROM
+			baisee_employee 
+		<where>
+			1=1
+			<if test="empType !='' and empType !=null">
+				and e_gradation = #{empType}
+			</if>
+			<if test="empType == null or empType == '' ">
+				and e_gradation != '2'
+			</if>
+			and E_STATUS='1'
+		</where>
+		order by E_GRADATION 
+	</select>
+	
+	<!-- 根据职位名称查询员工集合 -->
+	<select id="findDeptAndRoleEmp" resultMap="EmployeeMap" parameterType="map">
+		SELECT
+			* 
+		FROM
+			baisee_employee,
+			baisee_dictionaries,
+			baisee_user
+		WHERE
+			baisee_employee.E_JOB = baisee_dictionaries.DICT_ID
+		AND	baisee_user.USER_ID = baisee_employee.EID
+		AND baisee_employee.E_STATUS=1
+		AND baisee_dictionaries.DICT_DESTINATION = #{roleName}
+		
+		
+	</select>
+	
+	
+		<!-- 查询所有在职的员工 -->
+	<select id="selectEmps" resultMap="EmployeeMap">
+		SELECT
+			* 
+		FROM
+			baisee_employee
+		WHERE
+		E_STATUS='1' order by E_JOB DESC
+		
+		
+	</select>
+</mapper>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="commonTemplate :: header">
+</head>
+
+<body>
+<div class="lyear-layout-web">
+  <div class="lyear-layout-container">
+
+    <!--左侧导航-->
+    	<div th:replace="commonTemplate :: leftMenus"></div>
+    <!--End 左侧导航-->
+
+    <!--头部信息-->
+    	<div th:replace="commonTemplate :: headerDiv"></div>
+    <!--End 头部信息-->
+
+    <!--页面主要内容-->
+    <main class="lyear-layout-content">
+
+      <div class="container-fluid">
+        
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-body">
+                
+                <form th:action="@{message/template/add.ht}" method="post" class="row" onsubmit="return check()" th:object="${messageInfo}" >
+                  
+                  <div class="form-group col-md-12">
+                    <label for="title">标题</label>
+                    <input type="text" class="form-control" id="title" name="title" th:value="*{title}" placeholder="请输入标题" />
+                  </div>
+                  <div class="form-group col-md-12">
+                    <label for="type">类型</label>
+                    <div class="form-controls">
+                      <!-- <select name="type" class="form-control" id="type">
+                        <option th:sel value="1">系统消息</option>
+                        <option value="2">工作通知</option>
+                      </select> -->
+                      <span th:switch="*{type}">
+						<span  th:case="'1'">系统消息</span>
+						<span  th:case="'2'">工作通知</span>
+						<span  th:case="*">其他</span>
+					 </span>
+                    </div>
+                  </div>
+                  <div class="form-group col-md-12">
+                    <label for="content">内容</label>
+                   <input type="hidden" class="form-control" id="contentcv" name="contentcv"  th:value="*{content}"  /> 
+               <textarea class="form-control" id="content" name="content" rows="5" placeholder="*{title}"></textarea>
+                  </div>
+                 
+                  <div class="form-group col-md-12"><!-- onclick="javascript:history.back(-1);return false;" -->
+                  <a href="#!" th:href="@{message/changeMessageState.ht(messageId=*{id},isReader=2)}" title="处理消息" >
+                  <button type="button" class="btn btn-default">已处理</button></a>
+                    <a class="btn btn-default" th:href="@{indexpage.ht}">返回首页</a>
+                    <a class="btn btn-default" th:href="@{message/view.ht}">返回消息列表</a>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        
+      </div>
+
+    </main>
+    <!--End 页面主要内容-->
+  </div>
+</div>
+
+<script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap.min.js" th:src="@{static/js/bootstrap.min.js}"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/select2/i18n/zh-CN.js}"></script>
+<script type="text/javascript">
+
+	$(function(){
+		 $("#content").val($("#contentcv").val()); 
+	}) 
+
+$(function(){
+    $('.search-bar .dropdown-menu a').click(function() {
+        var field = $(this).data('field') || '';
+        $('#search-field').val(field);
+        $('#search-btn').html($(this).text() + ' <span class="caret"></span>');
+    });
+});
+
+</script>
+
+</body>
+</html>

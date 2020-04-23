@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.baisee.BaiseeNoticeMapper">
+    <resultMap id="BaiseeNoticeMap" type="cn.baisee.oa.model.BaiseeNotice">
+        <id column="ID" property="id" jdbcType="INTEGER"/>
+        <result column="TITLE" property="title" jdbcType="VARCHAR"/>
+        <result column="CONTENT" property="content" jdbcType="VARCHAR"/>
+        <result column="TO_USER_ID" property="toUserId" jdbcType="VARCHAR"/>
+        <result column="TO_USER_NAME" property="toUserName" jdbcType="VARCHAR"/>
+        <result column="FROM_USER_ID" property="fromUserId" jdbcType="VARCHAR"/>
+        <result column="FROM_USER_NAME" property="fromUserName" jdbcType="VARCHAR"/>
+        <result column="STATUS" property="status" jdbcType="VARCHAR"/>
+        <result column="UPDATE_TIME" property="updateTime" jdbcType="VARCHAR"/>
+        <result column="CREATE_TIME" property="createTime" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Notice_Column_List">
+		ID, TITLE, CONTENT, TO_USER_ID, TO_USER_NAME, FROM_USER_ID,FROM_USER_NAME,STATUS,UPDATE_TIME,CREATE_TIME
+	</sql>
+    <sql id="BaiseeNoticeWhere">
+        <where>
+            <if test="id != null">
+                and ID = #{id,jdbcType=VARCHAR}
+            </if>
+            <if test="toUserId != null">
+                and TO_USER_ID = #{toUserId,jdbcType=VARCHAR}
+            </if>
+            <if test="fromUserId != null">
+                and FROM_USER_ID = #{fromUserId,jdbcType=VARCHAR}
+            </if>
+            <if test="updateUser != null">
+                and UPDATE_USER = #{updateUser,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and STATUS = #{status,jdbcType=VARCHAR}
+            </if>
+            <if test="updateTime != null">
+                and UPDATE_TIME = #{updateTime,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </sql>
+    <!-- 查询某用户可查看的通知消息 -->
+    <select id="selectByUserId" resultMap="BaiseeNoticeMap" parameterType="java.lang.String">
+        select
+        <include refid="Notice_Column_List"/>
+        from baisee_notice
+        where STATUS='0' and TO_USER_ID= #{TO_USER_ID,jdbcType=VARCHAR}
+        ORDER BY CREATE_TIME DESC
+    </select>
+    <!-- 查询展示中的系统通知列表 -->
+    <select id="selectSystemNotice" resultMap="BaiseeNoticeMap">
+        select
+        <include refid="Notice_Column_List"/>
+        from baisee_notice
+        where STATUS='0' and TO_USER_ID IS NULL
+        ORDER BY CREATE_TIME DESC
+    </select>
+    <!-- 根据id  获取一条 通知 -->
+    <select id="selectById" resultMap="BaiseeNoticeMap" parameterType="java.lang.String">
+        select
+        <include refid="Notice_Column_List"/>
+        from baisee_notice
+        where ID=#{ID,jdbcType=VARCHAR}
+        ORDER BY CREATE_TIME DESC
+    </select>
+    <!-- 分页查询  系统通知表  分页显示-->
+    <select id="selectBaiseeNoticePage" resultMap="BaiseeNoticeMap" parameterType="cn.baisee.oa.model.BaiseeNotice">
+        SELECT
+        <include refid="Notice_Column_List"/>
+        FROM
+        baisee_notice
+        <where>
+
+            <if test="id != null">
+                and ID = #{id,jdbcType=VARCHAR}
+            </if>
+            <if test="fromUserId != null">
+                and FROM_USER_ID = #{fromUserId,jdbcType=VARCHAR}
+            </if>
+            <if test="fromUserName != null and fromUserName != '' ">
+                and FROM_USER_NAME like '%${fromUserName}%'
+            </if>
+            <if test="toUserId != null">
+                and (TO_USER_ID = #{toUserId,jdbcType=VARCHAR} OR TO_USER_ID IS NULL)
+            </if>
+            <if test="toUserName != null and toUserName != '' ">
+                and TO_USER_NAME like '%${toUserName}%'
+            </if>
+            <if test="status != null">
+                and STATUS = #{status,jdbcType=VARCHAR}
+            </if>
+            <if test="createStartTime != null and createStartTime != '' ">
+                and left(CREATE_TIME, 8) &gt;=
+                #{createStartTime,jdbcType=VARCHAR}
+            </if>
+            <if test="createEndTime != null and createEndTime != '' ">
+                and left(CREATE_TIME, 8) &lt;=
+                #{createEndTime,jdbcType=VARCHAR}
+            </if>
+            <if test="updateStartTime != null and updateStartTime != '' ">
+                and left(UPDATE_TIME, 8) &gt;=
+                #{updateStartTime,jdbcType=VARCHAR}
+            </if>
+            <if test="updateEndTime != null and updateEndTime != '' ">
+                and left(UPDATE_TIME, 8) &lt;=
+                #{updateEndTime,jdbcType=VARCHAR}
+            </if>
+        </where>
+        ORDER BY UPDATE_TIME DESC
+    </select>
+
+    <!-- 修改状态为 已处理-->
+    <update id="handleNotice" parameterType="map">
+		UPDATE baisee_notice
+		SET STATUS = '2', UPDATE_TIME = DATE_FORMAT(now(),'%Y%m%d%H%i%s')
+		WHERE
+			ID = #{ID,jdbcType=VARCHAR}
+	</update>
+    <!-- 修改状态为 已读-->
+    <update id="readNotice" parameterType="map">
+		UPDATE baisee_notice
+		SET STATUS = '1', UPDATE_TIME = DATE_FORMAT(now(),'%Y%m%d%H%i%s')
+		WHERE
+			ID = #{ID,jdbcType=VARCHAR} and STATUS='0'
+	</update>
+    <!-- 修改状态为 已关闭-->
+    <update id="closeNotice" parameterType="map">
+		UPDATE baisee_notice
+		SET STATUS = '3', UPDATE_TIME = DATE_FORMAT(now(),'%Y%m%d%H%i%s')
+		WHERE
+			ID = #{ID,jdbcType=VARCHAR} 
+	</update>
+    <!-- 插入-->
+    <insert id="insert"
+            parameterType="cn.baisee.oa.model.BaiseeNotice">
+        INSERT INTO baisee_notice
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="toUserId != null">
+                TO_USER_ID,
+            </if>
+            <if test="toUserName != null">
+                TO_USER_NAME,
+            </if>
+            FROM_USER_ID,
+            FROM_USER_NAME,
+            TITLE,
+            CONTENT,
+            STATUS,
+            UPDATE_TIME,
+            CREATE_TIME
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="toUserId != null">
+                #{toUserId, jdbcType=VARCHAR},
+            </if>
+            <if test="toUserName != null">
+                #{toUserName, jdbcType=VARCHAR},
+            </if>
+            #{fromUserId, jdbcType=VARCHAR},
+            #{fromUserName, jdbcType=VARCHAR},
+            #{title, jdbcType=VARCHAR},
+            #{content, jdbcType=VARCHAR},
+            #{status, jdbcType=VARCHAR},
+            DATE_FORMAT(now(),'%Y%m%d%H%i%s'),
+            DATE_FORMAT(now(),'%Y%m%d%H%i%s')
+        </trim>
+    </insert>
+
+    <!-- 查看信件信息 -->
+    <select id="selectByUserIdAndType" resultMap="BaiseeNoticeMap" parameterType="string">
+		select * from baisee_notice where to_user_id =#{userId} and status = 0
+	</select>
+    <select id="selectType" resultType="cn.baisee.oa.model.BaiseeNoticeStaff">
+        select
+        bt.t_content as t_content,
+        bt.t_id as t_id,
+        bt.t_title as t_title,
+        btr.name
+        from
+        baisee_template_record btr
+        join baisee_template bt
+        on btr.t_id = bt.t_id
+        WHERE
+        btr.USER_ID = #{userId}
+        and btr.type1 = "0"
+    </select>
+
+
+</mapper>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="commonTemplate :: header">
+</head>
+
+<body>
+	<div class="lyear-layout-web">
+		<div class="lyear-layout-container">
+
+			<!--左侧导航-->
+			<div th:replace="commonTemplate :: leftMenus"></div>
+			<!--End 左侧导航-->
+
+			<!--头部信息-->
+			<div th:replace="commonTemplate :: headerDiv"></div>
+			<!--End 头部信息-->
+
+			<!--页面主要内容-->
+			<main class="lyear-layout-content">
+
+			<div class="container-fluid">
+				<form th:action="@{dossierFile/dossierList.ht}" id="frm" name="frm"
+					method="post" th:object="${notice}" onsubmit="return check();">
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="card">
+								<div class="card-toolbar clearfix ">
+									<div class="pull-right search-bar">
+										<div class="input-group">
+											<select name="type" class="form-control" id="type">
+												<option value="">档案类别</option>
+												<option th:each="info:${categorys}" th:value="${info.cName}"
+													th:selected="${info.cName == type}" th:text="${info.cName}">
+												</option>
+											</select>
+										</div>
+										<div class="input-group">
+											<input type="text" class="form-control" value=""
+												name="keyword" placeholder="请输入" />
+											<div class="input-group-btn">
+												<button class="btn btn-success" id="search-btn1"
+													type="button" aria-haspopup="true" aria-expanded="false">
+													查询</button>
+											</div>
+										</div>
+
+									</div>
+									<div class="toolbar-btn-action">
+										<a class="btn btn-success m-r-5"
+											th:href="@{dossierFile/toAddDossierFile.ht}"
+											baisee:ctrl="WPSL_XZSL"><i class="mdi mdi-check"></i> 新增</a>
+										<a class="btn btn-danger" bms:ctrl="busDict.delDict"
+											href="javascript:void(0);" baisee:ctrl="XSDAGL_SC"
+											th:onclick="'delRepairItem(\'frm\', \''+ @{dossierFile/deleteFiles.ht} + '\')'"><i
+											class="mdi mdi-window-close"></i> 删除</a>
+									</div>
+								</div>
+								<div class="card-body">
+
+									<div class="table-responsive">
+										<table class="table table-bordered">
+											<thead>
+												<tr>
+													<th><label class="lyear-checkbox checkbox-primary">
+															<input type="checkbox" id="check-all" /><span></span>
+													</label></th>
+													<th>档案类别</th>
+													<th>档案名称</th>
+													<th>上传时间</th>
+													<th>操作</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr th:each="info:${pageResult.list}"
+													th:if="${pageResult.list != null &amp;&amp; pageResult.list.size() > 0}">
+													<td><label class="lyear-checkbox checkbox-primary">
+															<input type="checkbox" name="ids[]" value="1" /><span></span>
+													</label></td>
+													<td th:text="${info.typeId}">档案类别</td>
+													<td th:text="${info.fileName}">档案名称</td>
+													<td
+														th:text="${#dates.format(info.cTime,'yyyy-MM-dd HH:mm:dd')}">上传时间</td>
+													<td>
+														<div class="btn-group">
+															<a class="btn btn-xs btn-default" href="javascript:void(0);" title="预览档案 " th:onclick="'previewWork(\'' + ${info.id} + '\')'"
+																data-toggle="tooltip"><i
+																class="mdi mdi-page-layout-sidebar-left"></i></a> <a
+																class="btn btn-xs btn-default" href="javascript:void(0);" title="下载档案" th:onclick="'downloadDossier(\'' + ${info.id} + '\')'"
+																data-toggle="tooltip"><i
+																class="mdi mdi-arrow-collapse-down"></i></a>
+														</div>
+													</td>
+												</tr>
+
+											</tbody>
+										</table>
+									</div>
+									<ul class="pagination" th:if="${pageResult != null}"
+										th:object="${pageResult}">
+										<li><a href="javascript:void(0);"
+											th:onclick="*{hasPreviousPage} ? 'go(1)' : 'return false;'">首页</a></li>
+										<li><a href="javascript:void(0);"
+											th:onclick="*{hasPreviousPage} ? 'go(' + *{prePage} + ')' : 'return false;'">上一页</a></li>
+										<li><a href="javascript:void(0);"
+											th:onclick="*{hasNextPage} ? 'go(' + *{nextPage} + ')' : 'return false;'">下一页</a></li>
+										<li><a href="javascript:void(0);"
+											th:onclick="*{hasNextPage} ? 'go(' + *{pages} + ')' : 'return false;'">末页</a></li>
+										<li><a href="javascript:void(0);"
+											onclick="go($('#pagenumber').val());">跳转至</a></li>
+										<li><a href="#1"><input name="pageNum"
+												id="pagenumber" th:value="*{pageNum}" />/<span id="_pages"
+												th:text="*{pages == 0} ? 1 : *{pages}"></span></a></li>
+										<li><a href="#1">页</a></li>
+									</ul>
+
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</form>
+			</div>
+
+			</main>
+			<!--End 页面主要内容-->
+		</div>
+	</div>
+
+	<script type="text/javascript" src="js/jquery.min.js" th:src="@{js/jquery.min.js}"></script>
+	<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{js/perfect-scrollbar.min.js}"></script>
+	<script type="text/javascript" src="js/bootstrap-3.0.0/js/bootstrap-datepicker.min.js" th:src="@{js/bootstrap-datepicker.min.js}"></script>
+	<script type="text/javascript" src="js/bootstrap-3.0.0/js/bootstrap-datepicker.zh-CN.min.js" th:src="@{js/bootstrap-datepicker.zh-CN.min.js}"></script>
+	<script type="text/javascript" src="js/main.min.js" th:src="@{js/main.min.js}"></script>
+	<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+	<script type="text/javascript" th:src="@{js/plugins/layer/layer.js}"></script>
+	<script type="text/javascript" th:src="@{js/plugins/comm/bmsAjax.js}"></script>
+	<script type="text/javascript" th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+	<script type="text/javascript" th:src="@{js/plugins/My97DatePicker/WdatePicker.js}"></script>
+
+	<script th:inline="javascript">
+		function previewWork (id){
+			layer.open({
+				type : 2,
+				title : "档案管理",
+				shadeClose : true,
+				shade : 0.8,
+				area : [ '900px', '900px' ],
+				content :
+					/*<![CDATA[*/
+					[[@{/dossierFile/view.ht}]]+"?id="+id,
+					 /*]]>*/
+			    end: function () {
+					/*<![CDATA[*/
+					 $(window.top.document).find("#_proccesBar").css("visibility", "hidden");
+			    	 /*]]>*/
+	            }
+			});
+		};
+		function delRepairItem(formId, _url, msg) {
+			del(formId, _url);
+		}
+		function downloadDossier(id) {
+			$(location).attr('href', [[@{/dossierFile/download/dossier.ht}]]+'?id='+id); 
+			$(window.top.document).find("#_proccesBar").css("visibility", "hidden");
+		}
+//form表单提交事件
+function check(){ 
+	
+}
+</script>
+</body>
+</html>

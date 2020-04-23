@@ -1,0 +1,215 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head th:include="commonTemplate :: header">
+</head>
+<body class="bgcolor-body">
+
+	<div id="page">
+		<div th:include="commonTemplate :: headerDiv"></div>
+		<div id="content" class="layout">
+			<div class="grid-s5m0">
+				<div class="col-main">
+					<div class="main-wrap">
+						<div class="skin-box">
+							<div class="skin-box-bd">
+								<div class="cur-position">
+									<span><a href="javascript:void(0)">信息管理</a> </span> <span>&gt;</span>
+									<span><a th:href="@{retu/toReturnList.ht.ht}">返费规则管理</a>
+									</span> <span>&gt;</span> <span><a href="javascript:void(0)">编辑返费规则信息</a></span>
+								</div>
+								<!-- ==================================== 页面内容开始 ============================= -->
+
+
+								<div class="cont-box">
+									<div class="list-table">
+										<div class="list-table-cont">
+											<div class="table2">
+												<table class="ks-inputall">
+													<tr class="th">
+														<!-- <td class="col3">规则名 </td> -->
+														<td class="col5">规则类型</td>
+														<td class="col6">规则值</td>
+														<td class="col6">更新时间</td>
+													</tr>
+													<tr th:if="${retuList == null || retuList.size() == 0}">
+													</tr>
+
+													<tr th:each="info:${retuList}"
+														th:if="${retuList != null &amp;&amp; retuList.size() > 0}"
+														onmouseover="this.style.backgroundColor='#e3f1ff'"
+														onmouseout="this.style.backgroundColor='#ffffff'">
+														<!-- <td class="col3">
+															<span style="cursor:pointer"   title="点击进行修改" th:onclick="'edit(\''+${info.rrid}+'\',\''+${info.returnType}+'\',\''+${info.returnValue}+'\')'" th:text="${retu.rName}"></span>
+														</td> -->
+														<td class="col5"><span style="cursor: pointer"
+															title="点击进行修改"
+															th:onclick="'edit(\''+${info.rrid}+'\',\''+${info.returnType}+'\',\''+${info.returnValue}+'\')'"
+															th:text="${info.returnType}"></span></td>
+														<td class="col6"><span style="cursor: pointer"
+															title="点击进行修改"
+															th:onclick="'edit(\''+${info.rrid}+'\',\''+${info.returnType}+'\',\''+${info.returnValue}+'\')'"
+															th:text="${info.returnValue}"></span></td>
+														<td class="col10"><span style="cursor: pointer"
+															title="点击进行修改"
+															th:onclick="'edit(\''+${info.rrid}+'\',\''+${info.returnType}+'\',\''+${info.returnValue}+'\')'"
+															baisee:fmt="yyyy-MM-dd hh:mm:ss,${info.upDate}"></span></td>
+													</tr>
+												</table>
+											</div>
+										</div>
+									</div>
+									<div class="JsW skin-box-bd" data-widget-type="tab"
+										data-widget-config="{'activeIndex':0}">
+										<div class="skin-bd-box">
+											<div class="list-table">
+												<div class="list-table-cont">
+													<div class="table6">
+														<form id="retForm" th:action="@{retu/saveOrUpdateRetu.ht}"
+															method="post">
+															<!-- <input type="hidden" name="rid" id="rid" th:value="${retu.rid}" /> -->
+															<input type="hidden" name="prompt" id="prompt"
+																th:value="${prompt}" /> <input type="hidden"
+																name="rrid" id="rrid" value="" /> <input type="hidden"
+																name="rtId" id="trId" th:value="${retu.rtId}" />
+															<table>
+																<tr>
+																	<td>
+																		<div class="left">
+																			<div class="td1">
+																				<span class="require red">*</span><span>规则名：</span>
+																			</div>
+																			<div class="td2">
+																				<span><input type="text"
+																					onKeypress="javascript:if(event.keyCode == 32)event.returnValue = false;"
+																					class="radius3 input" th:value="${retu.rName}"
+																					id="rName" onkeyup="check();" name="rName" /></span>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+																<tr>
+																	<td>
+																		<div class="left">
+																			<div class="td1">
+																				<span class="require red">*</span><span>规则类型：</span>
+																			</div>
+																			<div class="td2">
+																				<div class="control-css3select css3select-icon-hide">
+																					<select class="radius3" id="returnType"
+																						name="returnType">
+																						<option></option>
+																						<option value="缴费金额">缴费金额</option>
+																						<option value="时间">时间限制</option>
+																						<option value="返费金额">返费金额</option>
+																					</select>
+																				</div>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+																<tr>
+																	<td>
+																		<div class="left">
+																			<div class="td1">
+																				<span class="require red">*</span><span>规则值：</span>
+																			</div>
+																			<div class="td2">
+																				<span><input type="text"
+																					onKeypress="javascript:if(event.keyCode == 32)event.returnValue = false;"
+																					class="radius3 input" id="returnValue"
+																					onkeyup="check();" name="returnValue" /></span>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+															</table>
+															<div class="redbutton control-button JsW"
+																data-control-type="button"
+																data-control-config="{'buttonCls':'button'}">
+																<span> <input value="保存" type="submit"
+																	class="radius5 button ks-pop-close1" />
+																</span> <span class="grey"> <input value="返回上一级"
+																	type="button" class="radius5 button ks-pop-close1"
+																	onclick="returnBack();" />
+																</span> <span id="del"></span>
+															</div>
+														</form>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<!-- ============================= 页面内容 结束============================= -->
+							</div>
+						</div>
+					</div>
+				</div>
+				<div th:include="commonTemplate :: leftMenus"></div>
+			</div>
+		</div>
+		<div th:include="commonTemplate :: footer"></div>
+	</div>
+	<div th:include="commonTemplate :: processBar" />
+	<script th:inline="javascript"> 
+		$(function(){
+			debugger;
+			setValidate($("#retForm"),{
+				rules: {
+					returnValue:{required: true, maxlength: 50},
+					returnType:{required: true,
+						remote:{       
+				              type : "POST",
+				              url : [[@{'/retu/checkUpdRetu.ht'}]],
+				              cache:false,
+				              async: false,
+				              data : {
+				            	 "rtId" : function(){return $("#trId").val();},
+								 "returnType":function(){return $("#returnType").val();},
+								 "rrid":function(){return $("#rrid").val();}
+				              },
+				             }	
+					}
+				},
+				messages:{
+					returnValue:{required: "必填",maxlength: "超过50，太长"},
+					returnType:{required: "必选",remote:"已有该规则类型，请选择其它规则类型"}
+				}
+			});
+		});
+		
+		$(function(){
+			var prompt=$("#prompt").val();
+			if(prompt != ""){
+				_alert(prompt);
+			}
+			
+		})
+		$(function(){
+			$("#returnType").select2({
+				placeholder : "请选择规则类型"
+			});
+		})	
+		
+		function edit(rrid,returnType,returnValue){
+			debugger;
+			$("#returnType").val(returnType);
+			$("#rrid").val(rrid);
+			$("#returnValue").val(returnValue);
+			
+			$("#returnType").select2({
+				placeholder : returnType
+			});
+			
+			//_alert(pkBefi);
+		}
+		
+		function returnBack(){
+			debugger;
+			var url = [[@{'/retu/toReturnList.ht'}]];
+			locationHref(url);
+		} 
+		</script>
+</body>
+</html>

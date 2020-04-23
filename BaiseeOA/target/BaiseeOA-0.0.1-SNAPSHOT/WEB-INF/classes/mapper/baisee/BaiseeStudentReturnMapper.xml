@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.baisee.BaiseeStudentReturnMapper">
+
+	<resultMap type="cn.baisee.oa.model.student.BaiseeStudentReturnRule"
+		id="returFee">
+		<id column="R_ID" property="rrid" />
+		<result column="TU_ID" property="tuId" />
+		<result column="RETURN_TYPE" property="returnType" />
+		<result column="RETURN_VALUE" property="returnValue" />
+		<result column="UP_DATE" property="upDate" />
+	</resultMap>
+
+	<select id="selectReturFee" parameterType="String" resultMap="returFee">
+		select sum(case RETURN_TYPE when '缴费金额' then RETURN_VALUE else 0 end) as RETURN_TYPE,
+		sum(case RETURN_type when '时间' then RETURN_VALUE else 0 end) as RETURN_VALUE,
+		sum(case RETURN_type when '返费金额' then RETURN_VALUE else 0 end) as UP_DATE 
+	from baisee_student_return_rule where RT_ID in(
+	select RT_ID from baisee_student_return where RT_ID in(
+		select R_ID from baisee_tuition_return where Tu_id in(	
+			select Tu_id from baisee_student where sid=#{stuId})
+	)
+)
+
+	</select>
+	
+	<resultMap type="cn.baisee.oa.model.BaiseeRetuAO" id="retuOA_map">
+		<id column="SID" jdbcType="VARCHAR" property="sId"/>
+		<result column="S_NAME" jdbcType="VARCHAR" property="sName"/>
+		<result column="S_AUDITION_START_TIME" jdbcType="VARCHAR" property="sAuditionStartTime"/>
+		<result column="S_ENROLMENT_TIME" jdbcType="VARCHAR" property="sEnrolmentTime"/>
+		<result column="S_AGE" jdbcType="VARCHAR" property="sAge"/>
+		<result column="RETURN_STATUS" jdbcType="VARCHAR" property="returnStatus"/>
+		<result column="RETURN_SUM" jdbcType="VARCHAR" property="returnSum"/>
+		<result column="RETURN_TIME" jdbcType="VARCHAR" property="returnTime"/>
+		<result column="TUITION_SUM" jdbcType="VARCHAR" property="tuitionSum"/>
+		<result column="TU_TYPE_MEANING" jdbcType="VARCHAR" property="tuTypeMeaning"/>
+		<result column="S_AREA" jdbcType="VARCHAR" property="area"/>
+		<result column="S_REALAREA" jdbcType="VARCHAR" property="realArea"/>
+		<result column="ACTUAL_SUM" jdbcType="VARCHAR" property="actualSum"/>
+		<result column="remarks" jdbcType="VARCHAR" property="remarks"></result>
+		<result column="remarks2" jdbcType="VARCHAR" property="remarks2"/>
+	</resultMap>
+	
+	<select id="getRetuStatusList" resultMap="retuOA_map" parameterType="cn.baisee.oa.model.BaiseeRetuAO">
+		select 
+			max(a.SID) as SID ,
+	max(a.s_name) as s_name,
+	max(a.S_AUDITION_START_TIME)  as S_AUDITION_START_TIME,
+	max(g.s_area) as s_area,
+	max(b.TU_TYPE_MEANING) as TU_TYPE_MEANING,
+	max(a.S_ENROLMENT_TIME) as S_ENROLMENT_TIME ,
+	(
+		DATE_FORMAT(NOW(), '%Y') - SUBSTRING(max(a.S_ID_NUMBER), 7, 4)
+	) AS S_AGE ,
+	max(a.return_status) as return_status ,
+	MAX(
+		CASE f.RETURN_TYPE
+		WHEN '返费金额' THEN
+			f.RETURN_VALUE
+		ELSE
+			0
+		END
+	) AS RETURN_SUM,
+	max(h.RETURN_TIME) as RETURN_TIME,
+	max(b.TU_ID) as TU_ID,
+	max(e.TUITION_SUM) as TUITION_SUM,
+	max(h.ACTUAL_SUM) as ACTUAL_SUM,
+	max(h.remarks) as remarks,
+	max(g.s_Realarea) as s_Realarea,
+	max(bus3.remarks2) as remarks2
+				from baisee_student a 
+					LEFT JOIN baisee_tuition_rule b on a.tu_id=b.tu_id
+					LEFT JOIN baisee_tuition_return d on b.tu_id=d.tu_id
+					LEFT JOIN baisee_student_return c on d.R_ID=c.RT_ID 
+					LEFT JOIN (SELECT userid, SUM(single_amount) as TUITION_SUM FROM baisee_flow_business where transaction_type='学费'  or transaction_type = '试听费'  group by userid) e on a.sid=e.userid 
+					LEFT JOIN baisee_student_return_rule f on f.RT_ID=c.RT_ID 
+					LEFT JOIN baisee_student_supplement g on a.sid=g.sid
+					LEFT JOIN (SELECT
+							   userid,
+							   max(update_time) AS RETURN_TIME,
+							   sum(single_amount) AS ACTUAL_SUM,
+							   max(remarks) as remarks,
+							   max(service_serial_number) as service_serial_number 
+							   FROM baisee_flow_business 
+							   where transaction_type='返费' 
+							   group by userid) h on a.sid=h.userid 
+					LEFT JOIN (select remarks as remarks2,service_serial_number as number2,userid
+									from baisee_flow_business where transaction_type like '%返费%' )as bus3 
+									on a.SID = bus3.userid and h.service_serial_number != bus3.number2
+				<where>
+				     a.S_TYPE='1'
+					<if test="sName != null and  sName != ''">
+						and a.S_NAME like "%"#{sName,jdbcType=VARCHAR}"%"
+					</if>
+					<if test="tuTypeMeaning != null and tuTypeMeaning != ''">
+						and b.TU_TYPE=#{tuTypeMeaning,jdbcType=VARCHAR}
+					</if>
+					<if test="returnStatus != null and returnStatus != ''">
+						and a.RETURN_STATUS=#{returnStatus,jdbcType=VARCHAR}
+					</if>
+					<if test="enterStartTime != null and enterStartTime != ''">
+						and a.S_ENROLMENT_TIME &gt;= #{enterStartTime,jdbcType=VARCHAR}
+					</if>
+					<if test="enterEndTime != null and enterEndTime != ''">
+						and a.S_ENROLMENT_TIME &lt;= #{enterEndTime,jdbcType=VARCHAR}
+					</if>
+					<if test="audStartTime != null and audStartTime != ''">
+						and a.S_AUDITION_START_TIME &gt;= #{audStartTime,jdbcType=VARCHAR}
+					</if>
+					<if test="audEndTime != null and audEndTime != ''">
+						and a.S_AUDITION_START_TIME &lt;= #{audStartTime,jdbcType=VARCHAR}
+					</if>
+					<if test="area != null and area != ''">
+						and g.s_area=#{area,jdbcType=VARCHAR}
+					</if>
+				</where>
+				GROUP BY e.userid 		
+	</select>
+</mapper>

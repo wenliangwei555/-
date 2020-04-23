@@ -1,0 +1,124 @@
+package cn.baisee.oa.service;
+
+
+import java.util.List;
+
+import cn.baisee.oa.model.IcipBusDict;
+import cn.baisee.oa.page.pagehelper.PageInfo;
+
+public interface DictionariesService {
+	/**
+	 *添加字典
+	 * @param dic
+	 * @throws Exception
+	 */
+	public void insertDic(IcipBusDict dic)  throws Exception;
+	/**
+	 * 查询所有
+	 * @param map
+	 * @return
+	 */
+	public PageInfo<IcipBusDict> selectAllDic(int pageNum, int pageSize,String itemlableSearch) throws Exception;
+	/**
+	 * 根据id查询字典
+	 * @param dictId
+	 * @return
+	 */
+	public IcipBusDict selectDicById(String dictId) throws Exception;
+	/**
+	 * 修改方法
+	 * @param dic
+	 * @throws Exception
+	 */
+	public void updateDicById(IcipBusDict dic) throws Exception;
+	
+	/**
+	 * 修改方法
+	 * @param dic
+	 * @throws Exception
+	 */
+	public void update(IcipBusDict dic);
+	
+	/**
+	 * 根据value查询，页面校验用
+	 * @param dictValue
+	 * @return
+	 * @throws Exception
+	 */
+	public IcipBusDict selectDicByValue(String dictValue) throws Exception;
+	/**
+	 * 删除
+	 * @param dictIds
+	 * @return
+	 * @throws Exception
+	 */
+	public Integer deleteDic(String[] dictIds) throws Exception;
+	/**
+	 *       根据字典名称查询值
+	 * @param name
+	 * @return
+	 */
+	List<IcipBusDict> selectIcipBusDictByDictName(String name);
+	
+	/*		部门操作		*/
+	/**
+	 * 查询所有
+	 * @param map
+	 * @return
+	 */
+	public PageInfo<IcipBusDict> getDepartments(int pageNum, int pageSize,String itemlableSearch) throws Exception;
+	
+	/**
+	 * 
+	 * @param pageNum 第几页
+	 * @param pageSize 每页几条
+	 * @param dictName 词典名称
+	 * @param itemlableSearch value模糊查询
+	 * @return
+	 * @throws Exception
+	 */
+	public PageInfo<IcipBusDict> findPageByDictName(int pageNum, int pageSize,String dictName,String itemlableSearch) throws Exception;
+	/**
+	 * 查询所有
+	 * @param map
+	 * @return
+	 */
+	public List<IcipBusDict> getDepartmentList();
+	
+	/**
+	 * 校验部门名称
+	 * @param deptName
+	 * @return
+	 */
+	List<IcipBusDict> checkDeptName(String deptName);
+	
+	/**
+	 * 查询所有
+	 * @param map
+	 * @return
+	 */
+	PageInfo<IcipBusDict> getRoles(int pageNum, int pageSize,String itemlableSearch);
+	
+	/**
+	 * 校验部门名称
+	 * @param deptName
+	 * @return
+	 */
+	List<IcipBusDict> getRoleByDId(String dId);
+	
+	/**
+	 *根据部门value查询角色
+	 * @param dValue
+	 * @return
+	 * liangfeng
+	 */
+	List<IcipBusDict> getDpetValue(String dValue);
+	
+	/**
+	 *添加部门
+	 * @param dic
+	 * @throws Exception
+	 * liangfeng
+	 */
+	public void insertDept(IcipBusDict dic)  throws Exception;
+}

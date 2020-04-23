@@ -1,0 +1,233 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head th:include="commonTemplate :: header">
+</head>
+<body class="bgcolor-body">
+
+<div class="lyear-layout-container">
+
+	<!--左侧导航-->
+	<div th:replace="commonTemplate :: leftMenus"></div>
+	<!--End 左侧导航-->
+
+	<!--头部信息-->
+	<div th:replace="commonTemplate :: headerDiv"></div>
+	<!--End 头部信息-->
+
+	<!--页面主要内容-->
+	<main class="lyear-layout-content">
+
+		<div class="container-fluid" style="margin-top: -90px">
+			<!--<form  th:action="@{disc/toDisList.ht}"  id="frm" name="frm" method="post" th:object="${notice}" onsubmit="return check();">-->
+			<form id="DiscForm" th:action="@{disc/saveOrUpdateDisc.ht}" method="post">
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="card">
+							<div class="card-body">
+								<div class="table-responsive">
+									<div class="table6">
+										<input type="hidden" name="tuDiId" id="tuDiId" th:value="${discInfo.tuDiId}" />
+										<input type="hidden" name="prompt" id="prompt" th:value="${prompt}" />
+										<table class="table table-bordered">
+											<tr>
+												<td>
+													<div class="left">
+														<div class="td1">
+															<span style="color: red;">*</span><span>优惠名称：</span>
+														</div>
+														<div class="td2">
+															<span class="col-xs-5">
+																<input type="text"
+																		 onKeypress="javascript:if(event.keyCode == 32)event.returnValue = false;"
+																		 class="form-control" id="tuDiName"
+																		 onkeyup="check();" name="tuDiName"
+																		 th:value="${discInfo.tuDiName}" />
+															</span>
+														</div>
+													</div>
+												</td>
+											</tr>
+											<tr>
+												<td>
+													<div class="left">
+														<div class="td1">
+															<span style="color: red;">*</span><span>优惠类型：</span>
+														</div>
+														<div class="td2">
+															<div class="col-xs-5">
+																<select class="form-control" id="tuDiType"
+																		name="tuDiType"
+																		onchange="tuDiReduceChoice(this.value)">
+																	<option></option>
+																	<option value="0">物质优惠</option>
+																	<option value="1">金额优惠</option>
+																</select>
+															</div>
+														</div>
+													</div>
+												</td>
+											</tr>
+											<tr>
+												<td>
+													<div class="left">
+														<div class="td1">
+															<span style="color: red;">*</span><span>优惠详情：</span>
+														</div>
+														<div class="td2">
+															<span class="col-xs-5">
+																<input type="text"
+																		 onKeypress="javascript:if(event.keyCode == 32)event.returnValue = false;"
+																		 class="form-control" id="tuDiThing"
+																		 onkeyup="check();" name="tuDiThing"
+																		 th:value="${discInfo.tuDiThing}" />
+															</span>
+														</div>
+													</div>
+												</td>
+											</tr>
+											<tr style="display: none;" id="tuDiReduceTr">
+												<td>
+													<div class="left">
+														<div class="td1">
+															<span style="color: red;">*</span><span>优惠金额：</span>
+														</div>
+														<div class="td2">
+															<span>
+																<input type="text"
+																		 onKeypress="javascript:if(event.keyCode == 32)event.returnValue = false;"
+																		 class="radius3 input" id="tuDiReduce"
+																		 onkeyup="check();" name="tuDiReduce"
+																		 th:value="${discInfo.tuDiReduce}" />
+															</span>
+														</div>
+													</div>
+												</td>
+											</tr>
+										</table>
+										<div>
+											<span>
+												<input value="保存" type="submit" class="btn btn-success btn-w-lg" />
+											</span>
+											<span class="grey">
+												<input value="取消" type="button" class="btn btn-secondary btn-w-lg" onclick="returnBack();" />
+											</span>
+											<span id="del"></span>
+										</div>
+									</div>
+								</div>
+
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</form>
+		</div>
+
+	</main>
+	<!--End 页面主要内容-->
+</div>
+
+
+<script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+<script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+<script type="text/javascript"  src="js/bootstrap-table/bootstrap-table.js"  th:src="@{static/js/bootstrap-table/bootstrap-table.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/bmsAjax.js}"></script>
+<script type="text/javascript" src="js/bootstrap.min.js" th:src="@{static/js/bootstrap.min.js}"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"  th:src="@{js/bootstrap.min.js}"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap-3.0.0/js/bootstrap-datepicker.min.js" th:src="@{js/bootstrap-datepicker.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap-3.0.0/js/bootstrap-datepicker.zh-CN.min.js" th:src="@{js/bootstrap-datepicker.zh-CN.min.js}"></script>
+<script type="text/javascript" src="js/main.min.js" th:src="@{js/main.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/layer/layer.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/My97DatePicker/WdatePicker.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/validata.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/validate/jquery.validate.min.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/treeview/jquery.treeview.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/form/jquery.form.js}"></script>
+	<script th:inline="javascript"> 
+		$(function(){
+			var tuDiId = $("#tuDiId").val();
+			setValidate($("#DiscForm"),{
+				rules: {
+					tuDiName:{required: true, maxlength: 20},
+					tuDiType:{required: true},
+					tuDiThing:{required: true},
+					tuDiReduce:{required: true,tuDiReduce: true}
+				},
+				messages:{
+					tuDiName:{required: "必填",maxlength: "最多20个字符，太长"},
+					tuDiThing:{required: "必填"},
+					tuDiType:{required: "必选"},
+					tuDiReduce:{required: "必填"}
+				}
+
+			});
+		/*===========================================数字校验=================================*/
+			$.validator.addMethod("tuDiReduce", function(value, element) {
+				var length = value.length;
+				var tuDiReduce = /^\d+$|^\d*\.\d+$/g
+				return this.optional(element) || (tuDiReduce.test(value));
+			}, "必须是数字");
+		});
+		
+		$(function(){
+			var prompt=$("#prompt").val();
+			if(prompt != ""){
+				_alert(prompt);
+			}
+			
+		})
+		
+		function returnBack(){
+			/*var url = [[@{'/disc/toDisList.ht'}]];
+			locationHref(url);*/
+			location.href=basePath+"/disc/toDisList.ht";
+		} 
+		/* 优惠类型默认选中 */
+		$(function () {
+			var tuDiType=[[${discInfo.tuDiType}]];
+			$("#tuDiType").val(tuDiType);
+		});
+		
+		$(function(){
+			$("#tuDiType").select2({
+				placeholder : "请选择优惠类型"
+			});
+		});
+		
+		$(function (){
+			var tuDiType = $("#tuDiType").val();
+			if (tuDiType =='1') {
+				tuDiReduceTr.style.display = '';
+			}else {
+				tuDiReduceTr.style.display = 'none';
+				$("#tuDiReduce").val("0");
+			}
+		})
+		
+		function tuDiReduceChoice(tuDiTypeSelect){
+			if (tuDiTypeSelect != '') {
+				var tuDiType = $("#tuDiType").val();
+				if (tuDiType =='1') {
+					tuDiReduceTr.style.display = '';
+					$("#tuDiReduce").val("");
+				}else {
+					tuDiReduceTr.style.display = 'none';
+					$("#tuDiReduce").val("0");
+				}
+			}
+		}
+		function check () {
+			
+		}
+		</script>
+</body>
+</html>

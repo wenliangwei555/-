@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.baisee.BaiseeDiscountMapper">
+	<resultMap type="cn.baisee.oa.model.tuition.TuitionDiscount"
+		id="discMap">
+		<id column="TU_DI_ID" property="tuDiId" jdbcType="VARCHAR" />
+		<result column="TU_DI_NAME" property="tuDiName"
+			jdbcType="VARCHAR" />
+		<result column="TU_DI_TYPE" property="tuDiType"
+			jdbcType="VARCHAR" />
+		<result column="TU_DI_THING" property="tuDiThing"
+			jdbcType="VARCHAR" />
+		<result column="TU_DI_REDUCE" property="tuDiReduce"
+			jdbcType="VARCHAR" />
+		<result column="UPDATE_TIME" property="tuDiUpdateTime"
+			jdbcType="VARCHAR" />
+	</resultMap>
+	<!-- 分页查询优惠信息 -->
+	<select id="getDiscInfo" resultMap="discMap"
+		parameterType="cn.baisee.oa.model.tuition.TuitionDiscount">
+		SELECT TU_DI_ID,TU_DI_NAME,TU_DI_TYPE,TU_DI_THING,TU_DI_REDUCE,UPDATE_TIME FROM
+		baisee_tuition_discount
+		<where>
+			<if test="tuDiType != null and tuDiType !=''">
+				and TU_DI_TYPE=#{tuDiType, jdbcType=VARCHAR}
+			</if>
+			<if test="tuDiThing != null and tuDiThing != ''">
+				and TU_DI_THING like "%"#{tuDiThing, jdbcType=VARCHAR}"%"
+			</if>
+		</where>
+	</select>
+	<!-- 新增优惠信息 -->
+	<insert id="addDiscount"
+		parameterType="cn.baisee.oa.model.tuition.TuitionDiscount">
+		<selectKey resultType="java.lang.String" order="AFTER"
+			keyProperty="tuDiId">
+			SELECT TU_DI_ID FROM baisee_tuition_discount
+			ORDER BY TU_DI_ID DESC LIMIT 1
+		</selectKey>
+		insert into baisee_tuition_discount
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			TU_DI_ID,
+			<if test="tuDiName != null and tuDiName != ''">
+				TU_DI_NAME,
+			</if>
+			<if test="tuDiType != null and tuDiType != ''">
+				TU_DI_TYPE,
+			</if>
+			<if test="tuDiThing != null and tuDiThing != ''">
+				TU_DI_THING,
+			</if>
+			<if test="tuDiReduce != null and tuDiReduce != ''">
+				TU_DI_REDUCE,
+			</if>
+			UPDATE_TIME
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			pkval('TUDI'),
+			<if test="tuDiName != null and tuDiName != ''">
+				#{tuDiName,jdbcType=VARCHAR},
+			</if>
+			<if test="tuDiType != null and tuDiType != ''">
+				#{tuDiType, jdbcType=VARCHAR},
+			</if>
+			<if test="tuDiThing != null and tuDiThing != ''">
+				#{tuDiThing, jdbcType=VARCHAR},
+			</if>
+			<if test="tuDiReduce != null and tuDiReduce != ''">
+				#{tuDiReduce, jdbcType=VARCHAR},
+			</if>
+			DATE_FORMAT(now(),'%Y%m%d%H%i%s')
+		</trim>
+	</insert>
+	<!-- 新增学费优惠关联 -->
+	<insert id="insertDiscountTyition" parameterType="map">
+		INSERT INTO baisee_tuition_rule_discount
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="tuId != null and tuId != ''">
+				TU_ID,
+			</if>
+			<if test="tuDiId != null and tuDiId != ''">
+				TU_DI_ID
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="tuId != null and tuId != ''">
+				#{tuId, jdbcType=VARCHAR},
+			</if>
+			<if test="tuDiId != null and tuDiId != ''">
+				#{tuDiId, jdbcType=VARCHAR}
+			</if>
+		</trim>
+	</insert>
+	<!-- 修改学费优惠关联 -->
+	<update id="updateTuitionDiscount" parameterType="map">
+		UPDATE baisee_tuition_rule_discount
+		<set>
+			<if test="tuDiId != null and tuDiId != ''">
+				TU_DI_ID=#{tuDiId, jdbcType=VARCHAR}
+			</if>
+		</set>
+		<where>
+			<if test="tuId != null and tuId != ''">
+				TU_ID = #{tuId, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</update>
+	<!-- 根据ID查询信息 -->
+	<select id="getDiscountsById" resultMap="discMap"
+		parameterType="map">
+		SELECT TU_DI_ID,TU_DI_NAME,TU_DI_TYPE,TU_DI_THING,TU_DI_REDUCE FROM baisee_tuition_discount
+		<where>
+			<if test="tuDiId != '' and tuDiId != null">
+				TU_DI_ID=#{tuDiId, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<update id="updateDiscount"
+		parameterType="cn.baisee.oa.model.BaiseeDiscounts">
+		update baisee_tuition_discount
+		<set>
+			<if test="tuDiName != null and tuDiName != ''">
+				TU_DI_NAME=#{tuDiName,jdbcType=VARCHAR},
+			</if>
+			<if test="tuDiType != null and tuDiType != ''">
+				TU_DI_TYPE=#{tuDiType, jdbcType=VARCHAR},
+			</if>
+			<if test="tuDiThing != null and tuDiThing != ''">
+				TU_DI_THING=#{tuDiThing, jdbcType=VARCHAR},
+			</if>
+			<if test="tuDiReduce != null and tuDiReduce != ''">
+				TU_DI_REDUCE=#{tuDiReduce, jdbcType=VARCHAR},
+			</if>
+			UPDATE_TIME=DATE_FORMAT(now(),'%Y%m%d')
+		</set>
+		<where>
+			<if test="tuDiId != null and tuDiId != ''">
+				TU_DI_ID=#{tuDiId, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</update>
+	<!-- 据根据学费规则id获取优惠规则ID -->
+	<select id="getTuDiIdByTuId" parameterType="map"
+		resultType="java.lang.String">
+		SELECT TU_DI_ID AS tuDiId FROM baisee_tuition_rule_discount
+		<where>
+			<if test="tuId != null and tuId != ''">
+				TU_ID=#{tuId, jdbcType=VARCHAR}
+			</if>
+			<if test="tuDiId != null and tuDiId != ''">
+				TU_DI_ID=#{tuDiId, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	<!-- 通过ID删除优惠信息 -->
+	<delete id="delDisc" parameterType="map">
+		<if test="tuDiId != null and tuId != ''">
+			DELETE FROM baisee_tuition_discount
+			<where>
+				TU_DI_ID=#{tuDiId,jdbcType=VARCHAR}
+			</where>
+		</if>
+	</delete>
+	<!-- 根据学费ID删除学费 优惠关联表 -->
+	<delete id="delTuitionDisc" parameterType="map">
+		<if test="tuId != null and tuId != ''">
+			DELETE FROM baisee_tuition_rule_discount
+			<where>
+				TU_ID=#{tuId, jdbcType=VARCHAR}
+			</where>
+		</if>
+	</delete>
+	<!-- 根据优惠ID删除学费 优惠关联表 -->
+	<delete id="delTuitionDiscByTuDiId" parameterType="map">
+		<if test="tuDiId != null and tuDiId != ''">
+			DELETE FROM baisee_tuition_rule_discount
+			<where>
+				TU_DI_ID=#{tuDiId, jdbcType=VARCHAR}
+			</where>
+		</if>
+	</delete>
+	<!-- 查询所有的优惠规则 -->
+	<select id="getDiscount" resultMap="discMap">
+		SELECT TU_DI_NAME,TU_DI_ID,TU_DI_TYPE
+		FROM baisee_tuition_discount
+	</select>
+</mapper>

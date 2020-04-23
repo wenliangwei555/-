@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+	<head th:include="commonTemplate :: header">
+	</head>
+	<body class="bgcolor-body">
+		<div id="page">
+			<div th:include="commonTemplate :: headerDiv"></div>
+			<div id="content" class="layout">
+				<div class="grid-s5m0">
+					<div class="col-main">
+						<div class="main-wrap">
+							<div class="skin-box">
+								<div class="skin-box-bd">
+									<div class="cur-position">
+										<span><a href="javascript:void(0)">打卡管理</a> </span>
+										<span>&gt;</span>
+										<span><a th:href="@{calendar/toCalendarList.ht}">日程管理</a> </span>
+										<span>&gt;</span>
+										<span><a href="javascript:void(0)">新增日程</a></span>
+									</div>
+									<!-- ==================================== 页面内容开始 ============================= -->
+									<div class="cont-box">
+										<div class="JsW skin-box-bd" data-widget-type="tab" data-widget-config="{'activeIndex':0}">
+											<div class="skin-bd-box">
+												<div class="list-table">
+													<div class="list-table-cont">
+														<div class="table6">
+															<form id="calendarForm" th:action="@{calendar/saveCalendar.ht}"  method="post" th:object="${info}" >
+																<input type="hidden" name="cId" id="cId" th:value="${calendar.cId}"  />
+																<table>
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span class="require red">*</span><span>日期：</span>
+																				</div>
+																				<div class="td2">
+																					<span><input style="width: 144px;margin-right: 30px;" type="text" placeholder="请选择日期" class="radius3 input" id="date"  name="date" th:value="${calendar.date}"  onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',readOnly:true})" /></span>
+																				</div>
+																			</div>
+																		</td>
+																	</tr>
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span class="require red">*</span><span>类型：</span>
+																				</div>
+																				<div class="td2">
+																					<span>
+   																						<select th:if="${dic} != null" class="radius3" id="type" name="type" >
+				 																	 		<option></option>
+																							<option th:selected="${calendar.type eq dic.dictValue}"  th:each="dic : ${dic}" th:value="${dic.dictValue}" th:text="${dic.dictDestination}" style="width: 144px;"/>
+																					    </select>
+  																				    </span>
+																				</div>
+																			</div>
+																		</td>
+																	</tr>
+																</table>
+																<div class="redbutton control-button JsW" data-control-type="button" data-control-config="{'buttonCls':'button'}">
+																	<span> <input value="保存" type="submit" class="radius5 button ks-pop-close1" /> </span>
+																	<span class="grey"> <input value="取消" type="button" class="radius5 button ks-pop-close1" onclick="returnBack();"/> </span>
+																	<span id="del"></span>
+																</div>
+															</form>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!-- ============================= 页面内容 结束============================= -->
+								</div>
+							</div>
+						</div>
+					</div>
+					<div th:include="commonTemplate :: leftMenus"></div>
+				</div>
+			</div>
+			<div th:include="commonTemplate :: footer"></div>
+		</div>
+		<div th:include="commonTemplate :: processBar" />
+		<script th:inline="javascript"> 
+		$(function(){
+			setValidate($("#calendarForm"),{
+				rules: {
+					date:{required: true, maxlength: 40,
+						remote:{       
+				              type : "POST",
+				              url : [[@{/calendar/checkDate.ht}]],
+				              cache:false,
+				              async: false,
+				              data : {
+				            	 "date" : function(){return $("#date").val();},
+			                     "cId" : function(){return $("#cId").val();}
+				              },
+				             }   
+			        },
+					type:{required: true}
+				},
+				messages:{
+					date:{required: "必填",maxlength: "超过40，太长",remote:"日程已存在"},
+					type:{required: "必填"},
+					
+				}
+			});
+		});
+		
+		function returnBack(){
+			var url = [[@{'/calendar/toCalendarList.ht'}]];
+			locationHref(url);
+		}
+		</script>
+	</body>
+</html>

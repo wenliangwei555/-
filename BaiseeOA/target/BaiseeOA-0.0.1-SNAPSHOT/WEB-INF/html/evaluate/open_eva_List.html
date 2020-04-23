@@ -1,0 +1,237 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- <html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"> -->
+	<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<!-- <head th:include="commonTemplate :: header"> -->
+<head th:replace="commonTemplate :: header">
+</head>
+<!-- <style>
+.test {
+	width: 170px;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	display: inline-block;
+	cursor: pointer;
+}
+</style> -->
+
+<body><!--  class="bgcolor-body" -->
+<div class="lyear-layout-web">
+		<div class="lyear-layout-container">
+
+			<!--左侧导航-->
+			<div th:replace="commonTemplate :: leftMenus"></div>
+			<!--End 左侧导航-->
+
+			<!--头部信息-->
+			<div th:replace="commonTemplate :: headerDiv"></div>
+			<!--End 头部信息-->
+
+			<!--页面主要内容-->
+			<main class="lyear-layout-content">
+
+			<div class="container-fluid">
+<!-- 			<div class="cur-position"> -->
+<!-- 									<span><a href="javascript:void(0);">评价问题信息管理</a> </span> <span>&gt;</span> -->
+<!-- 									<span><a th:href="@{eva/selectTgesPage.ht}">开启评价列表</a> </span> -->
+<!-- 								</div> -->
+				<form th:action="@{eva/saveCreTeb.ht}" id="frm" name="frm" method="post">
+				
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="card">
+								<div class="card-toolbar clearfix ">
+									<div class="toolbar-btn-action">
+										<a th:href="@{eva/selectListPage.ht}" class="btn btn-default m-r-5" title="返回上一级" >
+											<span class="mdi mdi-undo-variant"></span>返回上一级
+										</a>
+									</div>
+								</div>
+										<div class="card-body">
+											<div class="table-responsive">
+<!-- 												<div class="table2"> -->
+													<table class="table table-bordered">
+											<thead>
+												<tr>
+													<th>标题</th>
+													<th>评价班级</th>
+													<th>评价对象名</th>
+													<th>开启时间</th>
+													<th>开启人员</th>
+													<th>操作</th>
+												</tr>
+											</thead>
+											<tbody>
+														<tr
+															th:if="${pageResult.list == null || pageResult.list.size() == 0}">
+
+														</tr>
+														<tr th:each="info:${pageResult.list}"
+															th:if="${pageResult.list != null &amp;&amp; pageResult.list.size() > 0}"
+															onmouseover="this.style.backgroundColor='#e3f1ff'"
+															onmouseout="this.style.backgroundColor='#ffffff'">
+															<td class="col3"><span style="cursor: pointer"
+																th:text="${info.TitleName}"></span></td>
+															<td class="col4"><span style="cursor: pointer"
+																th:text="${info.claName}"></span></td>
+															<td class="col4"><span style="cursor: pointer"
+																th:text="${info.empName}"></span></td>
+															<td class="col5"><span style="cursor: pointer"
+																baisee:fmt="yyyy-MM-dd HH:mm:ss,${info.creationTime}"></span>
+															</td>
+															<td class="col5"><span style="cursor: pointer"
+																th:text="${info.openName}"></span></td>
+															<td class="col5"><a style="color: red;"
+																href="javascript:void(0);"
+																th:onclick="'closeEva(\'' + ${info.ecID} + '\')'">关闭评价</a>
+															</td>
+														</tr>
+														</tbody>
+													</table>
+<!-- 												</div> -->
+											</div>
+											<div th:include="commonTemplate :: pageBox"></div>
+										</div>
+									</div>
+									</div>
+										</div>
+								</form>
+			</div>
+
+			</main>
+			<!--End 页面主要内容-->
+		</div>
+	</div>
+	<!-- <div id="page">
+		<div th:include="commonTemplate :: headerDiv"></div>
+		<div id="content" class="layout">
+			<div class="grid-s5m0">
+				============================= 页面内容 开始=============================
+				<div class="col-main">
+					<div class="main-wrap">
+						<div class="skin-box">
+							<div class="skin-box-bd">
+								<div class="cur-position">
+									<span><a href="javascript:void(0);">评价问题信息管理</a> </span> <span>&gt;</span>
+									<span><a th:href="@{eva/selectTgesPage.ht}">开启评价列表</a> </span>
+								</div>
+								<form th:action="@{eva/saveCreTeb.ht}" id="frm" name="frm"
+									method="post">
+									<div class="cont-box">
+										<div class="search-box">
+											<div class="left">
+												<span class="add JsW"><a
+													th:href="@{eva/selectListPage.ht}" class="ks-pop-nav"
+													title="返回上一级" style="cursor: pointer; color: #ffffff"
+													onmouseover="javascript:this.style.color='#dbdbdb'"
+													onmouseout="javascript:this.style.color='#ffffff'">返回上一级</a>
+												</span>
+											</div>
+										</div>
+										<div class="list-table">
+											<div class="list-table-cont">
+												<div class="table2">
+													<table class="ks-inputall">
+														<tr class="th">
+
+															<td class="col3">标题</td>
+															<td class="col5">评价班级</td>
+															<td class="col6">评价对象名</td>
+															<td class="col6">开启时间</td>
+															<td class="col6">开启人员</td>
+															<td class="col6">操作</td>
+														</tr>
+														<tr
+															th:if="${pageResult.list == null || pageResult.list.size() == 0}">
+
+														</tr>
+														<tr th:each="info:${pageResult.list}"
+															th:if="${pageResult.list != null &amp;&amp; pageResult.list.size() > 0}"
+															onmouseover="this.style.backgroundColor='#e3f1ff'"
+															onmouseout="this.style.backgroundColor='#ffffff'">
+															<td class="col3"><span style="cursor: pointer"
+																th:text="${info.TitleName}"></span></td>
+															<td class="col4"><span style="cursor: pointer"
+																th:text="${info.claName}"></span></td>
+															<td class="col4"><span style="cursor: pointer"
+																th:text="${info.empName}"></span></td>
+															<td class="col5"><span style="cursor: pointer"
+																baisee:fmt="yyyy-MM-dd HH:mm:ss,${info.creationTime}"></span>
+															</td>
+															<td class="col5"><span style="cursor: pointer"
+																th:text="${info.openName}"></span></td>
+															<td class="col5"><a style="color: red;"
+																href="javascript:void(0);"
+																th:onclick="'closeEva(\'' + ${info.ecID} + '\')'">关闭评价</a>
+															</td>
+														</tr>
+													</table>
+												</div>
+											</div>
+											<div th:include="commonTemplate :: pageBox"></div>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+				============================= 页面内容 结束=============================
+				<div th:include="commonTemplate :: leftMenus"></div>
+			</div>
+		</div>
+		<div th:include="commonTemplate :: footer"></div>
+	</div>
+	<div th:include="commonTemplate :: processBar" /> -->
+	<script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+	<script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+	<script type="text/javascript" th:src="@{js/plugins/comm/bmsAjax.js}"></script>
+	<script type="text/javascript" src="js/bootstrap.min.js" th:src="@{static/js/bootstrap.min.js}"></script>
+	<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+	<script type="text/javascript" src="js/bootstrap.min.js"  th:src="@{js/bootstrap.min.js}"></script>
+	<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{js/perfect-scrollbar.min.js}"></script>
+	<script type="text/javascript" src="js/bootstrap-3.0.0/js/bootstrap-datepicker.min.js" th:src="@{js/bootstrap-datepicker.min.js}"></script>
+	<script type="text/javascript" src="js/bootstrap-3.0.0/js/bootstrap-datepicker.zh-CN.min.js" th:src="@{js/bootstrap-datepicker.zh-CN.min.js}"></script>
+	<script type="text/javascript" src="js/main.min.js" th:src="@{js/main.min.js}"></script>
+	<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+	<script type="text/javascript" th:src="@{js/plugins/layer/layer.js}"></script>
+	<script type="text/javascript" th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+	<script type="text/javascript" th:src="@{js/plugins/My97DatePicker/WdatePicker.js}"></script>
+	<script type="text/javascript" th:src="@{js/plugins/comm/validata.js}"></script>
+	<script type="text/javascript"
+			th:src="@{js/plugins/validate/jquery.validate.min.js}"></script>
+	<script type="text/javascript"
+			th:src="@{js/plugins/treeview/jquery.treeview.js}"></script>
+	<script type="text/javascript"
+			th:src="@{js/plugins/form/jquery.form.js}"></script>
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+		/* $(function(){
+			var operationSuccess = $("#operationSuccess").val();
+			if(operationSuccess != ""){
+				_alert(operationSuccess);
+			}
+		}); */
+		
+		function closeEva(ecID) {
+			var logUrl = [[@{'/eva/closeEva.ht?ecId='}]]+ecID;
+			$.ajax({
+				url: logUrl,
+				type:'post',
+				success:function(data){
+					if (data.flag == "success") {
+						_alert("关闭成功");
+						 var succ=[[@{'/eva/selectEvaConPage.ht'}]]; 
+						locationHref(succ);
+					}  else {
+						_alert("关闭失败");
+					}
+				}
+			})
+		}	
+
+	/*]]>*/
+	</script>
+</body>
+</html>

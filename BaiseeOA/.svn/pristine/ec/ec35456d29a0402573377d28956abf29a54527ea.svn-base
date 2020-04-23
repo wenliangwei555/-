@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.baisee.BaiseeLeaveMapper">
+	<!-- 查询请假学生 -->
+	<select id="selectLeaveStu" resultType="cn.baisee.oa.model.student.BaiseeStudentLeave" parameterType="map">
+		SELECT
+		a.id,
+		b.sid,
+		b.S_NAME as sname,
+		(
+			SELECT
+				DICT_DESTINATION
+			FROM
+				baisee_dictionaries
+			WHERE
+				DICT_VALUE = a.rtype
+		) as rtype,
+		  c.C_NAME as cname,
+		  a.reason,
+		  DATE_FORMAT(a.startDate,'%Y-%m-%d %H:%i') as startDate,
+		  DATE_FORMAT(a.endDate,'%Y-%m-%d %H:%i') as endDate,
+		  (select user_name from baisee_user where user_id = a.userId) as userName
+		FROM
+		baisee_leave a
+		LEFT JOIN baisee_student b ON a.sid = b.sid
+		LEFT JOIN baisee_class c ON c.cid = b.cid
+		<where>
+		<choose>
+			<when test="isleave != null and isleave != '' and isleave==0 ">
+				and (now()  between a.startDate and a.endDate or  a.startDate > now())
+			</when>
+			<when test="isleave != null and isleave != '' and isleave==1 ">
+				and now() >  a.endDate 
+			</when>
+		</choose >
+		<if test="itemlableSearch != null and itemlableSearch != '' and itemlableSearch.length()  &lt;= 3 ">
+			and (
+				b.S_NAME LIKE "%"#{itemlableSearch,jdbcType=VARCHAR}"%"
+				OR
+				c.C_NAME = #{itemlableSearch,jdbcType=VARCHAR})
+		</if>
+		<if test="id != null and id != '' ">
+			and a.id =  #{id,jdbcType=VARCHAR}
+		</if>
+		</where>
+		order by a.updateTime desc
+	</select>
+	<insert id="insertLeaveStu" parameterType="map">
+		INSERT INTO baisee_leave ( sid, rtype, reason, startDate, endDate,userId,updateTime) 
+		VALUES
+		(#{sid, jdbcType=VARCHAR},
+		#{rtype, jdbcType=VARCHAR},
+		#{reason, jdbcType=VARCHAR},
+		#{startDate, jdbcType=VARCHAR},
+		#{endDate, jdbcType=VARCHAR},
+		#{userId, jdbcType=VARCHAR},
+		now()) 
+	</insert>
+	<update id="updateleaveStu" parameterType="map">
+		UPDATE baisee_leave SET 
+		sid=#{sid, jdbcType=VARCHAR},
+		rtype=#{rtype, jdbcType=VARCHAR},
+		reason=#{reason, jdbcType=VARCHAR},
+		startDate=#{startDate, jdbcType=VARCHAR},
+		endDate=#{endDate, jdbcType=VARCHAR},
+		userId = #{userId, jdbcType=VARCHAR}
+		WHERE id=#{id, jdbcType=VARCHAR};
+	</update>
+	<delete id="delleaveStu" parameterType="map">
+		<if test="id !=null">
+			delete from baisee_leave
+			<where>
+				id=#{id, jdbcType=VARCHAR}
+			</where>
+		</if>
+	</delete>
+</mapper>

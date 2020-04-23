@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="commonTemplate :: header">
+</head>
+<body>
+<div class="lyear-layout-web">
+	<div class="lyear-layout-container">
+
+		<!--左侧导航-->
+		<div th:replace="commonTemplate :: leftMenus"></div>
+		<!--End 左侧导航-->
+
+		<!--头部信息-->
+		<div th:replace="commonTemplate :: headerDiv"></div>
+		<!--End 头部信息-->
+
+		<!--页面主要内容-->
+		<main class="lyear-layout-content">
+			<div class="container-fluid">
+				<form id="basefrm" name="basefrm"  th:action="@{user/toSaveOrAddUser.ht}" method="post"  >
+					<table class="table">
+						<tbody>
+						<tr>
+							<td style="text-align: right;width: 43%;">
+								<label class="col-xs-12" for="cType"><span style="color: red;" class="require">*</span>选择用户:</label>
+								<input type="hidden" class="radius3 input" id="lastUpdateTime" name="lastUpdateTime" th:value="${baiseeUser.lastUpdateTime}"/>
+							</td>
+							<td>
+								<div class="col-xs-12">
+									<select id="userId" name="userId" size="1" style="width: 200px;" class="form-control">
+										<option></option>
+										<option th:each="info:${listName}" th:value="${info.empId}" th:text="${info.empName}"></option>
+									</select>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td style="text-align: right">
+								<label class="col-xs-12"><span style="color: red;" class="require">*</span>输入登录名称:</label>
+							</td>
+							<td>
+								<div class="form-group">
+									<div class="col-xs-12">
+										<input type="text" class="form-control" id="loginName" name="loginName" size="1" style="width: 200px;" th:value="${baiseeUser.loginName}" placeholder="请输入登录名称"  />
+									</div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td style="text-align: right">
+								<label class="col-xs-12"><span style="color: red;" class="require">*</span>角色名称:</label>
+							</td>
+							<td>
+								<div class="form-group">
+									<div class="col-xs-12">
+										<select class="form-control" id="roleName" name="roleName" size="1" style="width: 200px;">
+											<option></option>
+											<option th:each="t : ${roles}" th:value="${t.roleId}" th:text="${t.roleName}" ></option>
+										</select>
+									</div>
+								</div>
+							</td>
+						</tr>
+						</tbody>
+					</table>
+					<div
+							style="width: 100%;text-align: center;"
+							class="redbutton control-button JsW"
+							data-control-type="button"
+							data-control-config="{'buttonCls':'button'}">
+						<span> <input value="保存" type="submit"
+									  style="width: 150px;line-height: 30px;border: 1px solid lightskyblue;background-color: dodgerblue;color: white;"/></span>
+						<span class="grey"> <input value="取消" type="button"  onclick="returnBack();"
+												   style="width: 150px;line-height: 30px;border: 1px solid #F9AF2E;background-color: #FFEA77;color: white;"/>
+						</span> <span id="del"></span>
+					</div>
+				</form>
+			</div>
+		</main>
+		<!--End 页面主要内容-->
+	</div>
+</div>
+<script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+<script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/layer/layer.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/form/jquery.form.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/validate/jquery.validate.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/My97DatePicker/WdatePicker.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+	/*<![CDATA[*/
+	var basePath = /*[[@{/}]]*/;
+	/*]]>*/
+</script>
+<script th:inline="javascript">
+
+	$(function(){
+		setValidate($("#basefrm"),{
+			rules: {
+				userId:{required: true,
+					remote:{
+						type : "POST",
+						url : basePath+"/user/VerificationEmpID.ht",
+		cache:false,
+				async: false,
+				data : {
+			"userId" : function(){return $("#userId").val();}
+		},
+	}
+	},
+		loginName:{required: true, maxlength: 21,minlength:2,loginNameEnglish:true,
+				remote:{
+			type : "POST",
+					url : basePath+"/user/VerificationLoginName.ht",
+			cache:false,
+					async:false,
+					data : {
+				"loginName" : function(){return $("#loginName").val();}
+			},
+		}
+		},
+
+		loginPwd:{required: true ,maxlength: 21,minlength:6},
+		roleName:{required: true},
+		userType:{required: true}
+	},
+		messages:{
+			userId:{required: "*请选择用户",remote: "已有该用户！请重新选择"},
+			loginName:{required: "*请填写登录名称",maxlength: "*最多输入21位字符",minlength:"*最少2位字符",remote: "已有该登录名称！请重新填写"},
+			loginPwd:{required: "*请填写登录密码",maxlength: "*最多输入21位字符",minlength:"*密码最少输入6位字符"},
+			roleName:{required: "*请选择角色"},
+			userType:{required: "*请选择部门籍"}
+		}
+	});
+
+		/* =========================================登录名称校验(只能输入英文字母)======================================================= */
+		$.validator.addMethod("loginNameEnglish", function(value, element) {
+			var length = value.length;
+			var loginNameEnglish = /^[a-zA-Z]{2,21}$/;
+			return this.optional(element) || (loginNameEnglish.test(value));
+		}, "*登录名称只能包含英文，长度2~21！");
+
+	});
+
+
+	function returnBack(){
+		var url = basePath+'/user/toUserList.ht';
+		locationHref(url);
+	};
+</script>
+</body>
+</html>

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="commonTemplate :: header">
+</head>
+
+<body>
+	<div class="lyear-layout-web">
+		<div class="lyear-layout-container">
+
+			<!--左侧导航-->
+			<div th:replace="commonTemplate :: leftMenus"></div>
+			<!--End 左侧导航-->
+
+			<!--头部信息-->
+			<div th:replace="commonTemplate :: headerDiv"></div>
+			<!--End 头部信息-->
+
+			<!--页面主要内容-->
+			<main class="lyear-layout-content">
+
+			<div class="container-fluid">
+				<form th:action="@{apply/showApplicants.ht}"
+					onsubmit="return check();" id="frm" name="frm" method="post">
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="card">
+								<div class="card-toolbar clearfix ">
+									<div class="card-toolbar clearfix ">
+										<div class="pull-right search-bar">
+											<div class="input-group">
+												<input type="text" th:value="${itemlableSearch}"
+													id="itemlableSearch" name="itemlableSearch"
+													placeholder="请输入姓名/手机号/班级" class="form-control" />
+
+												<div class="input-group-btn">
+													<input class="btn btn-success"
+														th:onclick="'stuAuditionStartTime()'" id="search-btn1"
+														type="submit" aria-haspopup="true" th:value="查询"
+														aria-expanded="false" />
+
+												</div>
+											</div>
+										</div>
+										<div class="pull-right search-bar">
+											<span><select name="areas" id="areas"
+												class="form-control">
+													<option value="" selected="selected">全部区县</option>
+													<option value="130402" th:if="${areas} eq 130402"
+														selected="selected">邯山区</option>
+													<option value="130402" th:if="${areas} ne 130402">邯山区</option>
+													<option value="130403" th:if="${areas} eq 130403"
+														selected="selected">丛台区</option>
+													<option value="130404" th:if="${areas} eq 130404"
+														selected="selected">复兴区</option>
+													<option value="130406" th:if="${areas} eq 130406"
+														selected="selected">峰峰矿区</option>
+													<option value="130421" th:if="${areas} eq 130421"
+														selected="selected">邯郸县</option>
+													<option value="130423" th:if="${areas} eq 130423"
+														selected="selected">临漳县</option>
+													<option value="130424" th:if="${areas} eq 130424"
+														selected="selected">成安县</option>
+													<option value="130425" th:if="${areas} eq 130425"
+														selected="selected">大名县</option>
+													<option value="130426" th:if="${areas} eq 130426"
+														selected="selected">涉 县</option>
+													<option value="130427" th:if="${areas} eq 130427"
+														selected="selected">磁 县</option>
+													<option value="130428" th:if="${areas} eq 130428"
+														selected="selected">肥乡县</option>
+													<option value="130429" th:if="${areas} eq 130429"
+														selected="selected">永年县</option>
+													<option value="130430" th:if="${areas} eq 130430"
+														selected="selected">邱 县</option>
+													<option value="130431" th:if="${areas} eq 130431"
+														selected="selected">鸡泽县</option>
+													<option value="130432" th:if="${areas} eq 130432"
+														selected="selected">广平县</option>
+													<option value="130433" th:if="${areas} eq 130433"
+														selected="selected">馆陶县</option>
+													<option value="130434" th:if="${areas} eq 130434"
+														selected="selected">魏 县</option>
+													<option value="130435" th:if="${areas} eq 130435"
+														selected="selected">曲周县</option>
+													<option value="130481" th:if="${areas} eq 130481"
+														selected="selected">武安市</option>
+													<option value="130527" th:if="${areas} eq 130527"
+														selected="selected">南和县</option>
+													<option value="130535" th:if="${areas} eq 130535"
+														selected="selected">临西县</option>
+													<option value="410581" th:if="${areas} eq 410581"
+														selected="selected">林州市</option>
+													<option value="130403" th:if="${areas} ne 130403">丛台区</option>
+													<option value="130404" th:if="${areas} ne 130404">复兴区</option>
+													<option value="130406" th:if="${areas} ne 130406">峰峰矿区</option>
+													<option value="130421" th:if="${areas} ne 130421">邯郸县</option>
+													<option value="130423" th:if="${areas} ne 130423">临漳县</option>
+													<option value="130424" th:if="${areas} ne 130424">成安县</option>
+													<option value="130425" th:if="${areas} ne 130425">大名县</option>
+													<option value="130426" th:if="${areas} ne 130426">涉
+														县</option>
+													<option value="130427" th:if="${areas} ne 130427">磁
+														县</option>
+													<option value="130428" th:if="${areas} ne 130428">肥乡县</option>
+													<option value="130429" th:if="${areas} ne 130429">永年县</option>
+													<option value="130430" th:if="${areas} ne 130430">邱
+														县</option>
+													<option value="130431" th:if="${areas} ne 130431">鸡泽县</option>
+													<option value="130432" th:if="${areas} ne 130432">广平县</option>
+													<option value="130433" th:if="${areas} ne 130433">馆陶县</option>
+													<option value="130434" th:if="${areas} ne 130434">魏
+														县</option>
+													<option value="130435" th:if="${areas} ne 130435">曲周县</option>
+													<option value="130481" th:if="${areas} ne 130481">武安市</option>
+													<option value="130527" th:if="${areas} ne 130527">南和县</option>
+													<option value="130535" th:if="${areas} ne 130535">临西县</option>
+													<option value="410581" th:if="${areas} ne 410581">林州市</option>
+											</select></span>
+										</div>
+										<div class="pull-right search-bar">
+											<span th:if="${#strings.isEmpty(userType)}"> <select
+												name="claStatus" class="form-control">
+													<option value="">--选择学籍--</option>
+													<option value="0" th:if="${claStatus} eq 0"
+														selected="selected">初中</option>
+													<option value="0" th:if="${claStatus} ne 0">初中</option>
+													<option value="1" th:if="${claStatus} eq 1"
+														selected="selected">高中</option>
+													<option value="1" th:if="${claStatus} ne 1">高中</option>
+											</select>
+											</span>
+										</div>
+
+
+										<div class="pull-right search-bar">
+											<div class="input-group">
+												<select name="status" class="form-control">
+													<option value="">--选择状态--</option>
+													<option value="2" th:if="${status} eq 2"
+														selected="selected">正式</option>
+													<option value="2" th:if="${status} ne 2">正式</option>
+													<option value="3" th:if="${status} eq 3"
+														selected="selected">毕业</option>
+													<option value="3" th:if="${status} ne 3">毕业</option>
+													<option value="4" th:if="${status} eq 4"
+														selected="selected">休学</option>
+													<option value="4" th:if="${status} ne 4">休学</option>
+													<option value="5" th:if="${status} eq 5"
+														selected="selected">退学</option>
+													<option value="5" th:if="${status} ne 5">退学</option>
+													<option value="6" th:if="${status} eq 6"
+														selected="selected">开除</option>
+													<option value="6" th:if="${status} ne 6">开除</option>
+													<option value="7" th:if="${status} eq 7"
+														selected="selected">已退费</option>
+													<option value="7" th:if="${status} ne 7">已退费</option>
+												</select>
+											</div>
+										</div>
+										<div class="pull-right search-bar">
+											<div class="input-daterange input-group">
+												<input class="form-control js-datepicker"
+													data-date-format="yyyy-mm-dd" type="text" id="stuStartTime"
+													name="stuStartTime" th:value="${stuStartTime}"
+													placeholder="开始时间" /> <span class="input-group-addon"><i
+													class="mdi mdi-chevron-right"></i></span> <input
+													class="form-control js-datepicker"
+													data-date-format="yyyy-mm-dd" type="text" id="stuEndTime"
+													name="stuEndTime" th:value="${stuEndTime}"
+													placeholder="结束时间" />
+											</div>
+										</div>
+										<a th:href="@{apply/toAddApplicants.ht}"
+											class="btn btn-success m-r-5"> <i class="mdi mdi-check"></i>新增
+										</a>
+										<div class="modal fade" tabindex="-1" role="dialog"
+											aria-labelledby="gridSystemModalLabel" id="gridSystemModal">
+											<div class="modal-dialog" role="document">
+												<div class="modal-content">
+													<div class="modal-header">
+														<button type="button" class="close" data-dismiss="modal"
+															aria-label="Close">
+															<span aria-hidden="true">&times;</span>
+														</button>
+														<h4 class="modal-title" id="gridSystemModalLabel">班级合并</h4>
+													</div>
+													<div class="col-md-6 col-md-offset-5">
+														<div class="td1">
+															<span class="red">*</span><span>选择班级：</span> <input
+																type="hidden" id="id" name="id" th:value="${ids}" />
+														</div>
+														<div class="td2">
+															<div class="control-css3select css3select-icon-hide">
+																<select name="claId" id="claId" class="radius3">
+																	<option th:each="info:${list}" th:value="${info.cId}"
+																		th:text="${info.cName}"></option>
+																</select>
+															</div>
+														</div>
+													</div>
+													<div class="modal-footer">
+														<button type="button" class="btn btn-default"
+															data-dismiss="modal">关闭</button>
+														<a type="button" class="btn btn-primary">点击保存</a>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="card-body">
+									<div class="table-responsive">
+										<table class="table table-bordered">
+											<thead>
+												<tr>
+													<td class="col3">姓名 <input type="hidden"
+														th:value="${operationSuccess}" /> <input type="hidden"
+														name="succ" id="succ" th:value="${succ}" />
+													</td>
+													<td class="col5">性别</td>
+													<td class="col6">手机号</td>
+													<td class="col8">报名时间</td>
+													<td class="col9">所属地区</td>
+													<td class="col9">是否退费</td>
+													<td class="col11">操作</td>
+												</tr>
+											</thead>
+											<tbody>
+												<tr th:each="info:${pageResult.list}"
+													th:if="${pageResult.list != null &amp;&amp; pageResult.list.size() > 0}">
+													<td class="col3"><span style="cursor: pointer"
+														th:onclick="'edit(\'' + ${info.id} + '\')'"
+														th:text="${info.stuName}"></span></td>
+													<td class="col1"><span style="cursor: pointer"
+														title="点击可编辑" th:onclick="'edit(\'' + ${info.id} + '\')'"
+														th:if="${info.sex == '1'}" th:text="女"></span> <span
+														style="cursor: pointer" title="点击可编辑"
+														th:onclick="'edit(\'' + ${info.id} + '\')'"
+														th:if="${info.sex == '0'}" th:text="男"></span></td>
+													<td class="col4"><span style="cursor: pointer"
+														th:onclick="'edit(\'' + ${info.id} + '\')'"
+														th:text="${info.stuMobile}"></span></td>
+													<td class="col4"><span
+														style="cursor: pointer; white-space: nowrap;"
+														th:onclick="'edit(\'' + ${info.id} + '\')'"
+														baisee:fmt="yyyy-MM-dd,${info.stuAuditionStartTime}"></span></td>
+													<td class="col4"><span style="cursor: pointer"
+														th:onclick="'edit(\'' + ${info.id} + '\')'"
+														th:text="${info.province}"></span></td>
+													<td class="col4"><span th:if="${info.status} == 0">
+															<span style="cursor: pointer; color: red" th:text="是"></span>
+													</span> <span th:if="${info.status} == 1"> <span
+															style="cursor: pointer" th:text="否"></span>
+													</span></td>
+													<td><span style="margin-right: 30px;" class="add JsW"
+														baisee:ctrl="YBMXSGL_YJ" th:if="${info.status} == 1">
+															<a th:onclick="'updateStatus(\'' + ${info.id} + '\')'"
+															class="ks-pop-nav" title="点击预约结束"
+															style="cursor: pointer; color: red;">预约结束</a>
+													</span> <span style="margin-right: 30px;" class="add JsW"
+														baisee:ctrl="YBMXSGL_ZST"> <a
+															th:onclick="'toFor(\'' + ${info.id} + '\')'"
+															class="ks-pop-nav" title="转试听"
+															style="cursor: pointer; color: red">转试听</a>
+													</span> <span style="margin-right: 30px;" class="add JsW"
+														baisee:ctrl="YBMXSGL_YJ"> <a
+															th:onclick="'PayPrepayment(\'' + ${info.id} + '\')'"
+															class="ks-pop-nav" title="点击预缴费用"
+															style="cursor: pointer; color: blue;">预缴</a>
+													</span> <span style="margin-right: 30px;" class="add JsW"
+														baisee:ctrl="YBMXSGL_YJ"> <a
+															th:onclick="'backPayPrepayment(\'' + ${info.id} + '\')'"
+															class="ks-pop-nav" title="点击退预缴费用"
+															style="cursor: pointer; color: blue;">退预缴费</a>
+													</span></td>
+												</tr>
+
+											</tbody>
+										</table>
+									</div>
+								<!--	<ul class="pagination" th:if="${pageResult != null}"
+										th:object="${pageResult}">
+										<li><a href="javascript:void(0);"
+											th:onclick="*{hasPreviousPage} ? 'go(1)' : 'return false;'">首页</a></li>
+										<li><a href="javascript:void(0);"
+											th:onclick="*{hasPreviousPage} ? 'go(' + *{prePage} + ')' : 'return false;'">上一页</a></li>
+										<li><a href="javascript:void(0);"
+											th:onclick="*{hasNextPage} ? 'go(' + *{nextPage} + ')' : 'return false;'">下一页</a></li>
+										<li><a href="javascript:void(0);"
+											th:onclick="*{hasNextPage} ? 'go(' + *{pages} + ')' : 'return false;'">末页</a></li>
+										<li><a href="javascript:void(0);"
+											onclick="go($('#pagenumber').val());">跳转至</a></li>
+										<li><a href="javascript:void(0);"><input name="pageNum"
+												id="pagenumber" th:value="*{pageNum}" />/<span id="_pages"
+												th:text="*{pages == 0} ? 1 : *{pages}"></span></a></li>
+										<li><a href="javascript:void(0);">页</a></li>
+									</ul>-->
+									<ul class="pagination" th:if="${pageResult != null}"
+										th:object="${pageResult}">
+										<li><a href="javascript:void(0);"
+											   th:onclick="*{hasPreviousPage} ? 'go(1)' : 'return false;'">首页</a></li>
+										<li><a href="javascript:void(0);"
+											   th:onclick="*{hasPreviousPage} ? 'go(' + *{prePage} + ')' : 'return false;'">上一页</a></li>
+										<li><a href="javascript:void(0);"
+											   th:onclick="*{hasNextPage} ? 'go(' + *{nextPage} + ')' : 'return false;'">下一页</a></li>
+										<li><a href="javascript:void(0);"
+											   th:onclick="*{hasNextPage} ? 'go(' + *{pages} + ')' : 'return false;'">末页</a></li>
+										<li><a href="javascript:void(0);"
+											   onclick="go($('#pagenumber').val());">跳转至</a></li>
+										<li><a href="javascript:void(0)"><input name="pageNum"
+																id="pagenumber" th:value="*{pageNum}" />/<span id="_pages"
+																											   th:text="*{pages == 0} ? 1 : *{pages}"></span></a></li>
+										<li><a href="javascript:void(0)">页</a></li>
+									</ul>
+
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</form>
+			</div>
+
+			</main>
+			<!--End 页面主要内容-->
+		</div>
+	</div>
+	<script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+	<script type="text/javascript" th:src="@{js/plugins/comm/bmsAjax.js}"></script>
+	<script type="text/javascript" src="js/bootstrap.min.js" th:src="@{static/js/bootstrap.min.js}"></script>
+	<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+	<script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+	<script type="text/javascript" src="js/bootstrap.min.js"  th:src="@{js/bootstrap.min.js}"></script>
+	<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{js/perfect-scrollbar.min.js}"></script>
+	<script type="text/javascript" src="js/bootstrap-3.0.0/js/bootstrap-datepicker.min.js" th:src="@{js/bootstrap-datepicker.min.js}"></script>
+	<script type="text/javascript" src="js/bootstrap-3.0.0/js/bootstrap-datepicker.zh-CN.min.js" th:src="@{js/bootstrap-datepicker.zh-CN.min.js}"></script>
+	<script type="text/javascript" src="js/main.min.js" th:src="@{js/main.min.js}"></script>
+	<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+	<script type="text/javascript" th:src="@{js/plugins/layer/layer.js}"></script>
+	<script type="text/javascript" th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+	<script type="text/javascript" th:src="@{js/plugins/My97DatePicker/WdatePicker.js}"></script>
+	<script type="text/javascript" th:src="@{js/plugins/comm/validata.js}"></script>
+	<script type="text/javascript"
+			th:src="@{js/plugins/validate/jquery.validate.min.js}"></script>
+	<script type="text/javascript"
+			th:src="@{js/plugins/treeview/jquery.treeview.js}"></script>
+	<script type="text/javascript"
+			th:src="@{js/plugins/form/jquery.form.js}"></script>
+
+	<script th:inline="javascript">
+	$(function(){
+		// var operationSuccess = $("#operationSuccess").val();
+		// if(operationSuccess != ""){
+		// 	_alert(operationSuccess);
+		// }
+		var succ = $("#succ").val();
+		if(succ != ""){
+			_alert(succ);
+		}
+		
+	});
+	 //点击搜索判断入学时间
+	 function stuAuditionStartTime(){
+				var stuStartTime =$("#startTime").val();
+				var stuEndTime =$("#endTime").val();
+				if(stuStartTime > stuEndTime){
+					_alert("入学结束时间不得早于开始时间");
+					return false;
+				}
+				document.getElementById("frm").submit();
+				
+			 }
+		
+		 function edit(id){
+				locationHref([[@{/apply/toModifyApplicants.ht}]] + "?id=" + id);
+			}
+		 function toFor(id){
+				locationHref([[@{/apply/toChangeApplicants.ht}]] + "?id=" + id);
+			}
+		 //点击支付预缴费用
+		 function PayPrepayment(id){
+			 locationHref([[@{/apply/PayPrepaymentHTML.ht}]] + "?id=" + id);
+		 }
+		 function backPayPrepayment(id){
+			 locationHref([[@{/apply/backPayPrepaymentHTML.ht}]] + "?id=" + id);
+		 }
+		function updateStatus(id){
+			 locationHref([[@{/apply/updateStatus.ht}]] + "?id=" + id);
+		}
+		 
+		 
+	</script>
+</body>
+</html>

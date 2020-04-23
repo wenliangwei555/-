@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="commonTemplate :: header">
+</head>
+
+<body>
+
+    <div class="lyear-layout-web">
+        <div class="lyear-layout-container">
+
+            <!--左侧导航-->
+            <div th:replace="commonTemplate :: leftMenus"></div>
+            <!--End 左侧导航-->
+
+            <!--头部信息-->
+            <div th:replace="commonTemplate :: headerDiv"></div>
+            <!--End 头部信息-->
+
+            <!--页面主要内容-->
+            <main class="lyear-layout-content">
+
+                <div class="container-fluid">
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-body">
+
+                                    <form th:action="@{notice/addTemplate.ht}"  method="post" class="row">
+
+                                        <div class="form-group col-md-12">
+                                            <label for="title">模板标题</label>
+                                            <input type="text" class="form-control" id="title" name="title" value="" placeholder="请输入标题" />
+                                        </div>
+                                        <div class="form-group col-md-12">
+                                            <label for="seo_description">模板内容</label>
+                                            <textarea class="form-control" id="seo_description" name="seo_description" rows="5" value="" placeholder="描述"></textarea>
+                                        </div>
+                                        <div class="form-group col-md-12">
+                                            <label for="DICT_ID">部门</label>
+                                            <div class="form-controls">
+                                                <select name="DICT_ID" id="DICT_ID" class="form-control" onchange="test()" placeholder="请选择部门">
+                                                    <option></option>
+                                                    <option th:each="info:${list}"
+                                                            th:value="${info.dictValue}" th:text="${info.dictDestination}"></option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="form-group col-md-12">
+                                            <label for="DICT_ID1">角色</label>
+                                            <div class="form-controls">
+                                                <select name="DICT_ID1" id="DICT_ID1" class="form-control" multiple="multiple">
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group col-md-12">
+                                            <button type="button" class="btn btn-primary ajax-post"  th:onclick="'send()'" >确 定</button>
+                                            <button type="button" class="btn btn-default" th:onclick="'returnBack()'">返 回</button>
+                                        </div>
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </main>
+            <!--End 页面主要内容-->
+        </div>
+    </div>
+
+
+    <script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js" th:src="@{static/js/bootstrap.min.js}"></script>
+    <script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+    <script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+    <script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+    <script type="text/javascript" src="js/plugins/select2/select2.min.js" th:src="@{js/plugins/select2/select2.min.js}"></script>
+    <link rel="stylesheet" type="text/css"
+          th:href="@{css/select2/select2.css}" />
+    <script type="text/javascript" th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+
+    <script type="text/javascript"
+            th:src="@{js/plugins/select2/i18n/zh-CN.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+    var basePath = /*[[@{/}]]*/;
+    /*]]>*/
+</script>
+<script th:inline="javascript">
+
+    function loadToUser2(){
+        /*<![CDATA[*/
+        var id = $("#DICT_ID").val();
+        $("#DICT_ID1").select2({
+            language: 'zh-CN',
+            ajax: {
+                url: basePath + "/notice/select2UserList1.ht",
+                dataType: 'json',
+                method:"post",
+                placeholder: {id: '', text: "请选择接收角色"},
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q2: params.term, // search term
+                        page: params.page,
+                        id:id
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    var options = new Array();
+                    $(data).each(function(i, o) {
+                        options.push({　　　　　　　　　　//获取select2个必要的字段，id与text
+                            id : o.dictId,
+                            text : o.dictDestination
+                        });
+                        console.log({　　　　　　　　　　//获取select2个必要的字段，id与text
+                            id : o.dictId,
+                            text : o.dictDestination
+                        });
+                    });
+
+                    return {
+                        results: options,
+                        pagination: {
+                            more: (params.page * 10) < data.total_count
+                        }
+                    };
+                },
+                cache: true
+            },
+            escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+            minimumInputLength: 1//,
+            //maximumSelectionLength:1
+        });
+
+        /*]]>*/
+    }
+
+    $(function(){
+        $("#DICT_ID").select2({
+            placeholder : "请选择部门"
+        });
+        $("#DICT_ID1").select2({
+            placeholder : "先选择部门才可以选择角色"
+        });
+    });
+    function test() {
+        var id = $("#DICT_ID").val();
+        $("#DICT_ID").val(id)
+        $("#DICT_ID1").val("");
+        $("#DICT_ID1").text("");
+        loadToUser2()
+    }
+
+    function returnBack(){
+        // var url = [[@{'/notice/addTemplate.ht'}]];
+        // locationHref(url);
+        location.href=basePath + "/notice/addTemplate.ht";
+    }
+
+</script>
+<script>
+    function send(){
+        var t_title = $("#t_title").val();
+        if(!t_title){
+            alert("保存失败，请录入模板标题后保存！！");
+            return;
+        }
+        var t_content = $("#t_content").val();
+        if(!t_content){
+            alert("保存失败，填写内容后保存！！");
+            return;
+        }
+        var DICT_ID = $("#DICT_ID").val();
+        if(!DICT_ID){
+            alert("保存失败，填写部门后保存！！");
+            return;
+        }
+
+        $.ajax({
+            url:basePath + '/notice/addSend.ht',
+            data:$("#noticeSendForm").serialize(),
+            dataType:'json',
+            type:'post',
+            success:function(res){
+                alert(res.msg);
+                if(res.code == "SUCCESS"){
+                    returnBack();
+                }
+            }
+        })
+    }
+</script>
+</body>
+</html>

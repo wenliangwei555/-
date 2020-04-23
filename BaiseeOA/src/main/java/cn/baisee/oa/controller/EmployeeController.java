@@ -1,0 +1,222 @@
+package cn.baisee.oa.controller;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import cn.baisee.oa.utils.DateUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
+
+import cn.baisee.oa.annotation.Role;
+import cn.baisee.oa.model.IcipBusDict;
+import cn.baisee.oa.model.empinfo.Employee;
+import cn.baisee.oa.model.empinfo.EmployeeEducation;
+import cn.baisee.oa.model.empinfo.EmployeeFamily;
+import cn.baisee.oa.model.empinfo.EmployeeSupplement;
+import cn.baisee.oa.model.empinfo.EmployeeWork;
+import cn.baisee.oa.page.pagehelper.PageInfo;
+import cn.baisee.oa.service.DictionariesService;
+import cn.baisee.oa.service.EmployeeService;
+import cn.baisee.oa.service.UserService;
+import cn.baisee.oa.utils.ParamUtils;
+
+/**
+ * 员工controller类
+ *
+ * @author LiFQ
+ */
+@Controller
+@RequestMapping(value = "emp")
+public class EmployeeController {
+
+    @Autowired
+    private EmployeeService employeeService;
+
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private DictionariesService dictionariesService;
+
+    /***************************************员工List列表********************************************/
+    @RequestMapping("/toEmpList")
+    @Role(value = "YGGL")
+    public ModelAndView toEmpList(HttpServletRequest request, HttpServletResponse response) {
+        return employeeService.employeeListPage(request, response);
+    }
+
+    @RequestMapping("/toEmpListSelect2")
+    @ResponseBody
+    @Role(ignore = true)
+    public PageInfo<Employee> toEmpListSelect2(HttpServletRequest request, HttpServletResponse response) {
+        Integer pageNum = ParamUtils.getPageNumParameters(request);
+        Integer pageSize = ParamUtils.getPageSizeParameters(request);
+        String itemlableSearch = ParamUtils.getParameter(request, "itemlableSearch");
+        String status = ParamUtils.getParameter(request, "status");
+        String empJob = ParamUtils.getParameter(request, "empJob");
+        String empDept = ParamUtils.getParameter(request, "empDept");
+        String gender = ParamUtils.getParameter(request, "gender");
+        return employeeService.selectEmployeeList(pageNum, pageSize, itemlableSearch, status, empJob, empDept, gender);
+    }
+
+    /*********************************员工去添加页面************************************/
+    @RequestMapping(value = "/toAddEmp")
+    @Role(value = "YGGL_YGXZ")
+    public ModelAndView toAddEmp() {
+        ModelAndView model = new ModelAndView("employee/empEdit_emp");
+		/*List<IcipBusDict> dicts = dictionariesService.selectIcipBusDictByDictName("empJob");
+		List<IcipBusDict> empDept = dictionariesService.selectIcipBusDictByDictName("empDept");
+		model.addObject("empDept", empDept);
+		model.addObject("dict", dicts);
+		model.addObject("emp", new Employee());
+		return model;*/
+        List<IcipBusDict> empDept = dictionariesService.selectIcipBusDictByDictName("department");
+        model.addObject("empDept", empDept);
+        model.addObject("emp", new Employee());
+        return model;
+    }
+
+    /***********************************修改添加***************************************************/
+    @RequestMapping("/toSaveEmps")
+    @Role("YGGL_YGXG")
+    public ModelAndView toSaveEmps(MultipartFile empHeadPhotoDir, Employee employee, EmployeeSupplement supplement, EmployeeEducation education, EmployeeWork work, EmployeeFamily family, HttpServletRequest request) throws Exception, IOException {
+        return employeeService.employeeAddAndUpdatePage(empHeadPhotoDir, employee, supplement, education, work, family, request);
+    }
+
+    /***********************************修改添加页面跳转***************************************************************/
+    /**
+     * 附加信息
+     *
+     * @param request
+     * @return
+     */
+    @RequestMapping("/empPageJump")
+    @Role("YGGL_YGXG")
+    public ModelAndView empPageJump(HttpServletRequest request) {
+        return employeeService.employeePageJump(request);
+    }
+
+    /****************************员工身份证验证***************************************/
+    @RequestMapping(value = "/VerificationEmpID", method = RequestMethod.POST)
+    @ResponseBody
+    @Role("YGGL_YGXG")
+    public Object employeeIDVerification(HttpServletRequest request) {
+        String empIdNumber = ParamUtils.getParameter(request, "empIdNumber");
+        String empId = (String) request.getSession().getAttribute("empId");
+        Employee emp = new Employee();
+        emp.setEmpIdNumber(empIdNumber);
+        if (empId == null || empId == "") {
+            emp.setEmpId("");
+        } else {
+            emp.setEmpId(empId);
+        }
+        String str = employeeService.selectEmployeeIDNumberVerification(emp);
+        if (str != null && str.length() > 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /*****************************员工手机号验证***********************************************************/
+    @RequestMapping(value = "/VerificationEmpMobile", method = RequestMethod.POST)
+    @ResponseBody
+    @Role("YGGL_YGXG")
+    public Object employeeMobileVerification(HttpServletRequest request) {
+        String empMobile = ParamUtils.getParameter(request, "empMobile");
+        String empId = (String) request.getSession().getAttribute("empId");
+        Employee emp = new Employee();
+        emp.setEmpMobile(empMobile);
+        if (empId == null || empId == "") {
+            emp.setEmpId("");
+        } else {
+            emp.setEmpId(empId);
+        }
+        String str = employeeService.selectEmployeeMobileVerification(emp);
+        if (str != null && str.length() > 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+
+    /*******************************批量删除**************************************/
+    @RequestMapping(value = "/deleteCheckEmp")
+    @Role("YGGL_YGSC")
+    public ModelAndView deleteCheckEmp(HttpServletRequest request, HttpServletResponse response) {
+        String ids[] = ParamUtils.getParameters(request, "ids");
+        List<String> list = new ArrayList<String>();
+        for (String string : ids) {
+            list.add(string);
+        }
+        int r = employeeService.deleteCheckEmployeeAll(list);
+        if (r > 0) {
+            request.setAttribute("operationSuccess", "操作成功");
+        }
+        return toEmpList(request, response);
+    }
+
+    /*************************前往某个员工修改方法***********************************/
+    @RequestMapping(value = "/EmployeeUpdate")
+    @Role("YGGL_YGXG")
+    public ModelAndView toEmpUpdate(HttpServletRequest request) {
+        ModelAndView model = new ModelAndView();
+        String empId = ParamUtils.getParameter(request, "empId");
+        request.getSession().setAttribute("empId", empId);
+		/*List<IcipBusDict> dicts = dictionariesService.selectIcipBusDictByDictName("empJob");
+		List<IcipBusDict> empDept = dictionariesService.selectIcipBusDictByDictName("empDept");*/
+        Employee employee = employeeService.selectEmployeeById(empId);
+        List<IcipBusDict> dicts = dictionariesService.selectIcipBusDictByDictName("deptRole");
+        List<IcipBusDict> empDept = dictionariesService.selectIcipBusDictByDictName("department");
+        model.addObject("empDept", empDept);
+        model.addObject("dict", dicts);
+        model.addObject("emp", employee);
+        model.setViewName("employee/empEdit_emp");
+        return model;
+    }
+
+    /**
+     * 修改员工离职状态
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/toUpdateEmpStatus")
+    @ResponseBody
+    @Role("YGGL_YGXG")
+    public Map<String, String> toUpdateEmpStatus(HttpServletRequest request) throws Exception {
+        String empId = ParamUtils.getParameter(request, "EID");
+        String empStatus = ParamUtils.getParameter(request, "E_STATUS");
+        Employee employee = new Employee();
+        employee.setEmpId(empId);
+        employee.setEmpStatus(empStatus);
+        employee.setEmpLeaveTime(DateUtil.getNow(DateUtil.DATE_FORMAT_FULL));
+        //删除用户角色关联表关于这个员工的信息
+        try {
+            userService.deleteRoleUserById(empId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //调用修改员工状态的方法
+        int r = employeeService.updateEmployeeStatus(employee);
+        System.out.println(r);
+        Map<String, String> map = null;
+        if (r > 0) {
+            map = new HashMap<>();
+            map.put("flag", "updateSuccess");
+        }
+        return map;
+    }
+
+}

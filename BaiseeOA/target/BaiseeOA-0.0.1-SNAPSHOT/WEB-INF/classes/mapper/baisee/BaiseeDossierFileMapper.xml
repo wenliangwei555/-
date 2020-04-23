@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.baisee.BaiseeDossierFileMapper">
+
+    <resultMap type="cn.baisee.oa.model.BaiseeDossierFile" id="results">
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="file_path" jdbcType="VARCHAR" property="filePath"/>
+        <result column="file_name" jdbcType="VARCHAR" property="fileName"/>
+        <result column="total_count" jdbcType="INTEGER" property="totalCount"/>
+        <result column="type_id" jdbcType="VARCHAR" property="typeId"/>
+        <result column="file_type" jdbcType="VARCHAR" property="fileType"/>
+        <result column="c_time" jdbcType="TIMESTAMP" property="cTime"/>
+
+    </resultMap>
+
+    <!-- 查询所有的日期分页 -->
+    <select id="getDossierFiles" resultMap="results" parameterType="map">
+        select * from baisee_dossier_file where 1=1
+        <if test="itemlableSearch != null">
+            and file_name LIKE "%"#{itemlableSearch}"%"
+        </if>
+        <if test="type != null and type != ''">
+            and type_id = #{type}
+        </if>
+        order by type_id
+    </select>
+
+    <!-- 查询所有的日期分页 -->
+    <select id="getDossierFileAll" resultMap="results" parameterType="map">
+		select * from baisee_dossier_file 
+	</select>
+
+    <!-- 查询默认的数据日期分页 -->
+    <select id="findDefaultDossierFiles" resultMap="results">
+		select * from baisee_dossier_file where type_id = '学生档案' order by c_time desc
+	</select>
+
+    <select id="getById" resultMap="results" parameterType="java.lang.String">
+	    select * from baisee_dossier_file where id=#{id}
+ 	</select>
+
+    <insert id="saveTask" parameterType="cn.baisee.oa.model.BaiseeDossierFile">
+	    insert into baisee_dossier_file  (
+	    id,
+	    file_path,
+	    file_name,
+		file_type,	    
+	    total_count,
+	    type_id,
+	    c_time)
+	     values 
+	     (pkval('DAWJ'),
+	     #{filePath},
+	     #{fileName},
+	     #{fileType},
+	     #{totalCount},
+	     #{typeId},
+	     #{cTime})
+	</insert>
+
+    <update id="updateTask" parameterType="cn.baisee.oa.model.BaiseeDossierFile">
+	   update baisee_dossier_file set 
+	   file_name=#{fileName}
+	    where id=#{id}
+	</update>
+
+    <delete id="delDossierFiles" parameterType="java.lang.String">
+        delete from baisee_dossier_file where id in
+        <foreach collection="array" open="(" close=")" item="id" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="checkFileName" resultMap="results" parameterType="java.lang.String">
+		SELECT
+			*
+		FROM
+			baisee_dossier_file 
+		WHERE
+			file_name = #{fileName}
+	</select>
+
+    <select id="countTaskNun" resultType="int">
+		SELECT
+			count(*)
+		FROM
+			baisee_dossier_file 
+	</select>
+    <select id="getName" resultType="int">
+		select count(*) from baisee_dossier_file where file_name=#{name};
+	</select>
+    <select id="selectId" resultType="string">
+		select file_path from baisee_dossier_file where id = #{id};
+    </select>
+</mapper>

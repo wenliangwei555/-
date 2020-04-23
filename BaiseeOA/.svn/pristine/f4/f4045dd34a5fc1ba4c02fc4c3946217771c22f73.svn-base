@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="commonTemplate :: header">
+</head>
+<body>
+<div class="lyear-layout-web">
+	<div class="lyear-layout-container">
+		<!--左侧导航-->
+		<div th:replace="commonTemplate :: leftMenus"></div>
+		<!--End 左侧导航-->
+
+		<!--头部信息-->
+		<div th:replace="commonTemplate :: headerDiv"></div>
+		<!--End 头部信息-->
+
+		<!--页面主要内容-->
+		<main class="lyear-layout-content">
+			<!-- ==================================== 页面内容开始 ============================= -->
+			<div class="container-fluid">
+				<form id="busRepairForm" autocomplete="off" th:action="@{repertory/addRepertory.ht}"  method="post">
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="card">
+								<div class="card-body">
+									<table class="table table-hover">
+										<tr>
+											<td align="center">
+												<span style="color:red">*</span>
+												<span>物品名称：</span>
+											</td>
+											<td>
+												<span>
+													<input type="text" class="form-control" id="goodsName" name="goodsName"  />
+												</span>
+											</td>
+										</tr>
+										<tr>
+											<td align="center">
+												<span style="color:red">*</span>
+												<span>物品分类：</span>
+											</td>
+											<td>
+												<div>
+													<select name="goodsTypeId" class="form-control" id="goodsTypeId">
+														<option disabled="disabled" hidden="hidden" selected="selected">----请选择类型----</option>
+														<option th:each="info:${list}" th:value="${info.typeId}" th:text="${info.typeName}"></option>
+													</select>
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<td align="center">
+												<span style="color:red">*</span>
+												<span>库存数量：</span>
+											</td>
+											<td>
+												<span>
+													<input type="text" class="form-control" name="goodsNum"  id="goodsNum" />
+												</span>
+											</td>
+										</tr>
+										<tr>
+											<td align="center">
+												<span style="color:red">*</span>
+												<span>物品型号：</span>
+											</td>
+											<td>
+												<span>
+													<input type="text" class="form-control"  name="standards" id="standards"  />
+												</span>
+											</td>
+										</tr>
+									</table>
+									<div align="center">
+										<input value="保存" type="submit" class="btn btn-info btn-w-md" />
+										<input value="取消" type="button" onclick="returnBack();" class="btn btn-warning btn-w-md"/>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<!-- ============================= 页面内容 结束 ============================= -->
+		</main>
+		<!-- END 页面主要内容  -->
+	</div>
+</div>
+
+<script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap.min.js" th:src="@{static/js/bootstrap.min.js}"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+<script type="text/javascript" src="js/bootstrap-datepicker.min.js" th:src="@{js/bootstrap-datepicker.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap-datepicker.zh-CN.min.js" th:src="@{js/bootstrap-datepicker.zh-CN.min.js}"></script>
+<script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/layer/layer.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/form/jquery.form.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/validate/jquery.validate.min.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+	/*<![CDATA[*/
+	var basePath = /*[[@{/}]]*/;
+	/*]]>*/
+</script>
+<script type="text/javascript">
+$(function(){
+	setValidate($("#busRepairForm"),{
+		rules: {
+			goodsName:{required: true, maxlength: 50},
+			goodsTypeId:{required: true, maxlength: 50},
+			goodsNum:{required: true, maxlength: 50},
+			standards:{required: true, maxlength: 50}
+		},
+		messages:{
+			goodsName:{required: "名称不可为空 ",maxlength: "超过50，太长"},
+			goodsTypeId:{required: "类型不可为空",maxlength: "超过50，太长"},
+			goodsNum:{required: "数量不可为空",maxlength: "超过50，太长"},
+			standards:{required: "型号不可为空",maxlength: "超过50，太长"}
+		}
+	});
+});	
+function returnBack(){
+	var url = basePath+'/repertory/toRepertoryList.ht';
+	window.location.href=url;
+}
+</script>
+</body>
+</html>

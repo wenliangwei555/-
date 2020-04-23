@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.baisee.BaiseeInsuranceMapper">
+	
+	<resultMap type="cn.baisee.oa.model.Insurance.BaiseeInsurance" id="InsurancePoJo">
+		<id column="ID" property="id"/>
+		<result column="STUDENT_ID" property="stuId" jdbcType="VARCHAR"/>
+		<result column="STUDENT_NAME" property="stuName" jdbcType="VARCHAR"/>
+		<result column="S_STATUS" property="stuStatus" jdbcType="VARCHAR"/>
+		<result column="STUDENT_IDNUMBER" property="stuIdNumber" jdbcType="VARCHAR"/>
+		<result column="STUDENT_CLASS_ID" property="classId" jdbcType="VARCHAR"/>
+		<result column="STUDENT_CLASS_NAME" property="className" jdbcType="VARCHAR"/>
+		<result column="INSURANCE_COMPANY_CODE" property="iComCode" jdbcType="VARCHAR"/>
+		<result column="INSURANCE_COMPANY_NAME" property="iComName" jdbcType="VARCHAR"/>
+		<result column="INSURANCE_MONEY" property="iMoney" jdbcType="VARCHAR"/>
+		<result column="INSURANCE_NO" property="iNo" jdbcType="VARCHAR"/>
+		<result column="IS_CONTAIN_TUITION" property="isConTuition" jdbcType="VARCHAR"/>
+		<result column="INSURANCE_IN_TIME" property="iInTime" jdbcType="VARCHAR"/>
+		<result column="INSURANCE_OUT_TIME" property="iOutTime" jdbcType="VARCHAR"/>
+		<result column="CREATE_TIME" property="createTime" jdbcType="VARCHAR"/>
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="VARCHAR"/>
+		<result column="REMARKS" property="remarks" jdbcType="VARCHAR"/>
+		<result column="STATUS" property="status" jdbcType="VARCHAR"/>
+		<result column="IS_DEL" property="isDel" jdbcType="VARCHAR"/>
+		<result column="S_SEX" property="stuSex" jdbcType="VARCHAR"/>
+		<result column="S_FAM_NAME" property="stuFamName" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<sql id="conditionSql">
+		<if test="stuName != null and stuName != '' ">
+		    AND baisee_insurance.STUDENT_NAME LIKE "%"#{stuName,jdbcType=VARCHAR}"%"
+		</if>
+		<if test="iNo != null and iNo != '' ">
+			AND baisee_insurance.INSURANCE_NO = #{iNo,jdbcType=VARCHAR}
+		</if>
+		
+		<if test="className != null and className != '' ">
+			AND baisee_insurance.STUDENT_CLASS_NAME = #{className,jdbcType=VARCHAR}
+		</if>
+		
+		<if test="status != null and status != '' ">
+			AND baisee_insurance.STATUS = #{status,jdbcType=VARCHAR}
+		</if>
+		
+		<if test="iComName  != null and iComName != '' ">
+			AND baisee_insurance.INSURANCE_COMPANY_NAME = #{iComName,jdbcType=VARCHAR}
+		</if>
+		
+		<!-- 学生id -->
+		<if test="stuId  != null and stuId != '' ">
+			AND baisee_insurance.STUDENT_ID = #{stuId,jdbcType=VARCHAR}
+		</if>
+		
+		<!-- 学生的状态 -->
+		<if test="stuStatus != null and stuStatus !='' ">
+			AND baisee_student.S_STATUS = #{stuStatus,jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+	<!-- 分页显示学生保险 信息-->
+	<select id="selectStudentInsurance" resultMap="InsurancePoJo" parameterType="cn.baisee.oa.model.Insurance.BaiseeInsurance">
+		<!-- SELECT 
+		 ID, STUDENT_ID,STUDENT_IDNUMBER,STUDENT_NAME,
+		 STUDENT_CLASS_ID, STUDENT_CLASS_NAME, 
+		 INSURANCE_COMPANY_CODE, INSURANCE_COMPANY_NAME, 
+		 INSURANCE_MONEY, INSURANCE_NO, 
+		 IS_CONTAIN_TUITION, INSURANCE_IN_TIME, 
+		 INSURANCE_OUT_TIME, CREATE_TIME, 
+		 UPDATE_TIME, REMARKS, STATUS, IS_DEL
+		FROM baisee_insurance -->
+		SELECT 
+		 baisee_insurance.ID, baisee_insurance.STUDENT_ID,
+		 baisee_insurance.STUDENT_IDNUMBER,baisee_insurance.STUDENT_NAME,
+		baisee_insurance.STUDENT_CLASS_ID, baisee_insurance.STUDENT_CLASS_NAME, 
+		 baisee_insurance.INSURANCE_COMPANY_CODE, baisee_insurance.INSURANCE_COMPANY_NAME, 
+		 baisee_insurance.INSURANCE_MONEY, baisee_insurance.INSURANCE_NO, 
+		 baisee_insurance.IS_CONTAIN_TUITION, baisee_insurance.INSURANCE_IN_TIME, 
+		 baisee_insurance.INSURANCE_OUT_TIME, baisee_insurance.CREATE_TIME, 
+		 baisee_insurance.UPDATE_TIME, baisee_insurance.REMARKS, baisee_student.S_STATUS,
+		 baisee_insurance.STATUS, baisee_insurance.IS_DEL,
+		 baisee_student.S_SEX,MAX(baisee_student_family.S_FAM_NAME)
+		FROM baisee_insurance LEFT JOIN baisee_student on baisee_student.SID = baisee_insurance.STUDENT_ID
+LEFT JOIN baisee_student_family on baisee_student.SID = baisee_student_family.SID
+		<where>
+			<include refid="conditionSql"></include>
+		</where>
+		GROUP BY  baisee_insurance.ID, baisee_insurance.STUDENT_ID,
+		 baisee_insurance.STUDENT_IDNUMBER,baisee_insurance.STUDENT_NAME,
+		baisee_insurance.STUDENT_CLASS_ID, baisee_insurance.STUDENT_CLASS_NAME, 
+		 baisee_insurance.INSURANCE_COMPANY_CODE, baisee_insurance.INSURANCE_COMPANY_NAME, 
+		 baisee_insurance.INSURANCE_MONEY, baisee_insurance.INSURANCE_NO, 
+		 baisee_insurance.IS_CONTAIN_TUITION, baisee_insurance.INSURANCE_IN_TIME, 
+		 baisee_insurance.INSURANCE_OUT_TIME, baisee_insurance.CREATE_TIME, 
+		 baisee_insurance.UPDATE_TIME, baisee_insurance.REMARKS, 
+		 baisee_insurance.STATUS, baisee_insurance.IS_DEL,
+		 baisee_student.S_SEX
+		order by baisee_insurance.CREATE_TIME desc
+	</select>
+	<!-- 根据学生ID查看是否存在保险int selectStuInsuInfoByStuId(String stuId); -->
+	<select id="selectStuInsuInfoByStuId" parameterType="java.lang.String" resultType="java.lang.Integer">
+	select  COUNT(*)
+		from baisee_insurance 
+WHERE STUDENT_ID=#{stuId}
+	</select>
+	<!-- 查询个人录入信息 -->
+	<select id="getStuInsuInfo" parameterType="java.lang.String" resultMap="InsurancePoJo">
+		SELECT 
+			ID, STUDENT_ID,STUDENT_IDNUMBER,
+			STUDENT_NAME, STUDENT_CLASS_ID, 
+			STUDENT_CLASS_NAME, INSURANCE_COMPANY_CODE,
+			INSURANCE_COMPANY_NAME, INSURANCE_MONEY, 
+			INSURANCE_NO, IS_CONTAIN_TUITION, 
+			INSURANCE_IN_TIME, INSURANCE_OUT_TIME, 
+			CREATE_TIME, UPDATE_TIME, 
+			REMARKS, STATUS, IS_DEL
+		FROM baisee.baisee_insurance
+		where ID = #{id,jdbcType=VARCHAR}	
+	</select>
+	
+	<!-- 添加办理保险 -->
+	<update id="toAddStuInsurance" parameterType="cn.baisee.oa.model.Insurance.BaiseeInsurance">
+		UPDATE baisee.baisee_insurance
+			<set>
+				<if test="iComName != null and iComName != '' ">
+					INSURANCE_COMPANY_NAME=#{iComName,jdbcType=VARCHAR}, 
+				</if>
+				<if test="iNo != null and iNo != '' ">
+					INSURANCE_NO=#{iNo,jdbcType=VARCHAR},
+				</if>
+				<if test="iInTime != null and iInTime != '' ">
+					INSURANCE_IN_TIME=#{iInTime,jdbcType=VARCHAR}, 
+				</if>
+				<if test="iOutTime != null and iOutTime != '' ">
+					INSURANCE_OUT_TIME=#{iOutTime,jdbcType=VARCHAR},
+				</if>
+				<if test="updateTime != null and updateTime != '' ">
+					UPDATE_TIME=#{updateTime,jdbcType=VARCHAR}, 
+				</if>
+				<if test="remarks != null and remarks != '' ">
+					REMARKS=#{remarks,jdbcType=VARCHAR},
+				</if>
+				STATUS= '2'
+				WHERE ID=#{id,jdbcType=VARCHAR}
+			</set>
+	</update>
+		
+	<!-- 校验保险单号 -->
+	<select id="selectcheckInsuranceNumber" parameterType="java.lang.String" resultMap="InsurancePoJo">
+		select 
+			ID, STUDENT_ID, 
+			STUDENT_NAME, STUDENT_CLASS_ID, 
+			STUDENT_CLASS_NAME, INSURANCE_COMPANY_CODE,
+			INSURANCE_COMPANY_NAME, INSURANCE_MONEY, 
+			INSURANCE_NO, IS_CONTAIN_TUITION, 
+			INSURANCE_IN_TIME, INSURANCE_OUT_TIME, 
+			CREATE_TIME, UPDATE_TIME, 
+			REMARKS, STATUS, IS_DEL
+			from baisee.baisee_insurance
+			<where>
+				<if test="id != null and id != ''">
+					and ID != #{id,jdbcType=VARCHAR}
+				</if>
+				<if test="iNo != null and id != ''">
+					and INSURANCE_NO = #{iNo,jdbcType=VARCHAR}
+				</if>
+			</where>
+	</select>
+	
+	<!-- 查询所有人的保险信息 -->
+	<select id="queryAllInsurance" resultMap="InsurancePoJo">
+		select 
+			ID,INSURANCE_OUT_TIME,STATUS,STUDENT_CLASS_ID
+		from baisee.baisee_insurance
+	</select>
+	
+	<!-- 修改到期保险的状态 -->
+	<update id="updateExpireInsurance" parameterType="java.lang.String">
+		UPDATE baisee.baisee_insurance
+		SET STATUS=#{status,jdbcType=VARCHAR},UPDATE_TIME = now()
+		WHERE ID=#{id,jdbcType=VARCHAR}	
+	</update>
+	
+		<!-- 录入一条保险信息  -->
+	<insert id="addInsurance" parameterType="cn.baisee.oa.model.Insurance.BaiseeInsurance">
+		insert into baisee_insurance
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			ID,
+			<if test="stuId != null and stuId != ''">
+				STUDENT_ID,
+			</if>
+			<if test="stuName != null and stuName != ''">
+				STUDENT_NAME,
+			</if>
+			<if test="stuIdNumber != null and stuIdNumber != ''">
+				STUDENT_IDNUMBER,
+			</if>
+			<if test="classId != null and classId != ''">
+				STUDENT_CLASS_ID,
+			</if>
+			<if test="className != null and className != ''">
+				STUDENT_CLASS_NAME,
+			</if>
+			<if test="iMoney != null and iMoney != ''">
+				INSURANCE_MONEY,
+			</if>
+			<if test="isConTuition != null and isConTuition != ''">
+				IS_CONTAIN_TUITION,
+			</if>
+			STATUS,
+			CREATE_TIME,
+			UPDATE_TIME
+		</trim>
+		values
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			pkval ('EMID'),
+			<if test="stuId != null and stuId != ''">
+				#{stuId},
+			</if>
+			<if test="stuName != null and stuName != ''">
+				#{stuName},
+			</if>
+			<if test="stuIdNumber != null and stuIdNumber != ''">
+				#{stuIdNumber},
+			</if>
+			<if test="classId != null and classId != ''">
+				#{classId},
+			</if>
+			<if test="className != null and className != ''">
+				#{className},
+			</if>
+			<if test="iMoney != null and iMoney != ''">
+				#{iMoney},
+			</if>
+			<if test="isConTuition != null and isConTuition != ''">
+				#{isConTuition},
+			</if>
+			'1',
+			now(),
+			now()
+		</trim>
+	</insert>
+	
+	<!-- 根据保险id查询该保险的状态 0 为未投保 1 投保中 2 已投保 3 保险到期 -->
+	<select id="selectStatusById" resultType="java.lang.String" parameterType="java.lang.String">
+		select status from baisee_insurance
+		<where>
+			and id = #{id,jdbcType=VARCHAR}
+		</where>
+	</select>
+
+	<!-- 删除一条保险信息 -->	
+	<delete id="delInsurance" parameterType="java.lang.String">
+		<if test="value !=null and value != '' ">
+			delete from baisee_insurance
+			<where>
+				and id = #{id,jdbcType=VARCHAR}
+			</where>
+		</if>
+	</delete>
+	
+	<!-- 导出 excel 是修改导出学生的保险状态 -->
+	<update id="updateStatus" parameterType="map">
+		update baisee.baisee_insurance 
+		SET STATUS = #{status}, UPDATE_TIME = #{updateTime}
+		WHERE ID = #{id}
+	</update>
+	
+	<!-- 修改录入信息 -->
+	<update id="updIns" parameterType="cn.baisee.oa.model.Insurance.BaiseeInsurance">
+		update baisee_insurance
+		<set>
+			<if test="isConTuition != null and isConTuition != '' ">
+				IS_CONTAIN_TUITION = #{isConTuition},
+			</if>
+				INSURANCE_MONEY = #{iMoney},UPDATE_TIME = now()
+		</set>
+		<where>
+				and id = #{id,jdbcType=VARCHAR}
+		</where>
+	</update>
+	<!-- 根据学生ID修改学生班级 	void updateClassNameBystuID(@Param("stuID")String stuID,@Param("className")String className,@Param("classID")String classID);-->
+	<update id="updateClassNameBystuID" parameterType="java.lang.String">
+	UPDATE baisee_insurance SET STUDENT_CLASS_NAME=#{className},STUDENT_CLASS_ID=#{classID} WHERE STUDENT_ID=#{stuID}
+	</update>
+</mapper>

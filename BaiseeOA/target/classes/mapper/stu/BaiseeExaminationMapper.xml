@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.stu.BaiseeExaminationMapper">
+	
+	<resultMap type="cn.baisee.oa.model.examination.BaiseeExamination" id="examinationAttribute">
+		<id column="e_id" property="eid"/>						<!-- 主键 -->
+		<result column="t_id" property="tid"/>					<!-- 试卷Id -->
+		<result column="c_id" property="cid"/>					<!-- 班级Id -->
+		<result column="teacher" property="teacher"/>			<!-- 监考老师 -->
+		<result column="examination_place" property="examinationPlace"/><!-- 考试场地 -->
+		<result column="updateTs" property="updateTs"/>			<!-- 更新时间 -->
+		<result column="createTs" property="createTs"/>			<!-- 创建时间 -->
+		<result column="sort" property="sort"/>					<!-- 排序 -->
+		<result column="start_time" property="startTime"/>		<!-- 开始时间 -->
+		<result column="end_time" property="endTime"/>			<!-- 结束时间-->
+		<result column="examinationStatic" property="examinationStatic"/><!-- 考试状态 0未开始考试  1正在考试   2 已结束考试-->
+		<result column="term" property="term"/>	
+		<result column="state_of_ownership" property="stateOfOwnership"/><!-- 考试所属状态 ( 0初中 /  1高中)-->
+	</resultMap>
+	
+	<sql id="attribute">
+		e_id, t_id, c_id, teacher, examination_place, updateTs, createTs, sort, end_time, start_time, examinationStatic, term, state_of_ownership
+	</sql>
+
+	<!-- 根据试卷ID查询试卷是否在被使用 -->
+	<select id="getExaminationById" parameterType="String" resultMap="examinationAttribute">
+		select <include refid="attribute"/> from baisee_s_examination 
+		<where>
+			t_id = #{ids}
+		</where>
+	</select>
+	
+	<!-- 查询考试所有信息 -->
+	<select id="selectExaminationList" resultMap="examinationAttribute" parameterType="map">
+		select <include refid="attribute"/>
+		from baisee_s_examination
+		<where>
+			1=1
+			<if test="userType != '' and userType != null">
+				and state_of_ownership = #{userType}
+			</if>
+		</where>
+		order by start_time desc, end_time desc
+	</select>
+	
+	<!-- 添加考试信息 -->
+	<insert id="addExamination" parameterType="cn.baisee.oa.model.examination.BaiseeExamination">
+		insert into baisee_s_examination (e_id, t_id, c_id, teacher, examination_place, updateTs, createTs, sort, end_time, start_time, examinationStatic, term,state_of_ownership)
+		values(#{eid}, #{tid}, #{cid}, #{teacher}, #{examinationPlace}, DATE_FORMAT(now(),'%Y%m%d%H%i%m'),DATE_FORMAT(now(),'%Y%m%d%H%i%m'), #{sort}, #{endTime}, #{startTime}, 0, #{term},#{stateOfOwnership})
+	</insert>
+	
+	<select id="getExaminatioByEid" parameterType="String" resultMap="examinationAttribute">
+		select <include refid="attribute"/> from baisee_s_examination 
+		<where>
+			e_id = #{eid}
+		</where>
+	</select>
+	
+	<update id="updateExaminationById" parameterType="cn.baisee.oa.model.examination.BaiseeExamination">
+		update baisee_s_examination 
+		<set> 
+			<if test="tid != '' and tid != null "> <!-- 判断试卷 -->
+				t_id = #{tid},
+			</if>
+			<if test="cid != '' and cid != null "> <!-- 判断班级 -->
+				c_id = #{cid},
+			</if>
+			<if test="teacher != '' and teacher != null "> <!-- 判断监考老师 -->
+				teacher = #{teacher},
+			</if>
+			<if test="examinationPlace != '' and examinationPlace != null "> <!-- 判断场地 -->
+				examination_place = #{examinationPlace},
+			</if>
+			<if test="startTime != '' and startTime != null "> <!-- 判断开始时间 -->
+				start_time = #{startTime},
+			</if>
+			<if test="endTime != '' and endTime != null "> <!-- 判断结束时间 -->
+				end_time = #{endTime},
+			</if>
+				updateTs = #{updateTs}
+			<where>
+				e_id = #{eid}
+			</where>
+		</set>
+	</update>
+	
+	<delete id="delExaminationById" parameterType="String">
+		delete from baisee_s_examination
+		<where>
+			<foreach collection="array" open="e_id in(" close=")" item="ids" separator=",">
+				#{ids}	
+			</foreach>
+		</where>
+	</delete>
+	
+</mapper>

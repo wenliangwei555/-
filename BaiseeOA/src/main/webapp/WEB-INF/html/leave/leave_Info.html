@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="commonTemplate :: header">
+</head>
+<body>
+<div class="lyear-layout-web">
+	<div class="lyear-layout-container">
+
+		<!--左侧导航-->
+		<div th:replace="commonTemplate :: leftMenus"></div>
+		<!--End 左侧导航-->
+
+		<!--头部信息-->
+		<div th:replace="commonTemplate :: headerDiv"></div>
+		<!--End 头部信息-->
+
+		<!--页面主要内容-->
+		<main class="lyear-layout-content">
+
+			<div class="container-fluid">
+
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="card">
+
+							<div class="card-toolbar clearfix " >
+								<div class="toolbar-btn-action">
+
+									<button type="button" class="btn btn-default" th:onclick="'returnBack()'">
+										<span class="mdi mdi-undo-variant"></span>返回上一级
+									</button>
+
+									<button type="button" class="btn btn-primary" th:onclick="'toStu()'">
+										选择学生
+									</button>
+								</div>
+							</div>
+
+							<div class="card-body">
+								<form th:action="@{leave/toLeave.ht}" method="post" id="frm"
+									  name="frm" class="row">
+                                    <div class="form-group col-md-12">
+                                        <label for="startDate">学生姓名</label>
+                                        <input type="text" placeholder="学生姓名" class="form-control" id="sname" readonly="readonly"
+                                               name="sname" th:value="${sname!=null?sname:''}" th:if="${sname != null}" />
+                                        <input readonly="readonly" class="form-control" id="selsname"  th:value="${leave.sname}" th:if="${leave.sname!=null}"/>
+                                    </div>
+                                    <div class="form-group col-md-12">
+                                        <label for="startDate">所在班级</label>
+                                        <input type="text" placeholder="所在班级" class="form-control" id="cname" readonly="readonly"
+                                               name="cname" th:value="${cname!=null?cname:''}" th:if="${cname!=null}"/>
+                                        <input readonly="readonly" class="form-control" id="selcname"  th:value="${leave.cname}" th:if="${leave.cname!=null}"/>
+                                    </div>
+									<div class="form-group col-md-12">
+										<label for="rtype">请假类型</label>
+										<div class="form-controls">
+											<input type="hidden" id="id" name="id" th:value="${leave.id}" />
+											<input type="hidden" id="sid" name="sid" th:value="${leave.sid}" />
+                                            <input type="hidden" id="sid1" name="sid1" th:value="${sid}"/>
+											<select th:if="${dicts} != null" class="form-control" id="rtype" name="rtype" placeholder="请选择请假类型">
+												<option></option>
+												<option th:selected="${leave.rtype eq t.dictDestination}"  th:each="t : ${dicts}" th:value="${t.dictValue}" th:text="${t.dictDestination}" ></option>
+											</select>
+										</div>
+									</div>
+									<div class="form-group col-md-12">
+										<label for="startDate">开始时间</label>
+										<input type="text" placeholder="开始时间" class="form-control" id="startDate"
+											   name="startDate" th:value="${leave.startDate}"
+											   onfocus="WdatePicker({readOnly:true,dateFmt:'yyyy-MM-dd HH:mm'})" />
+									</div>
+									<div class="form-group col-md-12">
+										<label for="endDate">结束时间</label>
+										<input type="text" placeholder="结束时间" class="form-control" id="endDate"
+											   name="endDate" th:value="${leave.endDate}"
+											   onfocus="WdatePicker({readOnly:true,dateFmt:'yyyy-MM-dd HH:mm'})" />
+									</div>
+									<div class="form-group col-md-12">
+										<label for="reason">请假事由</label>
+										<textarea class="form-control"  id="reason"  name="reason" th:text="${leave.reason}"
+												  rows="5" placeholder="请假是由"></textarea>
+									</div>
+
+									<div class="form-group col-md-12">
+										<button type="button" class="btn btn-primary " th:onclick="'saveStu()'" >确 定</button>
+										<button type="button" class="btn btn-default" th:onclick="'returnBack()'">取 消</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+		<!-- 主要内容结束 -->
+	</div>
+</div>
+
+
+	<!--
+
+
+
+	<div class="cont-box">
+		<form th:action="@{leave/toLeave.ht}" method="post" id="frm"
+			name="frm">
+			<div class="search-box">
+				<div class="left">
+					<span class="del" th:if="${leave.id} == null"><a href="javascript:void(0);"
+						th:onclick="'showStu()'" title="选择学生"
+						style="cursor: pointer; color: #ffffff"
+						onmouseover="javascript:this.style.color='#dbdbdb'"
+						onmouseout="javascript:this.style.color='#ffffff'">选择学生</a> </span>
+				</div>
+				<div class="right"></div>
+			</div>
+			<div>
+				学生:<span id="selsname"  th:text="${leave.sname}"/> 班级:<span
+					id="selcname"  th:text="${leave.cname}"/>
+			</div>
+			<table>
+				<tr>
+					<td>
+						<div class="right">
+							<div class="td1">
+								<span class="red">*</span><span>请假类型：</span>
+							</div>
+							<div class="td2">
+								<div class="control-css3select css3select-icon-hide">
+									<input type="hidden" id="id" name="id" th:value="${leave.id}" />
+									<input type="hidden" class="radius3 input" id="sid" name="sid"
+										th:value="${leave.sid}" /> 
+									<select th:if="${dicts} != null" class="radius3" id="rtype" >
+				 					    <option></option>
+										<option th:selected="${leave.rtype eq t.dictDestination}"  th:each="t : ${dicts}" th:value="${t.dictValue}" th:text="${t.dictDestination}" ></option>
+								   </select>
+								</div>
+							</div>
+						</div>
+					</td>
+					<td>
+						<div class="left">
+							<div class="td1">
+								<span class="red">*</span><span>开始时间：</span>
+							</div>
+							<div class="td2">
+								<span> <input style="width: 230px;" type="text"
+									placeholder="开始时间" class="radius3 input" id="startDate"
+									name="startDate" th:value="${leave.startDate}"
+									onfocus="WdatePicker({readOnly:true,dateFmt:'yyyy-MM-dd HH:mm'})" /></span>
+							</div>
+						</div>
+					</td>
+					<td>
+						<div class="right">
+							<div class="td1">
+								<span class="red">*</span><span>结束时间：</span>
+							</div>
+							<div class="td2">
+								<span><input style="width: 230px;" type="text"
+									placeholder="结束时间" class="radius3 input" id="endDate"
+									name="endDate" th:value="${leave.endDate}"
+									onfocus="WdatePicker({readOnly:true,dateFmt:'yyyy-MM-dd HH:mm'})" /></span>
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<div class="right">
+							<div class="td1">
+								<span>请假事由：</span>
+							</div>
+							<div class="td2">
+								<span><input type="text" class="radius3 input" id="reason"
+									name="reason" th:value="${leave.reason}" /></span>
+							</div>
+						</div>
+					</td>
+				</tr>
+			</table>
+
+		</form>
+		<div class="redbutton control-button JsW" style="text-align: center">
+			<span baisee:ctrl="XSSSGl_RZ"> <input type="button"
+				value="确定保存" onclick="saveStu();"
+				class="radius5 button ks-pop-close1" />
+			</span>
+
+		</div>
+	</div>-->
+
+<script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap.min.js" th:src="@{static/js/bootstrap.min.js}"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+<script type="text/javascript" src="js/plugins/select2/select2.full.min.js" th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+<script type="text/javascript" src="js/plugins/comm/bmsAjax.js" th:src="@{js/plugins/comm/bmsAjax.js}"></script>
+<script type="text/javascript" src="js/plugins/layer/layer.js" th:src="@{js/plugins/layer/layer.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+<script type="text/javascript" src="js/plugins/My97DatePicker/WdatePicker.js" th:src="@{js/plugins/My97DatePicker/WdatePicker.js}"></script>
+
+	<script th:inline="javascript">
+	console.log([[${leave.id}]])
+	 function showStu(){
+			layer.open({
+				type : 2,
+				title : "选择请假学生",
+				shadeClose : true,
+				shade : 0.8,
+				area : [ '600px', '400px' ],
+				content :
+					/*<![CDATA[*/
+					[[@{/leave/toStu.ht}]],
+					 /*]]>*/
+			    end: function () {
+					/*<![CDATA[*/
+					 $(window.top.document).find("#_proccesBar").css("visibility", "hidden");
+			    	 /*]]>*/
+	            }
+			});
+		}
+	 function selstuinfo(sid,cname,sname){
+		 console.log(sid)
+		 $("#sid").val(sid);
+		 $("#selcname").html(cname);
+		 $("#selsname").html(sname);
+	 }
+	 function saveStu(){
+		 var sid = $("#sid").val();
+		 var sid1 = $("#sid1").val();
+		 var id = $("#id").val();
+		 var rtype = $("#rtype").val();
+		 var reason = $("#reason").val();
+		 var startDate = $("#startDate").val();
+		 var endDate = $("#endDate").val();
+
+		 if(sid == ''){
+		     sid = sid1;
+         }
+
+		 console.log("sid::"+sid);
+		 console.log("id::"+id)
+
+		 if(sid==null||sid==""||sid==null||rtype==""||rtype==null||
+				 startDate==""||startDate==null||endDate==""||endDate==null){
+		     _alert("请填写必输项！");
+			 return false;
+		 }
+		 if(startDate>=endDate){
+			 layer.msg("开始时间大于结束时间！");
+			 return false;
+		 }
+		 var param = {
+				 "sid":sid,
+				 "id":id,
+				 "rtype":rtype,
+				 "reason":reason,
+				 "startDate":startDate,
+				 "endDate":endDate
+		 	}
+		 $.post([[@{/leave/saveStu.ht}]],param,function(result){
+			 console.log(result);
+			 returnBack();
+		 })
+	 }
+
+	 	function onCancel() {
+			var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+			parent.layer.close(index); //再执行关闭
+	 	}
+
+
+	 	function toStu(){
+			location.href=basePath + "leave/toStu.ht";
+		}
+
+		function returnBack(){
+	        location.href = basePath+"leave/toStuList.ht";
+        }
+
+	</script>
+</body>
+</html>

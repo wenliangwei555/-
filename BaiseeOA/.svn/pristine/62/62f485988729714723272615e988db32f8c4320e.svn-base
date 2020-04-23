@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="commonTemplate :: header">
+</head>
+
+<body>
+<div class="lyear-layout-web">
+  <div class="lyear-layout-container">
+
+    <!--左侧导航-->
+    	<div th:replace="commonTemplate :: leftMenus"></div>
+    <!--End 左侧导航-->
+
+    <!--头部信息-->
+    	<div th:replace="commonTemplate :: headerDiv"></div>
+    <!--End 头部信息-->
+
+    <!--页面主要内容-->
+    <main class="lyear-layout-content">
+
+      <div class="container-fluid">
+        <form  th:action="@{notice/list.ht}"  id="frm" name="frm" method="post" th:object="${notice}" onsubmit="return check();">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-toolbar clearfix " >
+              	 <div class="pull-right search-bar">
+	                  <div class="input-group">
+	                    <div class="input-group-btn">
+	                      <button class="btn btn-default" type="button" aria-haspopup="true" aria-expanded="false">
+	                      标题
+	                      </button>
+	                    </div>
+	                    <input type="text" class="form-control" value="" name="keyword" placeholder="请输入标题"/>
+	                    <div class="input-group-btn">
+	                      <button class="btn btn-success" id="search-btn1" type="button" aria-haspopup="true" aria-expanded="false">
+	                      查询
+	                      </button>
+	                    </div>
+	                  </div>
+
+                  </div>
+                <div class="toolbar-btn-action">
+                  <a th:href="@{message/template/addView.ht}" class="btn btn-success m-r-5" href="#!"><i class="mdi mdi-check"></i> 新增</a>
+                  <!-- <a class="btn btn-success m-r-5" href="#!"><i class="mdi mdi-block-helper"></i> 发送</a>
+                  <a class="btn btn-danger" href="#!"><i class="mdi mdi-window-close"></i> 删除</a> -->
+                </div>
+              </div>
+              <div class="card-body">
+
+                <div class="table-responsive">
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>
+                          <label class="lyear-checkbox checkbox-primary">
+                            <input type="checkbox" id="check-all"/><span></span>
+                          </label>
+                        </th>
+                        <th>序号</th>
+                        <th>标题</th>
+                        <th>类型</th>
+                        <th>发送PC</th>
+                        <th>发送微信</th>
+                        <th>发送邮件</th>
+                        <!-- <th>发送次数</th> -->
+                        <th>创建时间</th>
+                        <th>操作</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                       <tr th:each="item,iterStat:${pageResult.list}" th:if="${pageResult.list != null &amp;&amp; pageResult.list.size() > 0}">
+                        <td>
+                          <label class="lyear-checkbox checkbox-primary">
+                            <input type="checkbox" name="ids[]" value="1"/><span></span>
+                          </label>
+                        </td>
+                        <td th:text="${iterStat.count}">索引</td>
+                        <td th:text="${item.title}">标题</td>
+                        <td>
+							<span th:if="${item.type eq '1'}">系统消息</span>
+							<span th:if="${item.type eq '2'}">工作通知</span>
+						</td>
+                        <td th:text="${item.isSendPc=='0'?'否':'是'}">发送PC</td>
+                        <td th:text="${item.isSendWechat=='0'?'否':'是'}">发送微信</td>
+                        <td th:text="${item.isSendEmail=='0'?'否':'是'}">发送邮件</td>
+                        <!-- <td th:text="${item.sendCount}">发送次数</td> -->
+                        <td th:text="${#dates.format(item.createTime,'yyyy-MM-dd HH:mm:ss')}">创建时间</td>
+                        <td>
+                          <div class="btn-group">
+                          	<!-- <a class="btn btn-xs btn-default" href="#!" title="发送" data-toggle="tooltip">发送</a> -->
+                            <a class="btn btn-xs btn-default" title="编辑" data-toggle="tooltip" th:href="@{message/template/updateView.ht(templateId=${item.id})}">查看</a>
+                            <!-- <a class="btn btn-xs btn-default" href="#!" th:onclick="'javascript:del(\''+${item.id}+'\')'" title="删除" data-toggle="tooltip">删除</a> -->
+                          </div>
+                        </td>
+                      </tr>
+
+                    </tbody>
+                  </table>
+                </div>
+                <div th:replace="commonTemplate :: pageBox"></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        </form>
+      </div>
+
+    </main>
+    <!--End 页面主要内容-->
+  </div>
+</div>
+
+<script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap.min.js" th:src="@{static/js/bootstrap.min.js}"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+<script type="text/javascript" src="js/jconfirm/jquery-confirm.min.js" th:src="@{static/js/jconfirm/jquery-confirm.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+<script type="text/javascript">
+$(function(){
+    $('.search-bar .dropdown-menu a').click(function() {
+        var field = $(this).data('field') || '';
+        $('#search-field').val(field);
+        $('#search-btn').html($(this).text() + ' <span class="caret"></span>');
+    });
+});
+function check(){
+
+}
+//发送消息
+function send(){
+	
+}
+//删除
+function del(id){
+	$.confirm({
+        title: '提示',
+        content: '确定要删除吗？',
+        buttons: {
+            confirm: {
+                text: '确认',
+                action: function(){
+                	location.href = basePath + "/message/template/delete.ht?templateId="+id;
+                    $.alert('确认的!');
+                }
+            },
+            cancel: {
+                text: '取消',
+                action: function(){
+                    //$.alert('取消的!');
+                }
+            }
+        }
+    });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="commonTemplate :: header">
+</head>
+<body>
+	<div class="lyear-layout-web">
+		<div class="lyear-layout-container">
+			<!--左侧导航-->
+			<div th:replace="commonTemplate :: leftMenus"></div>
+			<!--End 左侧导航-->
+
+			<!--头部信息-->
+			<div th:replace="commonTemplate :: headerDiv"></div>
+			<!--End 头部信息-->
+
+			<!--页面主要内容-->
+			<main class="lyear-layout-content"> <!-- ==================================== 页面内容开始 ============================= -->
+			<div class="container-fluid">
+				<form id="basefrm"
+					th:action="@{stu/toSaveOrUpdateAudStu.ht(stuTable=audStudent)}"
+					autocomplete="off" method="post" th:object="${info}" enctype="multipart/form-data">
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="card">
+								<div class="card-body">
+									<ul id="myTabs" class="nav nav-tabs" role="tablist">
+										<li class="active"><a href="javascript:void(0);"
+											id="home-tab" role="tab" data-toggle="tab">基础信息</a></li>
+										<li><a onclick="notSupJump()" role="tab" id="profile-tab"
+											data-toggle="tab">附加信息</a></li>
+										<li><a onclick="notEduJump()" role="tab" id="profile-tab"
+											data-toggle="tab">教育信息</a></li>
+										<li><a onclick="notFamJump()" role="tab" id="profile-tab"
+											data-toggle="tab">家庭信息</a></li>
+									</ul>
+									<input type="hidden" name="dictId" />
+									<table class="table table-hover">
+										<tr th:if="${stu.stuId} != null and ${stu.stuId} != ''">
+											<td align="right" width="25%"><span style="color: red"></span><span>学员ID：</span>
+											</td>
+											<td><span> <span name="stuId"
+													th:text="${stu.stuId}"></span>
+											</span></td>
+										</tr>
+										<tr>
+											<td align="right" width="25%"><span style="color: red">*</span>
+												<span>输入姓名：</span></td>
+											<td><span> <input type="hidden" name="stuId"
+													id="stuId" th:value="${stu.stuId}" /> <input type="hidden"
+													name="operationSuccess" th:value="${operationSuccess}" />
+													<input type="text" class="form-control" id="stuName"
+													name="stuName" th:value="${stu.stuName}" />
+											</span></td>
+										</tr>
+										<tr>
+											<td align="right" width="25%"><span style="color: red">*</span>
+												<span>选择性别：</span></td>
+											<td>
+											<span>
+											<select th:if="${stu.stuSex == null}" name="stuSex"
+												class="form-control" id="stuSex">
+													<option value=""></option>
+													<option value="0">男</option>
+													<option value="1">女</option>
+											</select> <select th:if="${stu.stuSex == '0'}" name="stuSex"
+												class="form-control" id="stuSex">
+													<option value="0" selected="selected">男</option>
+													<option value="1">女</option>
+											</select> <select th:if="${stu.stuSex == '1'}" name="stuSex"
+												class="form-control" id="stuSex">
+													<option value="0">男</option>
+													<option value="1" selected="selected">女</option>
+											</select>
+											</span></td>
+										</tr>
+										<tr>
+											<td align="right" width="25%"><span style="color: red">*</span>
+												<span>选择班级：</span></td>
+											<td>
+												<span>
+													<select name="claId" class="form-control" id="class_select">
+														<option th:each="info:${list}" th:value="${info.cId}" th:text="${info.cName}"></option>
+													</select>
+												</span>
+											</td>
+										</tr>
+										<tr>
+											<td align="right" width="25%"><span style="color: red">*</span>
+												<span>身份证号：</span></td>
+											<td><span> <input type="text"
+													class="form-control" id="number" name="stuIdNumber"
+													th:value="${stu.stuIdNumber}" /></span></td>
+										</tr>
+
+										<tr>
+											<td align="right" width="25%"><span style="color: red">*</span>
+												<span>输入手机号 ：</span></td>
+											<td><span><input type="text" class="form-control"
+													id="stuMobile" name="stuMobile" th:value="${stu.stuMobile}" /></span>
+											</td>
+										</tr>
+										<tr>
+											<td align="right" width="25%"><span style="color: red">*</span>
+												<span>开始试听时间：</span></td>
+											<td><span> <input type="date"
+													class="form-control" id="stuAuditionStartTime"
+													name="stuAuditionStartTime"
+													th:value="${stu.stuAuditionStartTime}" />
+											</span></td>
+										</tr>
+										<tr>
+											<td align="right" width="25%"><span style="color: red">*</span>
+												<span>是否有试听费：</span></td>
+											<td><span> <input type="radio" id="audition"
+													name="audition" value="1" checked="checked" />是 <input
+													type="radio" id="audition" name="audition" value="0" />否
+											</span></td>
+										</tr>
+										<tr>
+											<td align="right" width="25%"><span style="color: red">*</span>
+												<span>所学专业:</span></td>
+											<td><span> <input type="text"
+													class="form-control" th:value="${stu.stuSpecialty}"
+													id="stuSpecialty" name="stuSpecialty" />
+											</span></td>
+										</tr>
+										<tr>
+											<td align="right" width="25%"><span style="color: red">*</span>
+												<span>学员备注:</span></td>
+											<td><span> <input type="text"
+													class="form-control" id="stuRemark" name="stuRemark"
+													th:value="${stu.stuRemark}" />
+											</span></td>
+										</tr>
+
+
+
+									</table>
+									<div align="center">
+										<input value="返回上一级" onclick="returnBack();" type="button"
+											class="btn btn-info btn-w-md" />
+										<input value="保存"
+											type="submit" class="btn btn-warning btn-w-md" />
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<!-- ============================= 页面内容 结束 ============================= -->
+			</main>
+			<!-- END 页面主要内容  -->
+		</div>
+	</div>
+
+	<script type="text/javascript" th:src="@{js/jquery-1.11.3.min.js}"></script>
+	<script type="text/javascript" th:src="@{js/public-obj.js}"></script>
+	<script type="text/javascript" th:src="@{js/bind.js}"></script>
+	<script type="text/javascript" th:src="@{js/controls.js}"></script>
+	<script type="text/javascript" th:src="@{js/slide.js}"></script>
+	<script type="text/javascript" th:src="@{js/switch.js}"></script>
+	<script type="text/javascript" th:src="@{js/initial.js}"></script>
+	<script type="text/javascript" th:src="@{js/printhtml.js}"></script>
+	<script type="text/javascript"
+		th:src="@{js/plugins/My97DatePicker/WdatePicker.js}"></script>
+	<script type="text/javascript"
+		th:src="@{js/plugins/file/uploadify/jquery.uploadify.min.js}"></script>
+	<script type="text/javascript" th:src="@{js/plugins/layer/layer.js}"></script>
+	<script type="text/javascript"
+		th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+	<script type="text/javascript"
+		th:src="@{js/plugins/select2/i18n/zh-CN.js}"></script>
+	<script type="text/javascript"
+		th:src="@{js/plugins/treeview/jquery.treeview.js}"></script>
+	<script type="text/javascript"
+		th:src="@{js/plugins/form/jquery.form.js}"></script>
+	<script type="text/javascript"
+		th:src="@{js/plugins/ztree/jquery.ztree.core-3.5.js}"></script>
+	<script type="text/javascript"
+		th:src="@{js/plugins/ztree/jquery.ztree.excheck-3.5.js}"></script>
+	<script type="text/javascript" th:src="@{js/plugins/comm/constant.js}"></script>
+	<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+	<script type="text/javascript"
+		th:src="@{js/plugins/comm/appconstans.js}"></script>
+	<script type="text/javascript" th:src="@{js/plugins/comm/bmsAjax.js}"></script>
+	<script type="text/javascript" th:src="@{js/plugins/comm/validata.js}"></script>
+	<script type="text/javascript"
+		th:src="@{js/plugins/validate/jquery.validate.min.js}"></script>
+	<script type="text/javascript"
+		th:src="@{js/plugins/validate/localization/messages_zh.min.js}"></script>
+	<script type="text/javascript"
+		th:src="@{js/plugins/validate/regValidate.js}"></script>
+	<script type="text/javascript" th:src="@{js/popup_layer.js}"></script>
+	<script type="text/javascript"
+		th:src="@{js/plugins/kxbdmarquee/js/jquery.kxbdmarquee.js}"></script>
+	<script type="text/javascript" th:src="@{js/textScroll.js}"></script>
+	<script type="text/javascript" th:src="@{js/app.js}"></script>
+	<script type="text/javascript" th:src="@{js/plugins/layer/layui.js}"></script>
+	<script th:inline="Javascript">
+	$(function(){
+		//默认选中
+		$("#class_select").val([[${stu.claId}]]);
+	});
+</script>
+	<script th:inline="javascript"> 
+		$(function(){
+			var operationSuccess = $("#operationSuccess").val();
+			if(operationSuccess != ""){
+				if (operationSuccess != null) {
+					if (operationSuccess != undefined){
+
+						_alert(operationSuccess);
+					}
+				}
+			}
+		});
+		/*********************校验开始************************/
+		$(function(){
+			setValidate($("#basefrm"),{
+				rules: {
+					stuName:{required: true,number: false,stuName: true, maxlength: 21,minlength:2},
+					stuIdNumber:{required: true,maxlength:18,minlength:2,ID_number:true,
+						 remote:{       
+				              type : "POST",
+				              url : [[@{/stu/VerificationStuID.ht}]],
+				              cache:true,
+				              async: true,
+				              data : { 
+				            	 "stuIdNumber" : function(){return $("#stuIdNumber").val();},
+								"stuId" : function(){return $("#stuId").val();}
+				              			},
+				          		 }	
+						},
+						stuAuditionStartTime:{required: true},
+						stuSex:{required: true},
+						claId:{required: true},
+					stuMobile:{phone_number: true, maxlength: 11,
+						 remote:{       
+				              type : "POST",
+				              url : [[@{/stu/VerificationStuMobile.ht}]],
+				              cache:true,
+				              async:true,
+				              data : {
+				            	 "stuMobile" : function(){return $("#stuMobile").val();},
+								"stuId" : function(){return $("#stuId").val();}
+				            		  },
+				          }  
+						}
+					
+					},
+					
+				messages:{
+					stuName:{required: "*请输入姓名!",number:"*输入正确的姓名!",maxlength: "*长度最大21位字符!",minlength:"*长度最小2位字符!"},
+					stuIdNumber:{required: "*请填身份证号码!",maxlength:"*最大长度18位!",minlength:"*最少长度2位 !",remote: "*已有该学员或员工!"},
+					stuAuditionStartTime:{required: "*请输入试听入学时间!"},
+					stuSex:{required: "*请选择性别!"},
+					claId:{required: "*请选择班级!"},
+					stuMobile:{ maxlength: "*输入正确手机格式!",remote: "*该手机号已被注册!"}
+				}
+			}
+			);
+			/* =========================================手机号码校验======================================================= */
+			$.validator.addMethod("phone_number", function(value, element) { 
+				//var phone_number = /^((13[0-9])|(14[5,7,9])|(15[^4])|(18[0-9])|(17[0,1,3,5,6,7,8]))\d{8}$/;
+				var phone_number = /^((1[0-9][0-9]))\d{8}$/;
+				return this.optional(element) || (phone_number.test(value)); 
+			}, "*手机号码格式错误!"); 
+			
+			/*=====================================身份证号验证=============================================*/
+			$.validator.addMethod("ID_number", function(value, element) { 
+				var ID_number = /^[1-9]\d{7}((0[1-9])|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$|^[1-9]\d{5}[1-9]\d{3}((0[1-9])|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$/;
+					
+				return this.optional(element) || (ID_number.test(value)); 
+			}, "*身份证号码格式错误!"); 
+			 /*=====================================姓名验证=============================================*/
+				$.validator.addMethod("stuName", function(value, element) { 
+					var stuName =  /^[\u4E00-\u9FA5A-Za-z]+$/;
+					return this.optional(element) || (stuName.test(value)); 
+				}, "*姓名只能输入中文和英文!"); 
+			 
+			 
+					$("#class_select").select2({
+						placeholder : "请选择班级"
+					});
+					$("#stuSex").select2({
+						placeholder : "请选择性别"
+					});
+		});
+		/********************************校验结束*************************************************/
+		
+		function notSupJump(){
+			var stuId = $("#stuId").val();
+			if(stuId==null || stuId == ""){
+				_alert("请先保存当前页面");
+			}else {
+				locationHref([[@{'/stu/stuPageJump.ht'}]] + "?stuTable=audStudentSupplementJump");
+			}
+		};
+		function notEduJump(){
+			var stuId = $("#stuId").val();
+			if(stuId==null || stuId == ""){
+				_alert("请先保存当前页面");
+			}else {
+				locationHref([[@{'/stu/stuPageJump.ht'}]] + "?stuTable=audStudentEducationJump");
+			}
+		};
+		
+		function notFamJump(){
+			var stuId = $("#stuId").val();
+			if(stuId==null || stuId == ""){
+				_alert("请先保存当前页面");
+			}else {
+				locationHref([[@{'/stu/stuPageJump.ht'}]] + "?stuTable=audStudentFamilyJump");
+			}
+		};
+		function returnBack(){
+			var url = [[@{'/stu/toAudStuList.ht'}]];
+			locationHref(url);
+		};
+		
+		</script>
+</body>
+</html>

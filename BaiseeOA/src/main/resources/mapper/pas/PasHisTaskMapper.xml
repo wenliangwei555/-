@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.pas.PasHisTaskMapper">
+	 
+<!-- <select id="selectInsIdByMap" parameterType="map"  resultType="map">
+		 select ID_ as id, PROC_DEF_ID_ as depId, PROC_INST_ID_ as insId from ACT_HI_TASKINST where ASSIGNEE_ = #{userId, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="selectVarMapByInsids" parameterType="map"  resultType="map">
+		  select NAME_ as name, TEXT_ as text from ACT_RU_VARIABLE a where PROC_INST_ID_ in 
+		  <foreach collection="list" open="(" close=")" item="insId" separator=",">
+				#{insId}
+		  </foreach>
+	</select> -->
+	
+	
+	<select id="selectHisPageByMap"  parameterType="map"  resultType="map">
+		  select a.NAME_ as processName, (select TEXT_ from ACT_HI_VARINST where name_ = 'userId' and EXECUTION_ID_ = a.PROC_INST_ID_) as userId,
+a.START_TIME_  as startTime, a.END_TIME_ as endTime , 
+b.NAME_ as taskName from ACT_HI_TASKINST a, ACT_RE_DEPLOYMENT b , ACT_RE_PROCDEF c
+where a.PROC_DEF_ID_ = c.ID_ and c.DEPLOYMENT_ID_ = b.ID_  and a.ASSIGNEE_ = #{userId, jdbcType=VARCHAR}
+	</select>
+
+	
+</mapper>

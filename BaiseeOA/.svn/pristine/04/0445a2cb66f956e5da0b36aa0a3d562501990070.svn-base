@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+	<head th:include="commonTemplate :: header">
+	</head>
+	<body class="bgcolor-body">
+		<div id="page">
+			<div th:include="commonTemplate :: headerDiv"></div>
+			<div id="content" class="layout">
+				<div class="grid-s5m0">
+					<!-- ============================= 页面内容 开始============================= -->
+					<div class="col-main">
+						<div class="main-wrap">
+							<div class="skin-box">
+								<div class="skin-box-bd">
+									<div class="cur-position">
+										<span><a href="javascript:void(0);">系统通知</a> </span> <span>&gt;</span>
+									<span><a href="javascript:void(0);">发送列表</a> </span>
+									</div>
+									<form th:action="@{notice/sendlist.ht}" th:object="${notice}"  id="frm" name="frm" method="post" onsubmit="return check();"> 
+										<div class="cont-box">
+											<div class="search-box">
+												<span style="padding-left:20px;"> 
+													<input baisee:ctrl="XTTZ_FSTZ" class="button" type="button" style="width:auto;margin-top: 5px;" th:onclick="'send()'" value="发送通知" /> 
+												</span>
+												<div class="right">
+													<div class="search-box-cont">
+														
+														<span> <input class="button" type="submit"  value="搜索" /> </span>
+														<span> <input class="input radius3" id="toUserName" name="toUserName" th:value="*{toUserName}" type="text" placeholder="接收人" style="width: 226px"/> </span>
+														
+														<span style="margin-right:30px;">
+															<select name="status" id="status" style="width:100px;"  th:field="*{status}">
+																<option value="*">选择状态</option>
+																<option value="0" >未读/运行</option>
+																<option value="1" >已读</option>
+																<option value="2" >已处理</option>
+																<option value="3" >已关闭</option>
+															</select>
+														</span>
+														<span style="margin-right: 30px;"> 
+																<input
+																style="width: 100px; margin-right: 30px;" type="text"
+																placeholder="发送开始时间" class="radius3 input" id="createStartTime"
+																name="createStartTime" th:value="*{createStartTime}"
+																onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',readOnly:true })" />
+																<input style="width: 100px; margin-right: 30px;"
+																type="text" placeholder="发送结束时间" class="radius3 input"
+																id="createEndTime" name="createEndTime" th:value="*{createEndTime}"
+																onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',readOnly:true })" />
+														</span>
+													</div>
+												</div>
+											</div>
+											<div class="list-table">
+												<div class="list-table-cont">
+													<div class="table2">
+														<table class="ks-inputall">
+															<tr class="th">
+																<td class="col1">标题</td>
+																<td class="col2">发送人</td>
+																<td class="col2">接收人</td>
+																<td class="col2">状态</td>
+																<td class="col3">更新时间</td>
+																<td class="col4">发送时间</td>
+															</tr>
+															<!-- 下面是数据 -->
+															<tr th:each="item:${pageResult.list}" th:if="${pageResult.list != null &amp;&amp; pageResult.list.size() > 0}" onmouseover="this.style.backgroundColor='#e3f1ff'" onmouseout="this.style.backgroundColor='#ffffff'">
+																<td class="col2">
+																	<span th:text="${item.title}" style="cursor:pointer" title="点击可编辑" th:onclick="'view(\'' + ${item.id} + '\')'" ></span>
+																</td>
+																<td class="col2">
+																	<span th:text="${item.fromUserName}" ></span>
+																</td>
+																<td class="col2">
+																	<span th:text="${item.toUserId}?${item.toUserName}:'系统消息'" >小三</span>
+																</td>
+																<td class="col3" th:switch="${item.status}">
+																	<span th:case="'0'" th:text="${item.toUserId}?'未读':'运行'"></span>
+																	<span th:case="'1'" th:text="已读"></span>
+																	<span th:case="'2'" th:text="已处理"></span>
+																	<span th:case="'3'" th:text="已关闭"></span>
+																</td>
+																<td class="col2">
+																	<span baisee:fmt="yyyy-MM-dd HH:mm:ss,${item.updateTime}" ></span>
+																</td>
+																<td class="col2">
+																	<span baisee:fmt="yyyy-MM-dd HH:mm:ss,${item.createTime}" ></span>
+																</td>
+															</tr> 
+														</table>
+													</div>
+												</div>
+											</div>
+											<div th:include="commonTemplate :: pageBox"></div>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- ============================= 页面内容 结束============================= -->
+					<div th:include="commonTemplate :: leftMenus"></div>
+				</div>
+			</div>
+			<div th:include="commonTemplate :: footer"></div>
+		</div>
+		<div th:include="commonTemplate :: processBar" />
+		
+	<script th:inline="javascript">
+	 	function check(){ 
+			var createStartTime = $("#createStartTime").val();
+			var createEndTime = $("#createEndTime").val();
+			if(createStartTime > createEndTime){
+				alert("结束时间不得早于开始时间");
+				$("#createStartTime").val("");
+				$("#createEndTime").val("");
+				return false;
+			}
+			
+			var toUserName=$("#toUserName").val();
+			var Correct = /^[A-Za-z0-9\u4e00-\u9fa5]+$/;
+			if(toUserName != ""){
+				if (!Correct.test(toUserName)){
+					alert("含有非法字符，请正确输入！");
+					$("#fromUserName").val("");
+					return false;
+				}
+			}
+		} 
+		//跳转学生查看页面
+		function view(id){
+			locationHref([[@{/notice/view.ht}]] + "?noticeId=" + id);
+		}
+		
+		//发送通知
+		function send(){
+			locationHref([[@{/notice/sendview.ht}]]);
+		}
+	</script>
+	</body>
+</html>  

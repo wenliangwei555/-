@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="header">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link rel="stylesheet" type="text/css"
+	th:href="@{css/classCourse.css}" />
+<link rel="stylesheet" th:href="@{css/common.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{css/DefaultSkin.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{css/load.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{css/control.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{css/page.css}" />
+<link rel="stylesheet" type="text/css"
+	th:href="@{css/select2/select2.css}" />
+<link rel="stylesheet" type="text/css"
+	th:href="@{css/zTreeStyle/zTreeStyle.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{css/core.css}" />
+<link rel="stylesheet" type="text/css"
+	th:href="@{js/plugins/file/uploadify/uploadify.css}" />
+<link rel="stylesheet" type="text/css"
+	th:href="@{js/plugins/treeview/jquery.treeview.css}" />
+<link rel="stylesheet" type="text/css"
+	th:href="@{js/plugins/layer/skin/layer.css}" />
+<link rel="stylesheet" type="text/css"
+	th:href="@{css/layui/dist/css/layui.css}" />
+<link rel="stylesheet" type="text/css"
+	th:href="@{css/layui/dist/css/global.css}" />
+<style type="text/css">
+	.slider ul{
+	}
+	#marquee{
+		position:absolute;
+		top:11px;
+		left:300px;
+		width:140%;
+		height:25px;
+		overflow:hidden; 
+		background:#EFEFEF;
+	}
+	#marquee ul li{
+		float:left; 
+		padding:0 10px; 
+		line-height:25px;
+	}
+</style>
+<script type="text/javascript" th:src="@{js/jquery-1.11.3.min.js}"></script>
+<script type="text/javascript" th:src="@{js/public-obj.js}"></script>
+<script type="text/javascript" th:src="@{js/bind.js}"></script>
+<script type="text/javascript" th:src="@{js/controls.js}"></script>
+<script type="text/javascript" th:src="@{js/slide.js}"></script>
+<script type="text/javascript" th:src="@{js/switch.js}"></script>
+<script type="text/javascript" th:src="@{js/initial.js}"></script>
+<script type="text/javascript" th:src="@{js/printhtml.js}"></script>
+<script type="text/javascript"
+	th:src="@{js/plugins/My97DatePicker/WdatePicker.js}"></script>
+<script type="text/javascript"
+	th:src="@{js/plugins/file/uploadify/jquery.uploadify.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/layer/layer.js}"></script>
+<script type="text/javascript"
+	th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+<script type="text/javascript"
+	th:src="@{js/plugins/select2/i18n/zh-CN.js}"></script>
+<script type="text/javascript"
+	th:src="@{js/plugins/treeview/jquery.treeview.js}"></script>
+<script type="text/javascript"
+	th:src="@{js/plugins/form/jquery.form.js}"></script>
+<script type="text/javascript"
+	th:src="@{js/plugins/ztree/jquery.ztree.core-3.5.js}"></script>
+<script type="text/javascript"
+	th:src="@{js/plugins/ztree/jquery.ztree.excheck-3.5.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/constant.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+<script type="text/javascript"
+	th:src="@{js/plugins/comm/appconstans.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/bmsAjax.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/validata.js}"></script>
+<script type="text/javascript"
+	th:src="@{js/plugins/validate/jquery.validate.min.js}"></script>
+<script type="text/javascript"
+	th:src="@{js/plugins/validate/localization/messages_zh.min.js}"></script>
+<script type="text/javascript"
+	th:src="@{js/plugins/validate/regValidate.js}"></script>
+<script type="text/javascript" th:src="@{js/popup_layer.js}"></script>
+<script type="text/javascript"
+	th:src="@{js/plugins/kxbdmarquee/js/jquery.kxbdmarquee.js}"></script>
+<script type="text/javascript"
+	th:src="@{js/textScroll.js}"></script>
+<script type="text/javascript" th:src="@{js/app.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/layer/layui.js}"></script>
+<script th:inline="javascript">
+		$(function(){
+			$("img").error(function(){//图片加载错误
+				$(this).attr("src", [[@{/img/u146.png?}]]);//设置默认图片
+			});
+			$("#menu_tree").bind('click',function(event){
+				if(event.target.className.indexOf("hitarea")>-1){
+					if(YW.newobj){
+						if(YW.newobj.leftheigth){
+							YW.newobj.leftheigth.setSize();
+						}
+					}
+				}
+			})
+			$(".item-hd,.dd-nav").bind('click',function(){
+				if(YW.newobj){
+					if(YW.newobj.leftheigth){
+						YW.newobj.leftheigth.setSize();
+					}
+				}
+			})
+		});
+		
+</script>
+
+<!-- 弹出框 -->
+<script type="text/javascript">
+	var w, h, className;
+	function getSrceenWH() {
+		w = $(window).width();
+		h = $(window).height();
+		$('#dialogBg').width(w).height(h);
+	}
+
+	window.onresize = function() {
+		getSrceenWH();
+	}
+	$(window).resize();
+
+	$(function() {
+		getSrceenWH();
+
+		//显示弹框
+		$('.box a').click(
+				function() {
+					className = $(this).attr('class');
+					$('#dialogBg').fadeIn(600);
+					$('#dialog').removeAttr('class').addClass(
+							'animated ' + className + '').fadeIn();
+				});
+
+		//关闭弹窗
+		$('.claseDialogBtn').click(function() {
+			$('#dialogBg').fadeOut(600, function() {
+				$('#dialog').addClass('bounceOutUp').fadeOut();
+			});
+		});
+	});
+	
+</script>
+
+<script type="text/javascript" th:inline="javascript">
+/*<![CDATA[*/
+var basePath = /*[[@{/}]]*/;
+/*]]>*/
+</script>
+
+<!-- 弹出框 -->
+<script type="text/javascript">
+	var w, h, className;
+	function getSrceenWH() {
+		w = $(window).width();
+		h = $(window).height();
+		$('#dialogBg1').width(w).height(h);
+	}
+
+	window.onresize = function() {
+		getSrceenWH();
+	}
+	$(window).resize();
+	
+	$(function() {
+		getSrceenWH();
+		
+		
+		//显示弹框
+		$('.box1 a').click(
+				function() {
+					className = $(this).attr('class');
+					$('#dialogBg').fadeIn(600);
+					$('#dialog').removeAttr('class').addClass(
+							'animated ' + className + '').fadeIn();
+				});
+
+		//关闭弹窗
+		$('.claseDialogBtn').click(function() {
+			$('#dialogBg').fadeOut(600, function() {
+				$('#dialog').addClass('bounceOutUp').fadeOut();
+			});
+		});
+	});
+	$(document).ready(function(){
+
+		loadUserNotice();
+		//$("#breakingnews1").BreakingNews();
+		$('#apply').click(function(e) {
+
+           addValues(); 
+
+        });
+
+		addValues();
+
+	});	
+
+	
+
+function addValues()
+
+{
+
+	
+
+	var params='Add : jQuery.js\n'+
+
+				'Add : BreakingNews.js\n'+
+
+				'Add : BreakingNews.css\n\n\n'+
+
+				'$("#breakingnews").BreakingNews({\n\n'+
+
+				'	background		:"'+$("#background").val()+'",\n'+
+
+				'	title			:"'+$("#title").val()+'",\n'+
+
+				'	titlecolor		:"'+$("#titlecolor").val()+'",\n'+
+
+				'	titlebgcolor		:"'+$("#titlebgcolor").val()+'",\n'+
+
+				'	linkcolor		:"'+$("#linkcolor").val()+'",\n'+
+
+				'	linkhovercolor		:"'+$("#linkhovercolor").val()+'",\n'+
+
+				'	fonttextsize		:'+parseInt($("#fonttextsize").val())+',\n'+
+
+				'	isbold			:'+($("#isbold").val() == "true" ? true : false)+',\n'+
+
+				'	border			:"'+$("#border").val()+'",\n'+
+
+				'	width			:"'+$("#width").val()+"%"+'",\n'+
+
+				'	timer			:'+parseInt($("#timer").val())+',\n'+
+
+				'	autoplay		:'+($("#autoplay").val() == "true" ? true : false)+',\n'+
+
+				'	effect			:"'+$("#effect").val()+'",\n\n'+
+
+			'});\n';
+
+	$('.content pre code').html(params);
+
+}
+//首页加载 动态通知
+function loadUserNotice(){
+	/*<![CDATA[*/
+	$.ajax({
+		url:basePath + "/notice/getCurrUserNoticeList.ht",
+		type:'get',
+		success:function(data){
+			var noticeList = "";
+			$.each(data,function(i,item){
+				noticeList += '&nbsp;&nbsp;&nbsp;<a href="JavaScript:void(0)" onclick="view('+ item.id +')" >('+(i+1)+') '+item.title+';</a>';
+			})
+			$("#marquee-list").html(noticeList);
+			wrap();
+		}
+	})
+	
+	setTimeout(loadUserNotice, 5*60*1000);
+	/*]]>*/
+}
+//刷新菜单缓存
+function refreshMenu(){
+	/*<![CDATA[*/
+	$.ajax({
+		url:basePath + "/user/clearAllMenuCache.ht",
+		type:'get',
+		success:function(data){
+			location.reload();
+		}
+	})
+	
+	/*]]>*/
+}
+//跳转查看通知页面
+function view(id){
+	var url = basePath + "/notice/view.ht?noticeId="+ id;
+	locationHref(url);
+}
+function wrap (){
+	/*<![CDATA[*/
+		$("#marquee").textScroll();//aaa为最外层div的Id  也可写Class  如：$(".aaa") 此处aaa为class名
+	//$("#marquee").kxbdMarquee();
+     /*]]>*/
+}
+</script>
+</head>
+<body>
+	<div th:fragment="pageBox">
+		<div class="list-page" th:if="${pageResult != null}"
+			th:object="${pageResult}">
+			<div class="left">
+				<div class="page">
+					<span class="page-home"><a href="javascript:void(0);"
+						th:onclick="*{hasPreviousPage} ? 'go(1)' : 'return false;'"
+						title="点击跳转至首页">首页</a> </span> 
+						<span class="separator"></span> <span
+						class="page-up"><a href="javascript:void(0);"
+						th:onclick="*{hasPreviousPage} ? 'go(' + *{prePage} + ')' : 'return false;'"
+						title="点击查看上一页">上一页</a> </span> <span class="separator"></span> <span
+						class="page-dn"><a href="javascript:void(0);"
+						th:onclick="*{hasNextPage} ? 'go(' + *{nextPage} + ')' : 'return false;'"
+						title="点击查看下一页">下一页</a> </span> <span class="separator"></span> <span
+						class="page-home"><a href="javascript:void(0);"
+						th:onclick="*{hasNextPage} ? 'go(' + *{pages} + ')' : 'return false;'"
+						title="点击跳转至末页">末页</a> </span>
+				</div>
+				<span>
+				 <a href="javascript:void(0);" onclick="go($('#pagenumber').val());" title="跳转至页面">跳转</a>
+				 至</span> 
+				 <span>
+				 <input name="pageNum" class="input" type="text" id="pagenumber" th:value="*{pageNum}" /></span>
+				 <span>/</span>
+				 <span id="_pages" th:text="*{pages == 0} ? 1 : *{pages}"></span>
+				 <span>页</span>
+			</div>
+			<div class="right">
+				<span class="item-count"><span>共：</span><span
+					th:text="*{total}"></span>条</span>
+			</div>
+		</div>
+	</div>
+	<div th:fragment="headerDiv">
+		<div id="header" class="layout">
+			<div class="grid-m">
+				<div class="col-main">
+					<div class="main-wrap">
+						<div class="skin-box">
+							<div class="skin-box-bd">
+								<div class="left">
+									<div class="logo-box">
+										<div class="logo" title="刷新菜单" onclick="refreshMenu()"></div>
+									</div>
+									<div class="logo-box">
+										<div class="name-box">
+											<div class="title-name" style="margin-left: 120px;">百思教育</div>
+											<div id="marquee" class="marquee">
+												<div style="position:absolute;">
+													<span id="marquee-list">
+														<a>1文字横向滚动;</a>
+													</span>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="right">
+									<div class="user-box">
+										<span class="user-loginout"> <a th:href="@{logout.ht}"><img
+												th:src="@{img/loginout-01.png}" alt="" /></a></span> <span
+											class="user-name"> <a href="javascript:void(0);"
+											onclick="showDialog('ks-pop-box-pwd');"
+											th:text="${#httpSession.getValue('sessionUserInfo')}  == null ? '' : '修改密码'"></a></span>
+										<span class="user-name"> <a href="javascript:void(0);"
+											th:text="${#httpSession.getValue('sessionUserInfo')}  == null ? '' : ${#httpSession.getValue('sessionUserInfo').userName}">用户名</a></span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+				
+		   </div>
+	</div>
+		
+	<div th:fragment="leftMenus">
+		<div class="col-sub">
+			<div class="skin-box">
+				<div class="skin-box-bd menu-box JsW" data-size-type="widescreen"
+					data-size-config="{'min':true,'screen':'document','width':false,'client':[-120,0],'newobj':'leftheigth'}">
+					<ul class="JsW" data-widget-type="accordion"
+						data-widget-config="{'hover':'sub-item-hd','navCls':'dd-nav','contentCls':'dd-inner','autoplay':false,'activeIndex':-1,'forTouch':true}"
+						baisee:menus="1">
+						
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div th:fragment="footer">
+		<div id="footer" class="JsW" data-position-type="fixed"
+			data-position-config="{'bottom':0}">
+			<div class="grid-m">
+				<div class="col-main">
+					<div class="main-wrap">
+						<div class="skin-box">
+							<div class="skin-box-bd">
+								<div class="footer-box">
+									<div class="footer-content">
+										<p>Copyright © 2018 fuwuqu.me All Rights Reserved |
+											沪ICP备15039568号-1</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div th:fragment="processBar">
+		<div id="_proccesBar" class="JsW keypayment"
+			data-position-type="fixed" data-position-config="{}"
+			data-widget-type="popup"
+			data-widget-config="{'contentId':true,'contentCls':'ks-load'}"
+			style="display: none;">
+			<div class="JsW load-box" id="ks-load" data-size-type="widescreen">
+				<div class="JsW bg alpha30"></div>
+				<div class="JsW load-pop-box" data-align-type="align"
+					data-align-config="{'lframe':'ks-load'}">
+					<!-- <i class="ks-pop-close">X</i> -->
+					<img class="rotate" th:src="@{img/loading.png}"></img>
+				</div>
+			</div>
+			<div class="ks-pop-nav"></div>
+		</div>
+		<div class="modal-box" id="ks-pop-box-pwd">
+			<div class="JsW bg alpha60" data-position-type="fixed"
+				data-size-type="widescreen"></div>
+			<div class="pop-box JsW" data-align-type="align"
+				data-align-config="{'vertical':false,'offset':[120,0]}">
+				<form th:action="@{user/changePwd.ht}" method="post" id="changePwd">
+					<div class="pop-box-hd">
+						修改登录密码 <i class="ks-pop-close2"
+							onclick="closeDialog('ks-pop-box-pwd')">X</i>
+					</div>
+					<div class="pop-box-bd">
+						<table>
+							<tr>
+								<td>
+									<div>
+										<span class="require">*</span><span>原密码：</span>
+									</div>
+								</td>
+								<td>
+									<div>
+										<span><input type="password" class="radius3 input"
+											id="oldPassword" name="oldPassword" /></span>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div>
+										<span class="require">*</span><span>新密码：</span>
+									</div>
+								</td>
+								<td>
+									<div>
+										<span><input type="password" class="radius3 input"
+											id="newPassword" maxlength="20" name="newPassword" /></span>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div>
+										<span class="require">*</span><span>确认密码：</span>
+									</div>
+								</td>
+								<td>
+									<div>
+										<span><input type="password" class="radius3 input"
+											maxlength="20" id="checkPassword" name="checkPassword" /></span>
+									</div>
+								</td>
+							</tr>
+						</table>
+					</div>
+					<div class="pop-box-ft">
+						<div class="redbutton control-button JsW">
+							<span> <input type="button" value="确定"
+								onclick="changePwd('ks-pop-box-pwd','changePwd')"
+								class="radius5 button" />
+							</span>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	
+</body>
+</html>

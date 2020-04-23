@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+	<head th:include="commonTemplate :: header">
+	<link rel="stylesheet" type="text/css" th:href="@{css/cla_list_css.css}" />
+	</head>
+	<body class="bgcolor-body">
+		<div id="page">
+			<div th:include="commonTemplate :: headerDiv"></div>
+			<div id="content" class="layout">
+				<div class="grid-s5m0">
+					<!-- ============================= 页面内容 开始============================= -->
+					<div class="col-main">
+						<div class="main-wrap">
+							<div class="skin-box">
+								<div class="skin-box-bd">
+									<div class="cur-position">
+										<span><a href="javascript:void(0);">信息管理</a> </span>
+										<span>&gt;</span>
+										<span><a th:href="@{cla/toClaList.ht}">流程管理</a> </span>
+									</div>
+									<form th:action="@{cla/toClaList.ht}" class="layui-form" id="frm" name="frm" method="post">
+										<div class="cont-box">
+											<div class="search-box">
+												<div class="right">
+													<div class="search-box-cont" >
+														<span> <input class="button" type="submit" value="搜索" /> </span>
+													</div>
+												</div>
+											</div>
+											<div class="list-table">
+												<div class="list-table-cont">
+													<div class="table2">
+														<table class="ks-inputall">
+															<tr class="th">
+																<td class="col4">流程名称</td>
+																<td class="col7">操作</td>
+															</tr>
+															  
+															<tr th:each="info:${pageResult}" th:if="${pageResult != null &amp;&amp; pageResult.size() > 0}" onmouseover="this.style.backgroundColor='#e3f1ff'" onmouseout="this.style.backgroundColor='#ffffff'">
+																<td class="col4">
+																	<span  th:text="${info.name}"></span>
+																</td>
+																<td class="col5">
+																	<span class="add JsW" >
+																		<a th:onclick="'startProcess(\'' + ${info.id} + '\')'" class="ks-pop-nav" title="启动流程" style="cursor:pointer;color: red">
+																			启动流程
+																		</a>
+																	</span>
+																</td>
+															</tr> 
+														</table>
+													</div>
+												</div>
+											</div>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- ============================= 页面内容 结束============================= -->
+					<div th:include="commonTemplate :: leftMenus"></div>
+				</div>
+			</div>
+			<div th:include="commonTemplate :: footer"></div>
+		</div>
+		<div th:include="commonTemplate :: processBar" />
+		
+	<script th:inline="javascript">
+	
+		function startProcess(deploymentId){
+			var ev = layer.open({
+				type : 2,// 0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+				title : '填写信息',
+				shadeClose : true,
+				shade : false,
+				maxmin : true,
+				area : [ '650px', '300px' ],
+				content : './engine/toEngineVariable.ht?deploymentId=' + deploymentId,
+				cancel  : function(){
+					if(confirm('确定要关闭么')){ //只有当点击confirm框的确定时，该层才会关闭
+						var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+						parent.layer.close(index);
+					}
+				}
+			});
+		};
+		
+	</script>
+	
+	</body>
+</html>

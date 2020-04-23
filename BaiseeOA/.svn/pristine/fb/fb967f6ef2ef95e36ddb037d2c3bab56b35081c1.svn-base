@@ -1,0 +1,10 @@
+/*!
+* @Authors:              *
+* @System:icip              *
+* @Version:v1.0.0             *
+* @update:2015-11-12 10:45:18 *
+*/
+
+!function(){window.$&&$(function(){for(var t=$(".JsW").get(),a=0;a<t.length;a++){switch("fixed"===$(t[a]).attr("data-position-type")&&YW.newObj(YW.position.Fixed,t[a],$(t[a]).attr("data-position-config")),"widescreen"===$(t[a]).attr("data-size-type")&&YW.newObj(YW.size.Widescreen,t[a],$(t[a]).attr("data-size-config")),"align"===$(t[a]).attr("data-align-type")&&YW.newObj(YW.align.Align,t[a],$(t[a]).attr("data-align-config")),$(t[a]).attr("data-widget-type")){case"tab":YW.newObj(YW.widget.Tab,t[a],$(t[a]).attr("data-widget-config"));break;case"popup":YW.newObj(YW.widget.Popup,t[a],$(t[a]).attr("data-widget-config"));break;case"accordion":YW.newObj(YW.widget.Accordion,t[a],$(t[a]).attr("data-widget-config"));break;case"slide":var e=YW.newObj(YW.widget.Slide,t[a],$(t[a]).attr("data-widget-config"));e.start()}switch($(t[a]).attr("data-ctrlmutual-type")){case"selectswap":YW.newObj(YW.ctrlmutual.SelectSwap,t[a],$(t[a]).attr("data-ctrlmutual-config"));break;case"disabled":YW.newObj(YW.ctrlmutual.Disabled,t[a],$(t[a]).attr("data-ctrlmutual-config"))}switch($(t[a]).attr("data-control-type")){case"number":YW.newObj(YW.controls.Adjustment,t[a],$(t[a]).attr("data-control-config"));break;case"checkbox":YW.newObj(YW.controls.Checkbox,t[a],$(t[a]).attr("data-control-config"));break;case"checkboxall":YW.newObj(YW.controls.CheckboxAll,t[a],$(t[a]).attr("data-control-config"));break;case"radio":YW.newObj(YW.controls.Radio,t[a],$(t[a]).attr("data-control-config"));break;case"select":YW.newObj(YW.controls.Select,t[a],$(t[a]).attr("data-control-config"));break;case"button":YW.newObj(YW.controls.Button,t[a],$(t[a]).attr("data-control-config"))}}}),window.$&&$(document).ready(function(){for(var t=$("[data-bind]").get(),a=0;a<t.length;a++)YW.newObj(YW.Evt.Bind,t[a],$(t[a]).attr("data-bind"))})}();
+
+/*!----------   2015-11-12 10:45:18   ----------*/

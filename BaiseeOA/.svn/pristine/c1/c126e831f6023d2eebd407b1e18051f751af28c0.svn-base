@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="commonTemplate :: header">
+</head>
+
+<body>
+<div class="lyear-layout-web">
+	<div class="lyear-layout-container">
+
+		<!--左侧导航-->
+		<div th:replace="commonTemplate :: leftMenus"></div>
+		<!--End 左侧导航-->
+
+		<!--头部信息-->
+		<div th:replace="commonTemplate :: headerDiv"></div>
+		<!--End 头部信息-->
+
+		<!--页面主要内容-->
+		<main class="lyear-layout-content">
+
+			<div class="container-fluid">
+				<form  th:action="@{flow/showPayment.ht}" id="frm" name="frm" method="post">
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="card">
+								<div class="card-toolbar clearfix " >
+									<div class="card-toolbar clearfix " >
+										<div class="pull-right search-bar" >
+											<div class="input-group">
+												<input class="form-control"
+													   onkeyup="check();" id="userid" name="userid"
+													   th:value="${userid}" type="text" placeholder="输入学生姓名"
+													    />
+												<div class="input-group-btn">
+													<button class="btn btn-success" th:onclick="'stuAuditionStartTime()'" id="search-btn1" type="button" aria-haspopup="true" aria-expanded="false">
+														搜索
+													</button>
+												</div>
+											</div>
+										</div>
+										<div class="pull-right search-bar">
+											<select name="type" id="type" class="form-control">
+												<option value="" selected="selected" >全部类型</option>
+												<option value="学费" th:if="${type} eq 学费" selected="selected">学费</option>
+												<option value="学费" th:if="${type} ne 学费" >学费</option>
+												<option value="返费" th:if="${type} eq 返费" selected="selected">返费</option>
+												<option value="返费" th:if="${type} ne 返费" >返费</option>
+												<option value="退费" th:if="${type} eq 退费" selected="selected">退费</option>
+												<option value="退费" th:if="${type} ne 退费" >退费</option>
+												<option value="试听费" th:if="${type} eq 试听费" selected="selected">试听费</option>
+												<option value="试听费" th:if="${type} ne 试听费" >试听费</option>
+												<option value="预缴费" th:if="${type} eq 预缴费" selected="selected">预缴费</option>
+												<option value="预缴费" th:if="${type} ne 预缴费" >预缴费</option>
+												<option value="退预缴费" th:if="${type} eq 退预缴费" selected="selected">退预缴费</option>
+												<option value="退预缴费" th:if="${type} ne 退预缴费" >退预缴费</option>
+											</select>
+										</div>
+										<div class="pull-right search-bar" >
+											<div class="input-daterange input-group">
+												<input class="form-control js-datepicker" data-date-format="yyyy-mm-dd" type="text" id="startTime"
+													   name="startTime" th:value="${startTime}" placeholder="开始时间"/>
+												<span class="input-group-addon"><i class="mdi mdi-chevron-right"></i></span>
+												<input class="form-control js-datepicker" data-date-format="yyyy-mm-dd" type="text" id="endTime" name="endTime"
+													   th:value="${endTime}" placeholder="结束时间"/>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="card-body">
+									<div class="table-responsive">
+										<table class="table table-bordered">
+											<thead>
+											<tr>
+												<th class="col3">交易流水号</th>
+												<th class="col4">学生姓名</th>
+												<th class="col5">班级</th>
+												<th class="col6">交易金额</th>
+												<th class="col7">交易类型</th>
+												<th class="col8">操作人</th>
+												<th class="col9">操作时间</th>
+												<th class="co20">交易详情</th>
+											</tr>
+											</thead>
+											<tbody>
+											<tr th:each="list,iterStat:${pageResult.list}"
+												onmouseover="this.style.backgroundColor='#e3f1ff'"
+												onmouseout="this.style.backgroundColor='#ffffff'"
+												th:id="${list.transactionID}">
+												<td class="col3"><span style="cursor: pointer"
+																	   th:text="${list.transactionID}"></span></td>
+												<td class="col4"><span style="cursor: pointer"
+																	   th:text="${list.remarks}"></span></td>
+												<td class="col5"><span style="cursor: pointer"
+																	   th:text="${list.serviceID}"></span></td>
+												<td class="col6"><span style="cursor: pointer"
+																	   th:text="${list.amount}"></span></td>
+												<td class="col7"><span style="cursor: pointer"
+																	   th:text="${list.transactionType}"></span></td>
+												<td class="col8"><span style="cursor: pointer"
+																	   th:text="${list.userID}"></span></td>
+												<td class="col9"><span style="cursor: pointer"
+																	   baisee:fmt="yyyy-MM-dd,${list.time}"></span></td>
+												<td class="co20" colspan="2"><span
+														style="cursor: pointer" class="see" title="点击可展开"
+														th:text="展开"
+														th:onclick="'showDetails(\'' + ${list.transactionID} + '\',\'' + ${iterStat.index} + '\')'"
+														th:id="${iterStat.index}"></span></td>
+											</tr>
+											<tr style="display: none">
+												<td><input type="hidden" name="operationSuccess"
+														   id="operationSuccess" th:value="${operationSuccess}" /></td>
+											</tr>
+											</tbody>
+										</table>
+										<p align="right" style="font-size: 15px">
+											总收入：<span style="font-size: 20px" th:text="${totalIncome}"></span>元
+											&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+											总支出：<span style="font-size: 20px; color: red;"
+													  th:text="${totalExpenditure}"></span>元
+										</p>
+									</div>
+									<ul class="pagination" th:if="${pageResult != null}" th:object="${pageResult}">
+										<li><a href="javascript:void(0);" th:onclick="*{hasPreviousPage} ? 'go(1)' : 'return false;'">首页</a></li>
+										<li><a href="javascript:void(0);" th:onclick="*{hasPreviousPage} ? 'go(' + *{prePage} + ')' : 'return false;'">上一页</a></li>
+										<li><a href="javascript:void(0);" th:onclick="*{hasNextPage} ? 'go(' + *{nextPage} + ')' : 'return false;'">下一页</a></li>
+										<li><a href="javascript:void(0);" th:onclick="*{hasNextPage} ? 'go(' + *{pages} + ')' : 'return false;'">末页</a></li>
+										<li><a href="javascript:void(0);" onclick="go($('#pagenumber').val());">跳转至</a></li>
+										<li><a href="#1"><input name="pageNum" id="pagenumber" th:value="*{pageNum}" />/<span id="_pages" th:text="*{pages == 0} ? 1 : *{pages}"></span></a></li>
+										<li><a href="#1">页</a></li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</main>
+		<!--End 页面主要内容-->
+	</div>
+</div>
+
+<script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"  th:src="@{static/js/bootstrap.min.js}"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap-datepicker.min.js" th:src="@{js/bootstrap-datepicker.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap-datepicker.zh-CN.min.js" th:src="@{js/bootstrap-datepicker.zh-CN.min.js}"></script>
+<script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/layer/layer.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/bmsAjax.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/form/jquery.form.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/validate/jquery.validate.min.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/My97DatePicker/WdatePicker.js}"></script>
+
+<script type="text/javascript">
+	/*<![CDATA[*/
+
+	$(function(){
+		$('.search-bar .dropdown-menu a').click(function() {
+			var field = $(this).data('field') || '';
+			$('#search-field').val(field);
+			$('#search-btn').html($(this).text() + ' <span class="caret"></span>');
+		});
+	});
+	function stuAuditionStartTime() {
+		var stuStartTime = $("#startTime").val();
+		var stuEndTime = $("#endTime").val();
+		if (stuStartTime > stuEndTime) {
+			_alert("结束时间不得早于开始时间");
+			return false;
+		}
+		document.getElementById("frm").submit();
+	}
+	function showDetails(transactionID, i) {
+
+		var id = transactionID;
+		if ($("#" + i).text() == "展开") {
+			$("#" + i).text("收起");
+
+			$.ajax({
+				url : basePath +"/flow/showServiceAccount.ht",
+				data : "transactionID=" + id,
+				type : "post",
+				dataType : "json",
+				processData : false,
+				success : function(obj) {
+					if (obj.data == "") {
+						return;
+					}
+					var d = '<tr id="a1" class="bb"><th colspan= "4">缴费详情</th></tr><tr class="bb" id="b1" style="background-color:gray;"><td  class="lefttd">业务流水号</td><td  class="lefttd">用户编号</td><td  class="lefttd">缴费金额</td><td  class="lefttd">缴费类型</td><td  class="lefttd">备注</td><td  class="lefttd">缴费时间</td></tr>';
+
+					$.each(
+							obj.data,
+							function(i, item) {
+								var flowID = item.serviceID;
+								var remarks = item.remarks;
+								var type = item.transactionType;
+								var userID = item.userID;
+								var amount = item.amount;
+								var time = item.time;
+								d += '<tr class="bb" style="background-color:#ccc;">'
+										+ '<td class="flowtd">'
+										+ flowID
+										+ '</td>'
+										+ '<td class="flowtd">'
+										+ userID
+										+ '</td>'
+										+ '<td class="flowtd">'
+										+ amount
+										+ '</td>'
+										+ '<td class="flowtd">'
+										+ type
+										+ '</td>'
+										+ '<td class="flowtd">'
+										+ remarks
+										+ '</td>'
+										+ '<td class="flowtd">'
+										+ time
+										+ '</td></tr>';
+								$("#" + id).after(d);
+							})
+				}
+			})
+			$.ajax({
+				url : basePath + "/flow/getPaymentDiscounts.ht",
+				data : "transactionID=" + id,
+				type : "post",
+				dataType : "json",
+				processData : false,
+				success : function(obj) {
+					if (obj.data == "") {
+						return;
+					}
+					var d = '<tr id="a2" class="bb"><th colspan= "4">优惠详情</th></tr><tr id="b2" class="bb" style="background-color:gray;"><td  class="lefttd">优惠流水号</td><td  class="lefttd">优惠金额</td><td  class="lefttd">优惠类型</td><td  class="lefttd">缴费时间</td></tr>';
+
+					$.each(
+							obj.data,
+							function(i, item) {
+								var flowID = item.transactionID;
+								var transactionType = item.transactionType;
+								var amount = item.amount;
+								var time = item.time;
+								d += '<tr class="bb" style="background-color:#ccc;">'
+										+ '<td class="flowtd">'
+										+ flowID
+										+ '</td>'
+										+ '<td class="flowtd">'
+										+ amount
+										+ '</td>'
+										+ '<td class="flowtd">'
+										+ transactionType
+										+ '</td>'
+										+ '<td class="flowtd">'
+										+ time
+										+ '</td></tr>';
+								$("#" + id).after(d);
+							})
+				}
+			})
+			$.ajax({
+				url : basePath + "/flow/getFillFlowMeter.ht",
+				data : "transactionID=" + id,
+				type : "post",
+				dataType : "json",
+				processData : false,
+				success : function(obj) {
+					if (obj.data == "") {
+						return;
+					}
+					var d = '<tr id="a3" class="bb"><th colspan= "4">抵充详情</th></tr><tr id="b3" class="bb" style="background-color:gray;"><td  class="lefttd">抵充流水号</td><td  class="lefttd">抵充金额</td><td  class="lefttd">抵充来源</td><td  class="lefttd">抵充时间</td></tr>';
+					$
+							.each(
+									obj.data,
+									function(i, item) {
+										var flowID = item.transactionID;
+										var transactionType = item.transactionType;
+										var amount = item.amount;
+										var time = item.time;
+										d += '<tr class="bb" style="background-color:#ccc;">'
+												+ '<td class="flowtd">'
+												+ flowID
+												+ '</td>'
+												+ '<td class="flowtd">'
+												+ amount
+												+ '</td>'
+												+ '<td class="flowtd">'
+												+ transactionType
+												+ '</td>'
+												+ '<td class="flowtd">'
+												+ time
+												+ '</td></tr>';
+										$("#" + id).after(d);
+									})
+				}
+			})
+			var bb = document.getElementsByClassName("bb");
+			bb.style.display == "none";
+		} else if ($("#" + i).text() == "收起") {
+			$(".see").text("展开");
+			$(".bb").remove();
+
+		}
+
+	}
+	$(function() {
+
+		var operationSuccess = $("#operationSuccess").val();
+		if (operationSuccess != "") {
+			_alert(operationSuccess);
+		}
+
+	});
+	/*]]>*/
+</script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<title>Insert title here</title>
+</head>
+<body>
+	<div th:each="pro:${list}">
+		<p style="color: red;">
+			<span th:text="${pro.stTitle}"></span>
+		</p>
+		<p>
+			<span th:if="${pro.stOptionA ne '' and pro.stOptionA ne null}">A、&nbsp;</span><span
+				th:text="${pro.stOptionA}"></span>
+		</p>
+		<p>
+			<span th:if="${pro.stOptionB ne '' and pro.stOptionB ne null}">B、&nbsp;</span><span
+				th:text="${pro.stOptionB}"></span>
+		</p>
+		<p>
+			<span th:if="${pro.stOptionC ne '' and pro.stOptionC ne null}">C、&nbsp;</span><span
+				th:text="${pro.stOptionC}"></span>
+		</p>
+		<p>
+			<span th:if="${pro.stOptionD ne '' and pro.stOptionD ne null}">D、&nbsp;</span><span
+				th:text="${pro.stOptionD}"></span>
+		</p>
+	</div>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head th:include="commonTemplate :: header">
+</head>
+<body class="bgcolor-body">
+
+	<div id="page">
+		<div th:include="commonTemplate :: headerDiv"></div>
+		<div id="content" class="layout">
+			<div class="grid-s5m0">
+				<div class="col-main">
+					<div class="main-wrap">
+						<div class="skin-box">
+							<div class="skin-box-bd">
+								<div class="cur-position">
+									<span><a href="javascript:void(0)">信息管理</a> </span> <span>&gt;</span>
+									<span><a th:href="@{refund/toRefundList.ht}">退费规则管理</a>
+									</span> <span>&gt;</span> <span><a href="javascript:void(0)">编辑退费规则信息</a></span>
+								</div>
+								<!-- ==================================== 页面内容开始 ============================= -->
+								<div class="cont-box">
+									<div class="JsW skin-box-bd" data-widget-type="tab"
+										data-widget-config="{'activeIndex':0}">
+										<div class="skin-bd-box">
+											<div class="list-table">
+												<div class="list-table-cont">
+													<div class="table6">
+														<form id="refForm"
+															th:action="@{refund/saveOrUpdateRefund.ht}" method="post">
+															<input type="hidden" name="rId" id="rId"
+																th:value="${refund.rId}" /> <input type="hidden"
+																name="prompt" id="prompt" th:value="${prompt}" />
+															<table>
+																<tr>
+																	<td>
+																		<div class="left">
+																			<div class="td1">
+																				<span class="require red">*</span><span>规则名称：</span>
+																			</div>
+																			<div class="td2">
+																				<span><input type="text"
+																					class="radius3 input" id="rName"
+																					name="rName" th:value="${refund.rName}"/></span>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+																<tr>
+																	<td>
+																		<div class="left">
+																			<div class="td1">
+																				<span class="require red">*</span><span>退费公式：</span>
+																			</div>
+																			<div class="td2">
+																				<span><textarea rows="2" cols="50"
+																						id="refundFormula"
+																						onKeypress="javascript:if(event.keyCode == 32)event.returnValue = false;"
+																						onkeyup="check();" name="refundFormula"
+																						th:text="${refund.refundFormula}"
+																						style="width: 200px; height: 80px; border: solid 1px #e0e0e0; border-radius: 10px; resize: none"></textarea></span>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+																<tr>
+																	<td>
+																		<div class="left">
+																			<div class="td1">
+																				<span class="require red">*</span><span>公式描述：</span>
+																			</div>
+																			<div class="td2">
+																				<span><textarea rows="2" cols="50"
+																						name="formulaDescribe"
+																						onKeypress="javascript:if(event.keyCode == 32)event.returnValue = false;"
+																						id="formulaDescribe" onkeyup="check();"
+																						th:text="${refund.formulaDescribe}"
+																						style="width: 200px; height: 80px; border: solid 1px #e0e0e0; border-radius: 10px; resize: none"></textarea></span>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+																<tr>
+																	<td>
+																		<div class="left">
+																			<div class="td1">
+																				<span class="require red">*</span><span>失效时间：</span>
+
+																			</div>
+																			<div class="td2">
+																				<span><input type="text"
+																					class="radius3 input" id="invalidTime"
+																					name="invalidTime" th:value="${refund.invalidTime}"
+																					onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',readOnly:true})" /></span>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+															</table>
+															<div class="redbutton control-button JsW"
+																data-control-type="button"
+																data-control-config="{'buttonCls':'button'}">
+																<span> <input value="保存" type="submit"
+																	class="radius5 button ks-pop-close1" />
+																</span> <span class="grey"> <input value="返回上一级"
+																	type="button" class="radius5 button ks-pop-close1"
+																	onclick="returnBack();" />
+																</span> <span id="del"></span>
+															</div>
+														</form>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<!-- ============================= 页面内容 结束============================= -->
+							</div>
+						</div>
+					</div>
+				</div>
+				<div th:include="commonTemplate :: leftMenus"></div>
+			</div>
+		</div>
+		<div th:include="commonTemplate :: footer"></div>
+	</div>
+	<div th:include="commonTemplate :: processBar" />
+	<script th:inline="javascript"> 
+		$(function(){
+			var cId = $("#rId").val();
+			setValidate($("#refForm"),{
+				rules: {
+					rName:{required: true, maxlength:30},
+					refundFormula:{required: true, maxlength:80},
+					formulaDescribe:{required: true},
+					cStatus:{required: true}
+				},
+				messages:{
+					rName:{required: "必填",maxlength: "最长30个字符"},
+					refundFormula:{required: "必填",maxlength: "最长80个字符"},
+					formulaDescribe:{required: "必填"},
+					invalidTime:{required: "必填"}
+				}
+			});
+		});
+		
+		$(function(){
+			var prompt=$("#prompt").val();
+			if(prompt != ""){
+				_alert(prompt);
+			}
+			
+		})
+		
+		function returnBack(){
+			var url = [[@{'/refund/toRefundList.ht'}]];
+			locationHref(url);
+		} 
+		</script>
+</body>
+</html>

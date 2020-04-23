@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+	<head th:replace="commonTemplate :: header">
+		<link rel="stylesheet" type="text/css" th:href="@{css/cla_list_css.css}" />
+	</head>
+	<body>
+		<div class="lyear-layout-web">
+			<div class="lyear-layout-container">
+
+				<!--左侧导航-->
+				<div th:replace="commonTemplate :: leftMenus"></div>
+				<!--End 左侧导航-->
+
+				<!--头部信息-->
+				<div th:replace="commonTemplate :: headerDiv"></div>
+				<!--End 头部信息-->
+
+				<!--页面主要内容-->
+				<main class="lyear-layout-content">
+
+					<div class="container-fluid">
+						<form th:action="@{insurance/toHandleList.ht}"  id="frm" name="frm" method="post">
+							<div class="row">
+								<div class="col-lg-12">
+									<div class="card">
+										<div class="card-toolbar clearfix " >
+
+											<div class="toolbar-btn-action">
+												<a class="btn btn-primary" th:href="@{tuition/toTuitionInfo.ht}"
+                                                   style="cursor: pointer; color: #ffffff"
+                                                   onmouseover="javascript:this.style.color='#dbdbdb'"
+                                                   onmouseout="javascript:this.style.color='#ffffff'"
+                                                ><i class="mdi mdi-plus"></i>新增</a>
+											</div>
+
+										</div>
+
+										<div class="card-body">
+
+											<div class="table-responsive">
+												<table class="table table-bordered text-center">
+													<thead>
+														<tr>
+															<th class="text-center">学籍</th>
+															<th class="text-center">是否退费</th>
+															<th class="text-center">是否分期</th>
+															<th class="text-center">是否优惠</th>
+															<th class="text-center">学费金额</th>
+															<th class="text-center">最后更新时间</th>
+															<th class="text-center">操作</th>
+														</tr>
+													</thead>
+													<tbody>
+														<tr th:if="${pageResult.list == null || pageResult.list.size() == 0}">
+														</tr>
+														<tr th:each="info:${pageResult.list}" th:if="${pageResult.list != null &amp;&amp; pageResult.list.size() > 0}" onmouseover="this.style.backgroundColor='#e3f1ff'" onmouseout="this.style.backgroundColor='#ffffff'">
+															<td>
+																<span title="点击可编辑" th:onclick="'edit(\'' + ${info.tuId} + '\')'" th:if="${info.tuType eq '0'}" >初中</span>
+																<span title="点击可编辑" th:onclick="'edit(\'' + ${info.tuId} + '\')'" th:if="${info.tuType eq '1'}" >高中</span>
+															</td>
+															<td>
+																<span title="点击可编辑" th:onclick="'edit(\'' + ${info.tuId} + '\')'" th:if="${info.tuRefund eq '1'}" >是</span>
+																<span title="点击可编辑" th:onclick="'edit(\'' + ${info.tuId} + '\')'" th:if="${info.tuRefund eq '0'}" >否</span>
+															</td>
+															<td>
+																<span title="点击可编辑" th:onclick="'edit(\'' + ${info.tuId} + '\')'" th:if="${info.tuByStages eq '1'}">是</span>
+																<span title="点击可编辑" th:onclick="'edit(\'' + ${info.tuId} + '\')'" th:if="${info.tuByStages eq '0'}">否</span>
+															</td>
+															<td>
+																<span title="点击可编辑" th:onclick="'edit(\'' + ${info.tuId} + '\')'" th:if="${info.tuDiscount eq '1'}">是</span>
+																<span title="点击可编辑" th:onclick="'edit(\'' + ${info.tuId} + '\')'" th:if="${info.tuDiscount eq '0'}">否</span>
+															</td>
+															<td>
+																<span title="点击可编辑" th:onclick="'edit(\'' + ${info.tuId} + '\')'" th:text="${info.tuMonet}"></span>
+															</td>
+															<td>
+																<span title="点击可编辑" th:onclick="'edit(\'' + ${info.tuId} + '\')'" baisee:fmt="yyyy-MM-dd HH:mm:ss,${info.tuUpdateTime }"></span>
+															</td>
+															<td baisee:ctrl="XFGL_XFSC">
+<!--																<span title="点击删除"  th:onclick="'delTuition(\'' + ${info.tuId} + '\')'"><font color="#ff0000">删除该规则</font></span>-->
+
+																<button type="button" class="btn btn-danger" th:onclick="'delTuition(\'' + ${info.tuId} + '\')'">
+																	<i class="mdi mdi-delete-forever"></i>删除该规则
+																</button>
+
+															</td>
+														</tr>
+													</tbody>
+												</table>
+											</div>
+
+										</div>
+
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+
+				</main>
+			</div>
+		</div>
+		<script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+		<script type="text/javascript" src="js/bootstrap.min.js" th:src="@{static/js/bootstrap.min.js}"></script>
+		<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+		<script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+		<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+		<script type="text/javascript" src="js/plugins/layer/layer.js" th:src="@{js/plugins/layer/layer.js}"></script>
+
+	<script th:inline="javascript">
+		function delTuition(tuId){
+			var logUrl = [[@{'/tuition/delTuition.ht?tuId='}]] + tuId;
+			layer.confirm('确定删除该学费规则吗？', {
+	            btn : [ '确定', '取消' ]//按钮
+	        }, function(index) {
+	            layer.close(index);
+			$.ajax({
+				url: logUrl,
+				type:'post',
+				success:function(data){
+					if (data.flag == "success") {
+						// var succ=[[@{'/tuition/toTuitionList.ht'}]];
+						// locationHref(succ);
+						location.href=basePath+"/tuition/toTuitionList.ht";
+						_alert("删除成功");
+					} else {
+						_alert("删除失败");
+					}
+				}
+			})
+	        });
+		};
+		
+	</script>
+	<script th:inline="javascript">
+		function edit(id){
+			// locationHref([[@{/tuition/toTuitionInfo.ht}]] + "?tuId=" + id);
+			location.href=basePath+"/tuition/toTuitionInfo.ht?tuId="+id;
+		} 
+		function check(){ 
+			var cName=$("#cName").val();
+			if (isNaN(cName)){
+				_alert("非法字符，只能输入数字！！！");
+				$("#cName").val('');
+			} 
+		} 
+	</script>
+	
+	</body>
+</html>

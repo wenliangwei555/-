@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+	<head th:include="commonTemplate :: header">
+	</head>
+	<body class="bgcolor-body">
+		<div id="page">
+			<div th:include="commonTemplate :: headerDiv"></div>
+			<div id="content" class="layout">
+				<div class="grid-s5m0">
+					<!-- ============================= 页面内容 开始============================= -->
+					<div class="col-main">
+						<div class="main-wrap">
+							<div class="skin-box">
+								<div class="skin-box-bd">
+									<div class="cur-position">
+										<span><a href="javascript:void(0);">系统管理</a> </span>
+										<span>&gt;</span>
+										<span><a th:href="@{role/showList.ht}">权限管理</a> </span>
+									</div>
+									<form th:action="@{role/showList.ht}"  id="roleForm" name="roleForm" method="post">
+										<div class="cont-box">
+											<div class="search-box">
+												<div class="left">
+												    <span class="add JsW"><a th:href="@{role/showInfo.ht}" class="ks-pop-nav" title="添加角色" style="cursor:pointer;color: #ffffff" 
+													onmouseover="javascript:this.style.color='#dbdbdb'" 
+													onmouseout="javascript:this.style.color='#ffffff'" baisee:ctrl="QXGL_QXXZ">新增</a> </span>
+													<span class="del"><a bms:ctrl="busDict.delDict" href="javascript:void(0);" th:onclick="'del(\'roleForm\', \''+ @{/role/delAllRole.ht} + '\')'" title="删除班级" style="cursor:pointer;color: #ffffff" 
+													onmouseover="javascript:this.style.color='#dbdbdb'" 
+													onmouseout="javascript:this.style.color='#ffffff'" baisee:ctrl="QXGL_QXSC">删除</a> </span>
+												</div>
+												<div class="right">
+													<div class="search-box-cont">
+														<span> <input class="button" type="submit" value="搜索" /> </span>
+														<span> <input class="input radius3" name="itemlableSearch" th:value="${itemlableSearch}" type="text" placeholder="角色名/创建人/修改人" style="width: 226px"/> </span>
+													</div>
+												</div>
+											</div>
+											<div class="list-table">
+												<div class="list-table-cont">
+													<div class="table2">
+														<table class="ks-inputall">
+															<tr class="th">
+																<td class="col1">
+																	<div class="JsW control-checkbox" data-control-type="checkboxall" baisee:ctrl="QXGL_QXSC">
+																		<input type="checkbox" onclick="selectAllCheckBox(document.frm.ids,document.frm.checkbox,this);" />
+																	</div>
+																</td>
+																<td class="col3">角色ID</td>
+																<td class="col4">角色名称</td>
+																<td class="col5">创建人</td>
+																<td class="col6">修改人</td>
+																<td class="col1"></td>
+															</tr>
+															 <tr th:if="${pageResult.list == null || pageResult.list.size() == 0}">
+															
+															</tr>
+															<tr th:each="info:${pageResult.list}" th:if="${pageResult.list != null &amp;&amp; pageResult.list.size() > 0}" onmouseover="this.style.backgroundColor='#e3f1ff'" onmouseout="this.style.backgroundColor='#ffffff'">
+																<td class="col1">
+																	<div class="JsW control-checkbox" data-control-type="checkbox" baisee:ctrl="QXGL_QXSC">
+																		<input type="checkbox" name="ids" th:value="${info.roleId}" />
+																	</div>
+																</td>
+																<td class="col2">
+																<span style="cursor:pointer" title="点击可编辑" th:onclick="'edit(\'' + ${info.roleId} + '\')'" th:text="${info.roleId}"></span>
+																</td>
+																<td class="col3">
+																<span style="cursor:pointer" title="点击可编辑" th:onclick="'edit(\'' + ${info.roleId} + '\')'" th:text="${info.roleName}"></span>
+																</td>
+																<td class="col4">
+																<span style="cursor:pointer" title="点击可编辑" th:onclick="'edit(\'' + ${info.roleId} + '\')'" th:text="${info.createUserInfo.userName}"></span>
+																</td>
+																<td class="col5">
+																<span style="cursor:pointer" title="点击可编辑" th:onclick="'edit(\'' + ${info.roleId} + '\')'" th:text="${info.updateUserInfo.userName}"></span>
+																</td>
+																<td class="col1">
+																	<span style="cursor:pointer" title="点击删除" baisee:ctrl="QXGL_QXSC" th:onclick="'delRole(\'' + ${info.roleId} + '\')'" ><font color="#ff0000">删除该角色</font></span>
+																</td>
+															</tr> 
+														</table>
+													</div>
+												</div>
+											</div>
+											<div th:include="commonTemplate :: pageBox"></div>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- ============================= 页面内容 结束============================= -->
+					<div th:include="commonTemplate :: leftMenus"></div>
+				</div>
+			</div>
+			<div th:include="commonTemplate :: footer"></div>
+		</div>
+		<div th:include="commonTemplate :: processBar" />
+		
+	<script th:inline="javascript">
+		function delRole(id){
+			var logUrl = [[@{'/role/delRole.ht?roleId='}]] + id;
+			$.ajax({
+				url: logUrl,
+				type:'post',
+				success:function(data){
+					if (data.flag == "success") {
+						_alert("删除成功");
+						var succ=[[@{'/role/showList.ht'}]];
+						locationHref(succ);
+					}  else {
+						_alert("删除失败");
+					}
+				}
+			})
+		}
+	</script>
+	<script th:inline="javascript">
+		function edit(id){
+			locationHref([[@{/role/showInfo.ht}]] + "?roleId=" + id);
+		}
+	</script>
+	</body>
+</html>
