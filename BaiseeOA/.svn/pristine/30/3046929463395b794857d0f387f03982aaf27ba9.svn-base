@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head th:include="commonTemplate :: header">
+</head>
+<body class="bgcolor-body">
+	<div id="page">
+		<div th:include="commonTemplate :: headerDiv"></div>
+		<div id="content" class="layout">
+			<div class="grid-s5m0">
+				<div class="col-main">
+					<div class="main-wrap">
+						<div class="skin-box">
+							<div class="skin-box-bd">
+								<div class="cur-position">
+									<span><a href="javascript:void(0)">评价问题信息管理</a> </span> <span>&gt;</span>
+									<span><a th:href="@{eva/selectTgesPage.ht}">评价问题管理</a> </span>
+									<span>&gt;</span> <span><a href="javascript:void(0)">新增问题信息</a></span>
+								</div>
+								<!-- ==================================== 页面内容开始 ============================= -->
+								<div class="cont-box">
+									<div class="JsW skin-box-bd" data-widget-type="tab"
+										data-widget-config="{'activeIndex':0}">
+										<div class="skin-bd-box">
+											<div class="list-table">
+												<div class="list-table-cont">
+													<div class="table6">
+														<form id="ClaForm" th:action="@{eva/insertEvaInfo.ht}"
+															method="post">
+															<input type="hidden" name="stID" id="stID"
+																th:value="${pro.stID}" />
+															<table>
+																<tr>
+																	<td>
+																		<div class="left">
+																			<div class="td1">
+																				<span class="require red">*</span><span>问题：</span>
+																			</div>
+																			<div class="td2">
+																				<span><input type="text"
+																					class="radius3 input" id="stTitle" name="stTitle"
+																					th:value="${pro.stTitle}"
+																					onkeyup="this.value=this.value.replace(/^ +| +$/g,'')" /></span>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+
+																<tr>
+																	<td>
+																		<div class="left">
+																			<div class="td1">
+																				<span class="require red">*</span><span>选择一（A）：</span>
+																			</div>
+																			<div class="td2">
+																				<span><input type="text"
+																					class="radius3 input" id="stOptionA"
+																					name="stOptionA" th:value="${pro.stOptionA}"
+																					onkeyup="this.value=this.value.replace(/^ +| +$/g,'')" /></span>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+																<tr>
+																	<td>
+																		<div class="left">
+																			<div class="td1">
+																				<span class="require red">*</span><span>选择二（B）：</span>
+																			</div>
+																			<div class="td2">
+																				<span><input type="text"
+																					class="radius3 input" id="stOptionB"
+																					name="stOptionB" th:value="${pro.stOptionB}"
+																					onkeyup="this.value=this.value.replace(/^ +| +$/g,'')" /></span>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+																<tr>
+																	<td>
+																		<div class="left">
+																			<div class="td1">
+																				<span class="require red">*</span><span>选择三（C）：</span>
+																			</div>
+																			<div class="td2">
+																				<span><input type="text"
+																					class="radius3 input" id="stOptionC"
+																					name="stOptionC" th:value="${pro.stOptionC}"
+																					onkeyup="this.value=this.value.replace(/^ +| +$/g,'')" /></span>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+																<tr>
+																	<td>
+																		<div class="left">
+																			<div class="td1">
+																				<span class="require red">*</span><span>选择四（D）：</span>
+																			</div>
+																			<div class="td2">
+																				<span><input type="text"
+																					class="radius3 input" id="stOptionD"
+																					name="stOptionD" th:value="${pro.stOptionD}"
+																					onkeyup="this.value=this.value.replace(/^ +| +$/g,'')" /></span>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+
+															</table>
+															<div class="redbutton control-button JsW"
+																data-control-type="button"
+																data-control-config="{'buttonCls':'button'}">
+																<span> <input value="保存" type="submit"
+																	class="radius5 button ks-pop-close1" />
+																</span> <span class="grey"> <input value="取消"
+																	type="button" class="radius5 button ks-pop-close1"
+																	onclick="returnBack();" />
+																</span> <span id="del"></span>
+															</div>
+														</form>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<!-- ============================= 页面内容 结束============================= -->
+							</div>
+						</div>
+					</div>
+				</div>
+				<div th:include="commonTemplate :: leftMenus"></div>
+			</div>
+		</div>
+		<div th:include="commonTemplate :: footer"></div>
+	</div>
+	<div th:include="commonTemplate :: processBar" />
+	<script th:inline="javascript"> 
+	// 点击取消跳转列表页面
+	function returnBack(){
+		var url = [[@{'/eva/selectTgesPage.ht'}]];
+		locationHref(url);
+	} 
+	
+	$(function () {
+		setValidate($("#ClaForm"),{
+				rules: {
+					stTitle:{required: true,remote:{
+						type:"POST",
+						  url : [[@{/eva/stTitleValidate.ht}]],
+			              cache:true,
+			              async: true,
+			              data : {
+			            	 "stTitle" : function(){return $("#stTitle").val();},
+			              },
+						
+					}},
+					stOptionA:{required: true},
+					stOptionB:{required: true},
+					stOptionC:{required: true},
+					stOptionD:{required: true}
+				},
+				messages:{
+					stTitle:{required: "*请输写问题!",remote:"*问题名已存在！"},
+					stOptionA:{required: "*请填写选择A!"},
+					stOptionB:{required: "*请填写选择B!"},
+					stOptionC:{required: "*请填写选择C!"},
+					stOptionD:{required: "*请填写选择D!"}
+				}
+			})
+	})
+	</script>
+</body>
+</html>

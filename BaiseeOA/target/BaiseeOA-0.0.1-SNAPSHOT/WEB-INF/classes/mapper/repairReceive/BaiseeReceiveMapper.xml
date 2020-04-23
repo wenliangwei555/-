@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.repairReceive.BaiseeReceiveMapper">
+
+    <resultMap type="cn.baisee.oa.model.repairReceive.BaiseeReceive" id="results">
+       <id column="id" jdbcType="VARCHAR" property="id" />
+       <result column="c_id" jdbcType="VARCHAR" property="cId" />
+       <result column="c_name" jdbcType="VARCHAR" property="cName" />
+       <result column="dept_id" jdbcType="VARCHAR" property="deptId" />
+       <result column="dept_name" jdbcType="VARCHAR" property="deptName" />
+       <result column="goods_id" jdbcType="VARCHAR" property="goodsId" />
+       <result column="goods_name" jdbcType="VARCHAR" property="goodsName" />
+       <result column="goods_num" jdbcType="VARCHAR" property="goodsNum" />
+       <result column="state" jdbcType="CHAR" property="state" />
+       <result column="update_person_id" jdbcType="VARCHAR" property="updatePersonId" />
+       <result column="update_person" jdbcType="VARCHAR" property="updatePerson" />
+       <result column="views" jdbcType="VARCHAR" property="views" />
+       <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+	   <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+	   <result column="refuse_reason" jdbcType="VARCHAR" property="refuseReason" />
+	   
+    </resultMap>
+
+    <!-- 查询所有的日期分页 -->
+    <select id="selectReceiveList" resultMap="results" parameterType="map">
+		select * from baisee_receive 
+		
+			<where>
+				<if test="userId != null">
+					c_id = #{userId} and
+				</if>
+				<if test="itemlableSearch != null">
+					goods_name LIKE "%"#{itemlableSearch}"%"
+				</if>
+				order by create_time desc
+			</where>
+		
+	</select>
+	
+	<select id="getReceiveById" resultMap="results" parameterType="java.lang.String">
+	    select * from baisee_receive where id=#{id}
+	 </select>
+	
+	<insert id="addReceive" parameterType="cn.baisee.oa.model.repairReceive.BaiseeReceive">
+	    insert into baisee_receive  (id,c_id,c_name,dept_id,dept_name,goods_id,goods_name,goods_num,views,state,create_time)
+	     values 
+	     (pkval('SLID'),#{cId},#{cName},#{deptId},#{deptName},#{goodsId},#{goodsName},#{goodsNum},#{views},#{state},#{createTime})
+	</insert>
+	
+	<update id="updateReceive" parameterType="cn.baisee.oa.model.repairReceive.BaiseeReceive">
+	   update baisee_receive set 
+	   goods_id=#{goodsId},
+	   goods_name=#{goodsName},
+	   views=#{views},
+	   goods_num=#{goodsNum}
+	    where id=#{id}
+	</update>
+	
+	<update id="completeReceive" parameterType="cn.baisee.oa.model.repairReceive.BaiseeReceive">
+	   update baisee_receive set 
+	   goods_num=#{goodsNum},
+	   update_person_id=#{updatePersonId},
+	   update_person=#{updatePerson},
+	   update_time=#{updateTime},
+	   state=#{state}
+	    where id=#{id}
+	</update>
+	
+	<update id="cancelReceive" parameterType="cn.baisee.oa.model.repairReceive.BaiseeReceive">
+	   update baisee_receive set 
+	   update_person_id=#{updatePersonId},
+	   update_person=#{updatePerson},
+	   update_time=#{updateTime},
+	   refuse_reason=#{refuseReason},
+	   state=#{state}
+	    where id=#{id}
+	</update>
+	
+	<delete id="delReceive" parameterType="java.lang.String">
+	    delete from baisee_receive where id in
+	    <foreach collection="array" open="(" close=")" item="id" separator=",">
+	        #{id}
+	    </foreach>
+	</delete>
+	
+	<select id="getStartTimeAndEndTime" resultMap="results" parameterType="map">
+	    select * from baisee_receive where (#{startTime}  &lt; create_time and #{endTime} &gt; create_time) and (state = 1 or state = 2)
+	 </select>
+</mapper>

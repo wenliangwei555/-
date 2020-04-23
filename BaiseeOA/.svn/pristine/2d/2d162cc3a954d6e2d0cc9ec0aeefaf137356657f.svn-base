@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"/>
+<title>Insert title here</title>
+</head>
+<body>
+	<div>
+		<p style="align-content: center; font-weight: bold;font-size: 8px"><span>选择题:</span></p>
+		<p th:text="${itemBank.subject}"></p>
+		<p>  <span th:if="${itemBank.selectOne ne '' and itemBank.selectOne ne null}">A、&nbsp;</span><span th:text="${itemBank.selectOne}"></span></p>
+		<p>  <span th:if="${itemBank.selectTwo ne '' and itemBank.selectTwo ne null}">B、&nbsp;</span><span th:text="${itemBank.selectTwo}"></span></p>
+		<p>  <span th:if="${itemBank.selectThree ne '' and itemBank.selectThree ne null}">C、&nbsp;</span><span th:text="${itemBank.selectThree}"></span></p>
+		<p>  <span th:if="${itemBank.selectFour ne '' and itemBank.selectFour ne null}">D、&nbsp;</span><span th:text="${itemBank.selectFour}"></span></p>
+		<p style="align-content: center; font-weight: bold;font-size: 8px"><span>答案 : <span th:text="${itemBank.answer}"></span></span></p>
+		<p>  <span th:if="${itemBank.projectAnalysis ne '' and itemBank.projectAnalysis ne null}">课题分析：</span><span th:text="${itemBank.projectAnalysis}"></span></p>
+	</div>
+</body>
+</html>

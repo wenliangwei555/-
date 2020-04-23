@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.baisee.BaiseeStudentApplicantsMapper">
+	<resultMap type="cn.baisee.oa.model.student.BaiseeStudentApplicants"
+		id="baiseeStudentApplicants">
+		<id column="SID" jdbcType="VARCHAR" property="id" />
+		<result column="NAME" jdbcType="VARCHAR" property="stuName" />
+		<result column="SEX" jdbcType="VARCHAR" property="sex" />
+		<result column="MOBILE" jdbcType="VARCHAR" property="stuMobile" />
+		<result column="ID_CARD" jdbcType="VARCHAR" property="stuIdNumber" />
+		<result column="PROVINCE" jdbcType="VARCHAR" property="province" />
+		<result column="CITY" jdbcType="VARCHAR" property="city" />
+		<result column="AREA" jdbcType="VARCHAR" property="area" />
+		<result column="ADDRESS" property="address" />
+		<result column="REMARKS" jdbcType="VARCHAR" property="remarks" />
+		<result column="STATUS" property="status" />
+		<result column="CREATE_USER" jdbcType="VARCHAR" property="createdUser" />
+		<result column="CREATE_TIME" jdbcType="VARCHAR" property="stuAuditionStartTime" />
+	</resultMap>
+	<!--添加预报名学生信息addStudentApplicants -->
+	<insert id="insertStudentApplicants" parameterType="cn.baisee.oa.model.student.BaiseeStudentApplicants">
+		INSERT INTO
+		baisee_student_applicants(SID,NAME,SEX,MOBILE,ID_CARD,PROVINCE,CITY,AREA,ADDRESS,REMARKS,STATUS,CREATE_USER,CREATE_TIME)VALUES
+		(pkval('STID'),#{stuName,jdbcType=VARCHAR},#{sex,jdbcType=VARCHAR},#{stuMobile,jdbcType=VARCHAR},#{stuIdNumber,jdbcType=VARCHAR},
+		#{province,jdbcType=VARCHAR},#{city,jdbcType=VARCHAR},#{area,jdbcType=VARCHAR},
+		#{address,jdbcType=VARCHAR},#{remarks,jdbcType=VARCHAR},'1',#{createdUser,jdbcType=VARCHAR},#{stuAuditionStartTime,jdbcType=VARCHAR})
+	</insert>
+	<!--查看所有预报名的学生List<BaiseeStudentApplicants> selectAllStudentApplicants(Map<String, 
+		Object> map); -->
+	<select id="selectAllStudentApplicants" parameterType="String"
+		resultMap="baiseeStudentApplicants">
+		SELECT * FROM baisee_student_applicants
+		<where>
+			<if test="startTime != null and startTime != '' ">
+				and left(replace(CREATE_TIME,'-',''), 8) &gt;=
+				#{startTime,jdbcType=VARCHAR}
+			</if>
+			<if test="endTime != null and endTime != '' ">
+				and left(replace(CREATE_TIME,'-',''), 8) &lt;=
+				#{endTime,jdbcType=VARCHAR}
+			</if>
+			<if test="stuName != null and stuName != '' ">
+				and NAME LIKE ("%"#{stuName,jdbcType=VARCHAR}"%")
+			</if>
+			<if test="areas != null and areas != '' ">
+				and area=#{areas}
+			</if>
+			<if test="status != null and status != '' ">
+				and status=#{status}
+			</if>
+		</where>
+		ORDER BY
+		CREATE_TIME DESC
+	</select>
+	<!-- 根据ID查看预报名学生的信息BaiseeStudentApplicants selectStudentApplicantsByid(String 
+		id); -->
+	<select id="selectStudentApplicantsByid" resultMap="baiseeStudentApplicants"
+		parameterType="String">
+		SELECT * FROM baisee_student_applicants WHERE SID=#{id,jdbcType=VARCHAR}
+	</select>
+	<!--根据ID修改预报名学生的信息 int updateStudentApplicantsByid(String id); -->
+	<update id="updateStudentApplicantsByid" parameterType="cn.baisee.oa.model.student.BaiseeStudentApplicants">
+		UPDATE baisee_student_applicants
+		<set>
+				NAME=#{stuName, jdbcType=VARCHAR},
+				SEX=#{sex, jdbcType=VARCHAR},
+				MOBILE=#{stuMobile, jdbcType=VARCHAR},
+				ID_CARD=#{stuIdNumber, jdbcType=VARCHAR},
+				PROVINCE=#{province, jdbcType=VARCHAR},
+				CITY=#{city, jdbcType=VARCHAR},
+				AREA=#{area, jdbcType=VARCHAR},
+				ADDRESS=#{address, jdbcType=VARCHAR},
+				REMARKS=#{remarks, jdbcType=VARCHAR},
+				CREATE_USER=#{createdUser, jdbcType=VARCHAR},
+				CREATE_TIME=#{stuAuditionStartTime, jdbcType=VARCHAR}
+		</set>
+		<where>
+		   and	SID=#{id, jdbcType=VARCHAR}
+		</where>
+	</update>
+	<!--修改预报名学生状态  int updateStudentApplicantsStatus(String id,String status);-->
+	<update id="updateStudentApplicantsStatus" parameterType="java.lang.String">
+	UPDATE baisee_student_applicants SET `STATUS`=#{status, jdbcType=VARCHAR} WHERE SID=#{id, jdbcType=VARCHAR}
+	
+	</update>
+	<!-- 验证身份证号是否存在 String selectIDNumberVerification(String IdNumber); -->
+	<select id="selectIDNumberVerification" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		SELECT ID_CARD FROM baisee_student_applicants WHERE
+		ID_CARD=#{IdNumber,jdbcType=VARCHAR}
+	</select>
+	<!-- * 根据ID删除预报名学生int deleteStudentApplicantsByid(String id);  -->
+	<delete id="deleteStudentApplicantsByid" parameterType="String">
+	DELETE FROM baisee_student_applicants WHERE SID=#{id}
+	</delete>
+</mapper>

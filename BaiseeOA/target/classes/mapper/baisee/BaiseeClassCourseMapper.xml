@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.baisee.BaiseeClassCourseMapper">
+	
+	<resultMap id="ClassCourseMap" type="cn.baisee.oa.model.course.BaiseeClassCourse" >
+		<result property="courseTitle" column="course_title"></result>
+		<result property="eName" column="e_name"></result>
+		<result property="courseOrder" column="course_order"></result>
+		<result property="roomName" column="room_name"></result>
+		<result property="roomType" column="room_type"></result>
+		<result property="week" column="week"></result>
+	</resultMap>
+	
+	<resultMap id="ClassCourseIdMap" type="cn.baisee.oa.model.course.BaiseeClassCourseId" >
+		<result property="ccId" column="cc_id"></result>
+		<result property="cid" column="c_id"></result>
+		<result property="ctId" column="ct_Id"/>
+		<result property="week" column="week"></result>
+		<result property="crId" column="cr_id"></result>
+		<result property="tsId" column="ts_id"></result>
+		<result property="updateTs" column="updateTs"></result>
+		<result property="createTs" column="createTs"></result>
+		<result property="sort" column="sort"></result>
+		<association property="employee" javaType="cn.baisee.oa.model.empinfo.Employee">
+			<id column="EID" property="empId"/>
+			<result column="E_NAME" property="empName"/>
+		</association>
+		<association property="course" javaType="cn.baisee.oa.model.course.BaiseeCourse">
+			<id property="ciId" column="ci_id"/>
+			<result property="courseTtitle" column="course_title"/>
+			<result property="courseType" column="course_type"/>
+		</association>
+	</resultMap>
+	<sql id="biaoSql">
+		from baisee_classs_course cc
+		LEFT JOIN baisee_course_teacher ct on ct.c_id = cc.ct_id
+		LEFT JOIN baisee_course course on course.ci_id = ct.ci_id
+		LEFT JOIN baisee_employee emp on emp.EID = ct.e_id
+		LEFT JOIN baisee_time_sort ts on ts.ts_id = cc.ts_id
+		LEFT JOIN baisee_classroom cr on cr.cr_id = cc.cr_id
+	</sql>
+	<!-- 根据班级id查询所有的课程 -->
+	<select id="selectClassCourseByCid" parameterType="java.lang.String" resultMap="ClassCourseMap">
+		select course_title,e_name,course_order,room_name,room_type,week
+		<include refid="biaoSql"></include>
+		<where>
+			<if test="value !=null and value !=''">
+				and cc.c_id =#{cid}	
+			</if>
+		</where>
+	</select>
+	
+	<!-- 根据一些信息查出一条课程记录 -->
+	<select id="selectClassCourseIdByInfo" resultMap="ClassCourseIdMap" parameterType="map" >
+		select cc.cc_id,cc.c_id,cc.ct_id,week,ts.ts_id,eid,e_name,course.ci_id,course_type,cr.cr_id
+		<include refid="biaoSql"></include>
+		<where>
+			<if test="courseOrder !=null and courseOrder != ''">
+				<if test="classId !=null and classId != ''">
+					 cc.c_id = #{classId, jdbcType=VARCHAR}
+				</if>
+				and course_order = #{courseOrder, jdbcType=VARCHAR}
+			</if>
+			<if test="week !=null and week != ''">
+			    and week = #{week, jdbcType=VARCHAR}
+			</if>
+			<if test="tsId !=null and tsId != ''">
+			    and ts.ts_id = #{tsId, jdbcType=VARCHAR}
+		    </if>
+		    <if test="empId !=null and empId != ''">
+			    and eid = #{empId, jdbcType=VARCHAR}
+			    <if test="classId !=null and classId != ''">
+					and cc.c_id != #{classId} 
+				</if>
+		    </if>
+		</where>
+	</select>
+	<!--  -->
+	<select id="getCourseIdByInfo"  resultType="java.lang.String" parameterType="map" >
+		select cc_id from baisee_classs_course
+		where c_id=#{classId} and week=#{week} and ts_id=#{tsId}
+	</select>
+	<!-- 新增班级课程 -->
+	<insert id="insertClassCourseId" parameterType="cn.baisee.oa.model.course.BaiseeClassCourseId">
+		INSERT INTO baisee_classs_course
+		 (cc_id,c_id, ct_id,  week ,  cr_id ,  ts_id ,  updateTs ,  createTs ,  sort ) 
+		 VALUES 
+		 (#{ccId},#{cid , jdbcType=VARCHAR},#{ctId, jdbcType=VARCHAR} ,#{week, jdbcType=VARCHAR} ,#{crId, jdbcType=VARCHAR} ,#{tsId, jdbcType=VARCHAR} ,
+		 DATE_FORMAT(now(),'%Y%m%d%H%i%s'),
+		 DATE_FORMAT(now(),'%Y%m%d%H%i%s'),
+		 '0');	
+		  <selectKey order="BEFORE" resultType="java.lang.String" keyProperty="ccId">
+			SELECT pkval('CCID')
+		</selectKey>
+	</insert>
+	<!-- 修改班级课程 -->
+	<update id="updateClassCourse" parameterType="cn.baisee.oa.model.course.BaiseeClassCourseId">
+		UPDATE baisee_classs_course 
+		SET  
+		     ct_id =#{ctId, jdbcType=VARCHAR}, 
+		     cr_id =#{crId, jdbcType=VARCHAR}, 
+		     updateTs =DATE_FORMAT(now(),'%Y%m%d%H%i%s'),  
+		     createTs =DATE_FORMAT(now(),'%Y%m%d%H%i%s')
+		     <where>
+		     	<if test="ccId != null and ccId !=''">
+		     		cc_id = #{ccId}
+		     	</if>
+		     </where>
+	</update>
+	<!-- 根据主键删除班级课程 -->
+	<delete id="delClassCourseByCcId" parameterType="java.lang.String">
+		delete from baisee_classs_course
+		<where>
+		 cc_id in (#{ccId})
+     	</where>
+	</delete>
+	<!-- 根据课程老师表得到的主键去班级课程表中查主键 -->
+	<select  id="getListCtid" parameterType="java.lang.String" resultType="java.lang.String">
+		select ct_id from baisee_classs_course cc 
+		LEFT JOIN baisee_course_teacher ct
+		on ct_id = ct.c_id 
+		<where>
+			<if test="value !=null and value !=''">
+				and ci_id = #{ciId}
+			</if>
+			<if test="value !=null and value !=''">
+				or ct_id = #{ctId}
+			</if>
+		</where>
+	</select>
+</mapper>

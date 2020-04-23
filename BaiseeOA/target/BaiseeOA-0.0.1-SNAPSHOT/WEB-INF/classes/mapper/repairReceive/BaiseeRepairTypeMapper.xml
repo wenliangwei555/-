@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.repairReceive.BaiseeRepairTypeMapper">
+
+    <resultMap type="cn.baisee.oa.model.repairReceive.BaiseeRepairType" id="results">
+       <id column="id" jdbcType="VARCHAR" property="id" />
+       <result column="p_id" jdbcType="VARCHAR" property="pId" />
+       <result column="p_name" jdbcType="VARCHAR" property="pName" />
+       <result column="t_name" jdbcType="VARCHAR" property="tName" />
+       <result column="c_id" jdbcType="VARCHAR" property="cId" />
+       <result column="c_name" jdbcType="VARCHAR" property="cName" />
+       <result column="u_id" jdbcType="VARCHAR" property="uId" />
+       <result column="u_name" jdbcType="VARCHAR" property="uName" />
+	   <result column="c_time" jdbcType="TIMESTAMP" property="cTime" />
+	   <result column="u_time" jdbcType="TIMESTAMP" property="uTime" />
+	   
+    </resultMap>
+
+    <!-- 查询所有的日期分页 -->
+    <select id="getRepairType" resultMap="results" parameterType="map">
+		select * from baisee_repair_type 
+			<where>
+				<if test="itemlableSearch != null">
+					t_name LIKE "%"#{itemlableSearch}"%"
+				</if>
+			</where>
+		order by p_name, u_time desc
+	</select>
+	
+	 <!-- 查询所有故障地点 -->
+    <select id="getRepairTypeAll" resultMap="results">
+		select * from baisee_repair_type 
+	</select>
+	
+	<!-- 查询所属该校区下的故障地点 -->
+    <select id="getRepairTypeByPid" resultMap="results" parameterType="java.lang.String">
+		select * from baisee_repair_type where p_id = #{pId}
+	</select>
+	
+	<select id="getById" resultMap="results" parameterType="java.lang.String">
+	    select * from baisee_repair_type where id=#{id}
+ 	</select>
+	
+	<insert id="saveBaiseeRepairType" parameterType="cn.baisee.oa.model.repairReceive.BaiseeRepairType">
+	    insert into baisee_repair_type  (id,p_id,p_name,t_name,c_id,c_name,c_time)
+	     values 
+	     (pkval('DDID'),#{pId},#{pName},#{tName},#{cId},#{cName},#{cTime})
+	</insert>
+	
+	<update id="updateBaiseeRepairType" parameterType="cn.baisee.oa.model.repairReceive.BaiseeRepairType">
+	   update baisee_repair_type set 
+	   u_id=#{uId},
+	   u_name=#{uName},
+	   p_id=#{pId},
+	   p_name=#{pName},
+	   t_name=#{tName},
+	   u_time=#{uTime}
+	    where id=#{id}
+	</update>
+	
+	<delete id="delRepairType" parameterType="java.lang.String">
+	    delete from baisee_repair_type where id in
+	    <foreach collection="array" open="(" close=")" item="id" separator=",">
+	        #{id}
+	    </foreach>
+	</delete>
+	
+	<select id="getRepairTypeByPids" resultMap="results" parameterType="java.lang.String">
+	    select * from baisee_repair_type where p_id in
+	    <foreach collection="array" open="(" close=")" item="id" separator=",">
+	        #{id}
+	    </foreach>
+	</select>
+	
+	<select id="checkTname" resultMap="results"  parameterType="map">
+		SELECT
+			*
+		FROM
+			baisee_repair_type 
+		WHERE
+			t_name = #{tName} and p_id = #{pId}
+	</select>
+	
+</mapper>

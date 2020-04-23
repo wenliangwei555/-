@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+	<head th:include="commonTemplate :: header">
+	</head>
+	
+	<body class="bgcolor-body">
+		<div id="page">
+			<div th:include="commonTemplate :: headerDiv"></div>
+			<div id="content" class="layout">
+				<div class="grid-s5m0">
+					<div class="col-main">
+						<div class="main-wrap">
+							<div class="skin-box">
+								<div class="skin-box-bd">
+									<div class="cur-position">
+										<span><a href="javascript:void(0)">系统通知</a> </span>
+										<span>&gt;</span>
+										<span><a th:href="@{notice/list.ht}">通知列表</a> </span>
+										<span>&gt;</span>
+										<span><a href="javascript:void(0)">发送通知</a></span>
+									</div>
+									<!-- ==================================== 页面内容开始 ============================= -->
+									<div class="cont-box">
+										<div class="JsW skin-box-bd" data-widget-type="tab" data-widget-config="{'activeIndex':0}">
+											<div class="skin-bd-box">
+												<div class="list-table">
+													<div class="list-table-cont">
+														<div class="table6">
+															<form id="noticeSendForm"  method="post" onsubmit="return false;">
+																<table>
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span>标题：</span>
+																				</div>
+																				<div class="td2">
+																					<span><input type="text" name="title" id="title"  class="radius3 input"/></span>
+																				</div>
+																			</div>
+																		</td>
+																	</tr>
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span>内容：</span>
+																				</div>
+																				<div class="td2">
+																					<span>
+																						<textarea  id="content" name="content"></textarea>
+																					</span>
+																				</div>
+																			</div>
+																		</td>
+																	</tr>
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span>接收人：</span>
+																				</div>
+																				<div class="td2">
+																					<span>
+																						<select name="toUserId" id="toUserId" style="width:400px;" multiple="multiple">
+																						</select>
+																					</span>
+																				</div>
+																			</div>
+																		</td>
+																	</tr>
+																</table>
+																<div class="redbutton control-button JsW" data-control-type="button" data-control-config="{'buttonCls':'button'}">
+																	<span baisee:ctrl="XTTZ_FSTZ"> <input value="用户通知" type="button"  class="radius5 button ks-pop-close1" onclick="send()" /> </span>
+																	<span > <input baisee:ctrl="XTTZ_FSTZALL" value="系统通知" type="button"  class="radius5 button ks-pop-close1" onclick="sendAll()" /> </span>
+																	<span class="grey"> <input value="取消" type="button" class="radius5 button ks-pop-close1" onclick="returnBack();"/> </span>
+																</div>
+															</form>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!-- ============================= 页面内容 结束============================= -->
+								</div>
+							</div>
+						</div>
+					</div>
+					<div th:include="commonTemplate :: leftMenus"></div>
+				</div>
+			</div>
+			<div th:include="commonTemplate :: footer"></div>
+		</div>
+		<div th:include="commonTemplate :: processBar" />
+
+		<script type="text/javascript" th:inline="javascript">
+			/*<![CDATA[*/
+			var basePath = /*[[@{/}]]*/;
+			/*]]>*/
+		</script>
+		<script th:inline="javascript">
+		function loadToUser(){
+			/*<![CDATA[*/
+			$("#toUserId").select2({
+		        ajax: {
+		            url: basePath + "/user/select2UserList.ht",
+		            dataType: 'json',
+		            method:"post",
+		            placeholder: {id: '', text: "请选择接收用户"},
+		            delay: 250,
+		            data: function (params) {
+		                return {
+		                    q: params.term, // search term
+		                    page: params.page
+		                };
+		            },
+		            processResults: function (data, params) {
+		            	params.page = params.page || 1;
+		                var options = new Array();
+	                    $(data).each(function(i, o) {
+	                        options.push({　　　　　　　　　　//获取select2个必要的字段，id与text
+	                            id : o.userId,
+	                            text : o.userName
+	                        });
+	                        console.log({　　　　　　　　　　//获取select2个必要的字段，id与text
+	                            id : o.userId,
+	                            text : o.userName
+	                        });
+	                    });
+
+		                return {
+		                    results: options,
+		                    pagination: {
+		                        more: (params.page * 10) < data.total_count
+		                    }
+		                };
+		            },
+		            cache: true
+		        },
+		        escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+		        minimumInputLength: 1//,
+		        //maximumSelectionLength:1
+		    });
+
+			/*]]>*/
+		}
+		$(function(){
+			loadToUser();
+		});
+
+		function returnBack(){
+			var url = [[@{'/notice/sendlist.ht'}]];
+			locationHref(url);
+		}
+
+		</script>
+		<script baisee:ctrl="XTTZ_FSTZ">
+			function send(){
+				var title = $("#title").val();
+				if(!title){
+					alert("发送失败，请录入标题后发送！！");
+					return;
+				}
+				var toUserId = $("#toUserId").val();
+				if(!toUserId){
+					alert("发送失败，请选择接收人后发送！！");
+					return;
+				}
+
+				$.ajax({
+					url:basePath + '/notice/send.ht',
+					data:$("#noticeSendForm").serialize(),
+					dataType:'json',
+					type:'post',
+					success:function(res){
+						alert(res.msg);
+						if(res.code == "SUCCESS"){
+							returnBack();
+						}
+					}
+				})
+			}
+		</script>
+		<script baisee:ctrl="XTTZ_FSTZALL">
+			function sendAll(){
+				var title = $("#title").val();
+				if(!title){
+					alert("发送失败，请录入标题后发送！！");
+					return;
+				}
+				$.ajax({
+					url:basePath + '/notice/sendAll.ht',
+					data:$("#noticeSendForm").serialize(),
+					dataType:'json',
+					type:'post',
+					success:function(res){
+						alert(res.msg);
+						if(res.code == "SUCCESS"){
+							returnBack();
+						}
+					}
+				})
+			}
+		</script>
+	</body>
+</html>

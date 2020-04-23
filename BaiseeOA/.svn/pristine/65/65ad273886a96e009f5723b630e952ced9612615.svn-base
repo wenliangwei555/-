@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.baiseew.BaiseewOrderMapper">
+		<!-- 查询列表 -->
+		<select id="getOrder"  resultType="cn.baisee.oa.model.order.BaiseewOrder" parameterType="map">
+			 select id,ORDERNAME,ORDERPHONE,ORDER_QQ as orderQQ,ORDEROLD,ODERDATE,
+			 case when ORDERCLASSES=0 then '高中' when ORDERCLASSES=1 then '初中' else '' end as orClassEs from baisee_order
+			 <where>
+			 	1=1
+				<if test=" itemlableSearch != null and itemlableSearch !=''">
+					and (ORDERNAME like "%"#{itemlableSearch, jdbcType=VARCHAR}"%" or 
+		 			ORDERPHONE like "%"#{itemlableSearch, jdbcType=VARCHAR}"%" )
+				</if>
+				
+				<if test="contact != null and contact != ''">
+               		and ORDEROLD = #{contact, jdbcType=VARCHAR}
+       			</if>
+				
+			</where>
+		</select>
+		
+		<!-- 修改联系为已联系 -->
+		<update id="orderOldInformed" parameterType="map" >
+			update baisee_order set ORDEROLD='1' 
+			where id=#{id} and ORDEROLD != 1
+		</update>
+
+
+</mapper>

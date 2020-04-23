@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="commonTemplate :: header">
+
+</head>
+  
+<body>
+  <input type="hidden" th:value="${menuCode}" id="code" />
+  <input type="hidden" th:value="${menuIcon}" id="icon" />
+  <input type="hidden" th:value="${menuUrl}" id="url" />
+  <input type="hidden" th:value="${menuName}" id="name" />
+  <input type="hidden" th:value="${parentId}" id="mid" />
+  <input type="hidden" th:value="${orderNum}" id="num" />
+  <input type="hidden" th:value="${pId}" id="p_id" />
+<div class="lyear-layout-web">
+  <div class="lyear-layout-container">
+    <!--左侧导航-->
+    <div th:replace="commonTemplate :: leftMenus"></div>
+    <!--End 左侧导航-->
+    
+    <!--头部信息-->
+   <div th:replace="commonTemplate :: headerDiv"></div>
+    <!--End 头部信息-->
+    
+    <!--页面主要内容-->
+    <main class="lyear-layout-content">
+      
+      <div class="container-fluid">
+        
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-body">
+                
+                <form action="" method="post" class="row" id="add">
+
+                  <div class="form-group col-md-6">
+                    <label id="id"></label>
+                    <input type="text" class="form-control" id="pName" name="pName" placeholder="上级菜单" />
+                    <input type="hidden" class="form-control" id="pId" name="pId"/>
+                    <input type="hidden" class="form-control" id="menuId" name="menuId" />
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="menuName">菜单名称</label>
+                    <input type="text" class="form-control" id="menuName" name="menuName" value="" placeholder="菜单名称" />
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label><a for="menuIcon" th:title="点击查看图标" onclick="on_menuIcon()">图标</a></label>
+                    <input type="text" class="form-control" id="menuIcon" name="menuIcon" value="" placeholder="图标" />
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="menuUrl">跳转链接</label>
+                    <input type="text" class="form-control" id="menuUrl" name="menuUrl" value="" placeholder="跳转链接" />
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="menuCode">按钮权限</label>
+                    <input type="text" class="form-control" id="menuCode" name="menuCode" value="" placeholder="按钮权限" />
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="orderNum">排序</label>
+                    <input type="text" class="form-control" id="orderNum" name="orderNum" value="" placeholder="排序" />
+                  </div>
+                  
+                  <div class="form-group col-md-6">
+                    <label for="isMenu">类型</label>
+                    <div class="clearfix">
+                      <label class="lyear-radio radio-inline radio-primary">
+                        <input type="radio" name="isMenu" th:value="${1}" checked="checked"/><span>菜单</span>
+                      </label>
+                      <label class="lyear-radio radio-inline radio-primary">
+                        <input type="radio" name="isMenu" th:value="${2}"  /><span>按钮</span>
+                      </label>
+                    </div>
+                  </div>
+                  <div class="form-group col-md-12">
+                    <button type="button" onclick="sub()" class="btn btn-primary ajax-post" target-form="add-form">确 定</button>
+                    <button type="button" class="btn btn-default" onclick="javascript:history.back(-1);return false;">返 回</button>
+                  </div>
+                </form>
+       
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        
+      </div>
+
+      <!--显示图标弹出框 ，开始-->
+      <!--<div id="div1" style="border: 1px solid red;height: 500px">
+      &lt;!&ndash; <iframe marginwidth="0" marginheight="0" width="100%" height="200" th:src="@{sys/menu}" frameborder="no"></iframe>&ndash;&gt;
+        &lt;!&ndash;<object style="border:1px solid red" type="text/x-scriptlet" data="menu_icons.html" width="100%" height="200px"></object>&ndash;&gt;
+       &lt;!&ndash; <iframe id="xfdxiframe" th:src="a.html" style="width:100%;height:650px;" frameborder="no" border="0"
+                marginwidth="0" marginheight="0" scrolling="yes" allowtransparency="yes"></iframe>&ndash;&gt;
+      </div>-->
+      <!--显示图标弹出框 ，结束-->
+
+    </main>
+    <!--End 页面主要内容-->
+  </div>
+</div>
+
+<!--<script type="text/javascript" th:src="@{static/js/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{static/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{static/js/perfect-scrollbar.min.js}"></script>-->
+<!--标签插件-->
+
+<!--<script type="text/javascript" th:src="@{static/js/main.min.js}"></script>-->
+
+
+  <script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+  <script type="text/javascript" src="js/bootstrap.min.js" th:src="@{static/js/bootstrap.min.js}"></script>
+  <script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+  <script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+  <script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+  <script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+    var basePath = /*[[@{/}]]*/;
+    /*]]>*/
+  </script>
+<script type="text/javascript" th:inline="javascript">
+    $(function () {
+      if($("#code").val() != ""){
+          $("#id").html("菜单ID")
+          $("#pName").val("");
+          $("#menuName").val($("#name").val());
+          $("#menuIcon").val($("#icon").val());
+          $("#menuUrl").val($("#url").val());
+          $("#menuCode").val($("#code").val());
+          $("#menuId").val($("#mid").val());
+          $("#orderNum").val($("#num").val());
+          $("#pId").val($("#p_id").val())
+      }else{
+         $("#id").html("上级菜单")
+        $("#pName").val($("#name").val());
+        $("#menuName").val("");
+        $("#menuIcon").val("");
+        $("#menuUrl").val("");
+        $("#menuCode").val("");
+        $("#menuId").val("");
+        $("#orderNum").val("");
+        $("#pId").val($("#mid").val())
+      }
+    })
+    function on_menuIcon() {
+        location.href = basePath+'sys/menu/icons.ht';
+    }
+    function sub() {
+      $.ajax({
+        url: basePath + "sys/menu/SaveAndModify.ht",
+        type: "post",
+        dataType: "text",
+        data: $("#add").serialize(),
+        success: function (obj) {
+          alert(obj)
+          location.href = basePath+"sys/menu/list.ht";
+        },
+        error:function(x,y,z){
+          alert(y);
+        }
+      })
+    }
+
+</script>
+</body>
+</html>

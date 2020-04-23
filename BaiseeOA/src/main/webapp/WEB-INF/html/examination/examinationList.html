@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+	<head th:include="commonTemplate :: header">
+	</head>
+	<style>
+		.test{ width: 170px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; display: inline-block; cursor:pointer; }
+	</style>
+	<body class="bgcolor-body">
+		<div id="page">
+			<div th:include="commonTemplate :: headerDiv"></div>
+			<div id="content" class="layout">
+				<div class="grid-s5m0">
+					<!-- ============================= 页面内容 开始============================= -->
+					<div class="col-main">
+						<div class="main-wrap">
+							<div class="skin-box">
+								<div class="skin-box-bd">
+									<div class="cur-position">
+										<span><a href="javascript:void(0);">考试信息管理</a> </span>
+										<span>&gt;</span>
+										<span><a href="javascript:void(0);">考试管理</a> </span>
+									</div>
+									<form  id="frm" name="frm" method="post" th:action="@{examination/eInformationList.ht}"><!--  --> 
+										<div class="cont-box">
+											<div class="search-box">
+												<div class="left">
+												    <span class="add JsW"><a th:href="@{examination/examinationJump.ht}" class="ks-pop-nav" title="添加试题" style="cursor:pointer;color: #ffffff" 
+													onmouseover="javascript:this.style.color='#dbdbdb'"  baisee:ctrl="KSGL_XZKS"
+													onmouseout="javascript:this.style.color='#ffffff'">新增</a> </span>
+													<span class="del"><a baisee:ctrl="KSGL_SCKS" href="javascript:void(0);"
+													 th:onclick="'del(\'frm\', \''+ @{/examination/delExamination.ht} + '\')'" title="删除试题" style="cursor:pointer;color: #ffffff" 
+													onmouseover="javascript:this.style.color='#dbdbdb'" 
+													onmouseout="javascript:this.style.color='#ffffff'">删除</a> </span>
+												</div>
+											</div>
+											<div class="list-table">
+												<div class="list-table-cont">
+													<div class="table2">
+														<table class="ks-inputall">
+															<tr class="th">
+																<td class="col1" baisee:ctrl="KSGL_SCKS">
+																	<div class="JsW control-checkbox" data-control-type="checkboxall">
+																		<input type="checkbox" onclick="selectAllCheckBox(document.frm.ids,document.frm.checkbox,this);" />
+																	</div>
+																</td>
+																<td class="col3">试卷名称</td>
+																<td class="col4">班级名称</td>
+																<td class="col5">监考老师</td>
+																<td class="col6">考试场地</td>
+																<td class="col6">开始时间</td>
+																<td class="col6">结束时间</td>
+															</tr>
+															 <tr th:if="${pageResult.list == null || pageResult.list.size() == 0}">
+															 </tr>
+															<tr th:each="info:${pageResult.list}" th:if="${pageResult.list != null &amp;&amp; pageResult.list.size() > 0}" onmouseover="this.style.backgroundColor='#e3f1ff'" onmouseout="this.style.backgroundColor='#ffffff'">
+																<td class="col1" baisee:ctrl="KSGL_SCKS">
+																	<div class="JsW control-checkbox" data-control-type="checkbox">
+																		<input type="checkbox" name="ids" id="ids" th:value="${info.eid}" />
+																	</div>
+																</td>
+																<td class="col2">
+																	<span class="test" style="cursor:pointer" th:text="${info.tid}"></span>
+																</td>
+																<td class="col3">
+																	<span style="cursor:pointer" th:text="${info.cid}"></span>
+																</td>
+																<td class="col4">
+																	<span style="cursor:pointer" th:text="${info.teacher}"></span>
+																</td>
+																<td class="col5">
+																	<span style="cursor:pointer" th:text="${info.examinationPlace}"></span>
+																</td>
+																<td class="col5">
+																	<span style="cursor:pointer" th:text="${info.startTime}"></span>
+																</td>
+																<td class="col5">
+																	<span style="cursor:pointer" th:text="${info.endTime}"></span>
+																</td>
+															</tr> 
+														</table>
+													</div>
+												</div>
+											</div>
+											<div th:include="commonTemplate :: pageBox"></div>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- ============================= 页面内容 结束============================= -->
+					<div th:include="commonTemplate :: leftMenus"></div>
+				</div>
+			</div>
+			<div th:include="commonTemplate :: footer"></div>
+		</div>
+		<div th:include="commonTemplate :: processBar" />
+	<script th:inline="javascript">
+		$(function (){
+			/*<![CDATA[*/
+			var promptInformation = [[${promptInformation}]];
+			if(promptInformation != '' && promptInformation!=null){
+				_alert(promptInformation);
+			}
+			/*]]>*/
+			
+		})
+	
+		function edit( eid){
+			var url = [[@{'/examination/examinationJump.ht?eid='}]] + eid;
+			locationHref(url);
+		}
+	</script>
+	</body>
+</html>

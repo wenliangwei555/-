@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="commonTemplate :: header">
+</head>
+<body>
+<div class="lyear-layout-web">
+	<div class="lyear-layout-container">
+		<!--左侧导航-->
+		<div th:replace="commonTemplate :: leftMenus"></div>
+		<!--End 左侧导航-->
+
+		<!--头部信息-->
+		<div th:replace="commonTemplate :: headerDiv"></div>
+		<!--End 头部信息-->
+
+		<!--页面主要内容-->
+		<main class="lyear-layout-content"> <!-- ==================================== 页面内容开始 ============================= -->
+			<div class="container-fluid">
+				<form id="basefrm" name="basefrm"  th:action="@{stu/toUpdateForStu.ht(stuTable=forStudentEducation)}" method="post" enctype="multipart/form-data">
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="card">
+								<div class="card-body">
+									<ul id="myTabs" class="nav nav-tabs" role="tablist">
+										<li><a onclick="notstuJump();" href="javascript:void(0);" id="home-tab" role="tab" data-toggle="tab">基础信息</a></li>
+										<li><a role="tab" id="profile-tab" onclick="notSupJump();" data-toggle="tab">附加信息</a></li>
+										<li  class="active"><a role="tab" id="profile-tab" data-toggle="tab">教育信息</a></li>
+										<li><a onclick="notFamJump();" role="tab" id="profile-tab" data-toggle="tab">家庭信息</a></li>
+									</ul>
+									<input type="hidden" name="dictId" />
+									<table class="table table-hover">
+										<tbody>
+										<tr>
+											<td align="right" width="25%">
+												<span style="color: red"></span>
+												<span>入学时间：</span>
+											</td>
+											<td>
+													<span>
+														<input type="hidden" id="pkBegi" name="pkBegi" th:value="${edu.pkBegi}" />
+														<input type="hidden" id="stuId" name="stuId" th:value="${edu.stuId}" />
+														<input type="hidden" name="operationSuccess" id="operationSuccess" th:value="${operationSuccess}"/>
+														<input type="text" class="form-control" id="stuStartTime" name="stuStartTime" th:value="${edu.stuStartTime}" />
+													</span>
+											</td>
+										</tr>
+										<tr>
+											<td align="right" width="25%">
+												<span style="color: red"></span>
+												<span>毕业时间：</span>
+											</td>
+											<td>
+													<span>
+														<input type="text" class="form-control" id="stuEndTime" name="stuEndTime" th:value="${edu.stuEndTime}" />
+													</span>
+											</td>
+										</tr>
+										<tr>
+											<td align="right" width="25%">
+												<span style="color: red"></span>
+												<span>输入毕业院校：</span>
+											</td>
+											<td>
+													<span>
+														<input type="text" class="form-control" id="stuGraduatedSchool" name="stuGraduatedSchool" th:value="${edu.stuGraduatedSchool}" />
+													</span>
+											</td>
+										</tr>
+										<tr>
+											<td align="right" width="25%"><span style="color: red"></span>
+												<span>选择学历：</span></td>
+											<td>
+												<select name="stuDegree" id="stuDegree" class="form-control">
+													<option></option>
+													<option value="大专及以上" th:if="${edu.stuDegree == '大专及以上'}" selected="selected" >大专及以上</option>
+													<option value="大专及以上" th:if="${edu.stuDegree != '大专及以上'}" >大专及以上</option>
+													<option value="高中" th:if="${edu.stuDegree == '高中'}" selected="selected" >高中</option>
+													<option value="高中" th:if="${edu.stuDegree != '高中'}" >高中</option>
+													<option value="初中及以下" th:if="${edu.stuDegree == '初中及以下'}" selected="selected">初中及以下</option>
+													<option value="初中及以下" th:if="${edu.stuDegree != '初中及以下'}" >初中及以下</option>
+												</select>
+											</td>
+										</tr>
+
+										<tr>
+											<td align="right" width="25%">
+												<span style="color: red"></span>
+												<span>输入专业：</span>
+											</td>
+											<td>
+												<input type="text" class="form-control" id="stuMajor" name="stuMajor" th:value="${edu.stuMajor}" />
+											</td>
+										</tr>
+										</tbody>
+									</table>
+									<div align="center">
+										<input value="返回上一级" onclick="returnBack();" type="button" class="btn btn-info btn-w-md" />
+										<input value="保存" type="submit" class="btn btn-warning btn-w-md" />
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<!-- ============================= 页面内容 结束 ============================= -->
+		</main>
+		<!-- END 页面主要内容  -->
+	</div>
+</div>
+
+<script type="text/javascript" th:src="@{js/jquery-1.11.3.min.js}"></script>
+<script type="text/javascript" th:src="@{js/public-obj.js}"></script>
+<script type="text/javascript" th:src="@{js/bind.js}"></script>
+<script type="text/javascript" th:src="@{js/controls.js}"></script>
+<script type="text/javascript" th:src="@{js/slide.js}"></script>
+<script type="text/javascript" th:src="@{js/switch.js}"></script>
+<script type="text/javascript" th:src="@{js/initial.js}"></script>
+<script type="text/javascript" th:src="@{js/printhtml.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/My97DatePicker/WdatePicker.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/file/uploadify/jquery.uploadify.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/layer/layer.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/select2/i18n/zh-CN.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/treeview/jquery.treeview.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/form/jquery.form.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/ztree/jquery.ztree.core-3.5.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/ztree/jquery.ztree.excheck-3.5.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/constant.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/comm/appconstans.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/bmsAjax.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/validata.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/validate/jquery.validate.min.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/validate/localization/messages_zh.min.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/validate/regValidate.js}"></script>
+<script type="text/javascript" th:src="@{js/popup_layer.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/kxbdmarquee/js/jquery.kxbdmarquee.js}"></script>
+<script type="text/javascript" th:src="@{js/textScroll.js}"></script>
+<script type="text/javascript" th:src="@{js/app.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/layer/layui.js}"></script>
+<script th:inline="javascript">
+	$(function(){
+		var operationSuccess = $("#operationSuccess").val();
+		if(operationSuccess != ""){
+			_alert(operationSuccess);
+		}
+	});
+	$(function(){
+		$("#stuDegree").select2({
+			placeholder : "请选择学历"
+		});
+	});
+
+	$(function(){
+		/* 	setValidate($("#basefrm"),{
+				rules: {
+					stuStartTime:{required: true},
+					stuEndTime:{required: true},
+					stuGraduatedSchool:{required: true,stuGraduatedSchool: true},
+					stuDegree:{required: true},
+					stuMajor:{stuMajor:true}
+				},
+				messages:{
+					stuStartTime:{required: "*请输入入学时间!"},
+					stuEndTime:{required: "*请输入毕业时间!"},
+					stuGraduatedSchool:{required: "*请填写毕业院校!"},
+					stuDegree:{required: "*请选择学历!"},
+				}
+			}); */
+	});
+	//毕业院校校验
+	$.validator.addMethod("stuGraduatedSchool", function(value, element) {
+		var length = value.length;
+		var stuGraduatedSchool =  /^[\u4E00-\u9FA5A-Za-z]+$/
+
+		return this.optional(element) || (stuGraduatedSchool.test(value));
+	}, "*毕业院校只能输入中文和英文!");
+	//专业校验
+	$.validator.addMethod("stuMajor", function(value, element) {
+		var length = value.length;
+		var stuMajor =  /^[\u4E00-\u9FA5A-Za-z]+$/
+
+		return this.optional(element) || (stuMajor.test(value));
+	}, "*专业只能输入中文和英文!");
+	function notSupJump(){
+		var stuId = document.getElementById("stuId").value;
+		if(stuId==null || stuId == ""){
+			_alert("请先保存当前页面");
+		}else {
+			locationHref(basePath+'/stu/stuPageJump.ht' + "?stuTable=forStudentSupplementJump");
+		}
+	};
+	function notstuJump(){
+		var stuId = document.getElementById("stuId").value;
+		if(stuId==null || stuId == ""){
+			_alert("请先保存当前页面");
+		}else {
+			locationHref(basePath+'/stu/stuPageJump.ht' + "?stuTable=forStudentJump");
+		}
+	};
+	function notFamJump(){
+		var stuId = document.getElementById("stuId").value;
+		if(stuId==null || stuId == ""){
+			_alert("请先保存当前页面");
+		}else {
+			locationHref(basePath+'/stu/stuPageJump.ht' + "?stuTable=forStudentFamilyJump");
+		}
+	};
+
+	function returnBack(){
+		var url = basePath+'/stu/toForStuList.ht';
+		locationHref(url);
+	};
+</script>
+</body>
+</html>

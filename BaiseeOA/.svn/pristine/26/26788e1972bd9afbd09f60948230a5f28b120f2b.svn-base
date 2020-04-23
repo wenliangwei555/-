@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="commonTemplate :: header">
+</head>
+
+<body>
+<div class="lyear-layout-web">
+    <div class="lyear-layout-container">
+
+        <!--左侧导航-->
+        <div th:replace="commonTemplate :: leftMenus"></div>
+        <!--End 左侧导航-->
+
+        <!--头部信息-->
+        <div th:replace="commonTemplate :: headerDiv"></div>
+        <!--End 头部信息-->
+
+        <!--页面主要内容-->
+        <main class="lyear-layout-content">
+
+            <div class="container-fluid">
+                <form th:action="@{leave/toStuList.ht}" id="frm" name="frm" method="post">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+
+                                <div class="card-toolbar clearfix ">
+                                    <div class="pull-right search-bar">
+                                        <div class="input-group">
+                                            <input type="text" name="itemlableSearch"
+                                                   th:value="${itemlableSearch}" id="itemlableSearch"
+                                                   class="form-control" value="" placeholder="姓名/班级"/>
+                                            <div class="input-group-btn">
+                                                <button class="btn btn-success" th:onclick="'stuAuditionStartTime()'"
+                                                        id="search-btn1" type="button" aria-haspopup="true"
+                                                        aria-expanded="false">
+                                                    查询
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="pull-right search-bar">
+                                        <div class="input-group">
+                                           <span style="">
+											   <select name="isleave" id="isleave" class="form-control">
+															<option value="0"
+                                                                    th:selected="${isleave == '0' }">已请假</option>
+															<option value="1"
+                                                                    th:selected="${isleave == '1'}">请假结束</option>
+														</select>
+													</span>
+                                        </div>
+                                    </div>
+                                    <div class="toolbar-btn-action">
+                                        <button type="button" class="btn btn-primary btn-lg" th:onclick="'toLeave(0)'">
+                                            请假
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                            <tr>
+                                                <td class="col3">学生姓名</td>
+                                                <td class="col4">班级</td>
+                                                <td class="col4">请假类型</td>
+                                                <td class="col4">请假事由</td>
+                                                <td class="col4">开始时间</td>
+                                                <td class="col4">结束时间</td>
+                                                <td class="col4">审批人</td>
+                                                <td class="col4">操作</td>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr th:each="info:${pageResult.list}"
+                                                th:if="${pageResult.list != null &amp;&amp; pageResult.list.size() > 0}"
+                                                onmouseover="this.style.backgroundColor='#e3f1ff'"
+                                                onmouseout="this.style.backgroundColor='#ffffff'">
+                                                <td class="col3"><span style="cursor: pointer"
+                                                                       th:title="${info.sname}"
+                                                                       th:text="${info.sname}"></span></td>
+                                                <td class="col4"><span style="cursor: pointer"
+                                                                       title="" th:text="${info.cname}"></span></td>
+                                                <td class="col4"><span style="cursor: pointer"
+                                                                       title="" th:text="${info.rtype}"></span></td>
+                                                <td class="col4"><span
+                                                        style="cursor: pointer; white-space: nowrap;" title=""
+                                                        th:text="${info.reason}"></span></td>
+                                                <td class="col4"><span style="cursor: pointer"
+                                                                       title="" th:text="${info.startDate}"></span></td>
+                                                <td class="col4"><span style="cursor: pointer"
+                                                                       title="" th:text="${info.endDate}"></span></td>
+                                                <td class="col4"><span style="cursor: pointer"
+                                                                       title="" th:text="${info.userName}"></span></td>
+                                                <td class="col4"><span baisee:ctrl="QJGL_SP"
+                                                                       style="cursor: pointer; color: red;" title="删除"
+                                                                       th:onclick="'deltLevInfo(\'' + ${info.id} + '\')'"
+                                                                       th:text="删除"> </span>
+                                                    <span baisee:ctrl="QJGL_SP"
+                                                          style="cursor: pointer; color: red;" title="修改"
+                                                          th:onclick="'toLeave(\'' + ${info.id} + '\')'"
+                                                          th:text="修改"> </span></td>
+
+                                            </tr>
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <ul class="pagination" th:if="${pageResult != null}" th:object="${pageResult}">
+                                        <li><a href="javascript:void(0);"
+                                               th:onclick="*{hasPreviousPage} ? 'go(1)' : 'return false;'">首页</a></li>
+                                        <li><a href="javascript:void(0);"
+                                               th:onclick="*{hasPreviousPage} ? 'go(' + *{prePage} + ')' : 'return false;'">上一页</a>
+                                        </li>
+                                        <li><a href="javascript:void(0);"
+                                               th:onclick="*{hasNextPage} ? 'go(' + *{nextPage} + ')' : 'return false;'">下一页</a>
+                                        </li>
+                                        <li><a href="javascript:void(0);"
+                                               th:onclick="*{hasNextPage} ? 'go(' + *{pages} + ')' : 'return false;'">末页</a>
+                                        </li>
+                                        <li><a href="javascript:void(0);" onclick="go($('#pagenumber').val());">跳转至</a>
+                                        </li>
+                                        <li><a href="javascript:void(0);"><input name="pageNum" id="pagenumber"
+                                                                                 th:value="*{pageNum}"/>/<span
+                                                id="_pages" th:text="*{pages == 0} ? 1 : *{pages}"></span></a></li>
+                                        <li><a href="javascript:void(0);">页</a></li>
+                                    </ul>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+
+        </main>
+        <!--End 页面主要内容-->
+    </div>
+</div>
+
+<script type="text/javascript">
+    /**
+     * 修改
+     **/
+    function toLeave(id) {
+        location.href = basePath + "leave/toLeave.ht?id=" + id;
+    }
+
+    /**
+     * 删除请假记录
+     * @param id
+     */
+    function deltLevInfo(id) {
+        var bool = confirm("是否执行删除请假记录")
+        if (bool == true) {
+            $.ajax({
+                url: basePath + "leave/deltStu.ht",
+                type: "post",
+                dataType: "text",
+                data: "id="+ id,
+                success: function (obj) {
+                    location.href = basePath + "leave/toStuList.ht";
+                },
+                error: function (x, y, z) {
+                    alert(y)
+                }
+            })
+        }
+
+    }
+
+    function stuAuditionStartTime() {
+        document.getElementById("frm").submit();
+    }
+
+    function save() {
+        var sid = $("#sid").val();
+        var id = $("#id").val();
+        var rtype = $("#rtype").val();
+        var reason = $("#reason").val();
+        var startDate = $("#startDate").val();
+        var endDate = $("#endDate").val();
+        if (sid == null || sid == "" || sid == null || rtype == "" || rtype == null ||
+            startDate == "" || startDate == null || endDate == "" || endDate == null) {
+            _alert("请填写必输项！");
+            return false;
+        }
+        if (startDate >= endDate) {
+            _alert("开始时间大于结束时间！");
+            return false;
+        }
+        var param = {
+            "sid": sid,
+            "id": id,
+            "rtype": rtype,
+            "reason": reason,
+            "startDate": startDate,
+            "endDate": endDate
+        }
+        $.post(basePath + 'leave/saveStu.ht', param, function (result) {
+            console.log(result);
+            $("#gridSystemModal").modal("hidden");
+        })
+    }
+
+</script>
+<script type="text/javascript" src="js/jquery.min.js" th:src="@{js/jquery.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap.min.js" th:src="@{static/js/bootstrap.min.js}"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js"
+        th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+<!-- <script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script> -->
+<!-- <script type="text/javascript" src="js/bootstrap.min.js"  th:src="@{js/bootstrap.min.js}"></script> -->
+<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap-3.0.0/js/bootstrap-datepicker.min.js"
+        th:src="@{js/bootstrap-datepicker.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap-3.0.0/js/bootstrap-datepicker.zh-CN.min.js"
+        th:src="@{js/bootstrap-datepicker.zh-CN.min.js}"></script>
+<script type="text/javascript" src="js/main.min.js" th:src="@{js/main.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/layer/layer.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/My97DatePicker/WdatePicker.js}"></script>
+</body>
+</html>

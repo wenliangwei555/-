@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+	<head th:include="commonTemplate :: header">
+	</head>
+	<body class="bgcolor-body">
+		<div id="page">
+			<div th:include="commonTemplate :: headerDiv"></div>
+			<div id="content" class="layout">
+				<div class="grid-s5m0">
+					<div class="col-main">
+						<div class="main-wrap">
+							<div class="skin-box">
+								<div class="skin-box-bd">
+									<div class="cur-position">
+									<span><a href="javascript:void(0)">信息管理</a> </span> <span>&gt;</span>
+									<span><a th:href="@{stu/toForStuList.ht}">学生信息</a> </span> <span>&gt;</span>
+									<span><a href="javascript:void(0)">编辑信息</a> </span>
+									</div>
+									<!-- ==================================== 页面内容开始 ============================= -->
+									<div class="cont-box">
+										<div class="JsW skin-box-bd" data-widget-type="tab" data-widget-config="{'activeIndex':0}">
+											<div class="skin-bd-box">
+												<div class="content-box-menu">
+													<ul >
+														<li><a href="javascript:void(0)"> <span
+															th:onclick="'notstuJump(\'' + ${stuId} + '\')'">基本信息</span> <span
+															class="separator"></span>
+													</a></li>
+														<li>
+															<a href="javascript:void(0)" > <span th:onclick="'notSupJump(\'' + ${stuId} + '\')'">附加信息</span> <span class="separator"></span> </a>
+														</li>
+														<li>
+															<a href="javascript:void(0)"><span th:onclick="'notEduJump(\'' + ${stuId} + '\')'">教育信息</span> <span class="separator"></span> </a>
+														</li>
+														<li class="active">
+															<a href="javascript:void(0)"> <span>家庭信息</span> <span class="separator"></span> </a>
+														</li>
+														
+													</ul>
+												</div>
+												<div class="list-table">
+													<div class="list-table-cont">
+														<div class="table6">
+														
+															<form id="basefrm" name="basefrm"  th:action="@{stu/toUpdateForStu.ht(stuTable=forStudent)}" method="post" enctype="multipart/form-data" >
+																 
+																<div class="list-table">
+													<div class="list-table-cont">
+											 		<div class="table2">
+														<table class="ks-inputall">
+															<tr class="th">
+																<td class="col3">家长姓名 <input type="hidden" name="operationSuccess" id="operationSuccess" th:value="${operationSuccess}"/></td>
+																<td class="col5">家长性别<input type="hidden" id="sId" name="sId"  th:value="${stuId}" /></td>
+																<td class="col6">家长手机号</td>
+																<td class="col8">家长身份证号</td>
+																<td class="col9">监护人关系</td>
+																<td class="col10">其他监护人关系</td>
+															</tr>
+															 <tr th:if="${list == null || list.size() == 0}">
+															</tr>
+															
+															<tr th:each="info:${list}" th:if="${list != null &amp;&amp; list.size() > 0}" onmouseover="this.style.backgroundColor='#e3f1ff'" onmouseout="this.style.backgroundColor='#ffffff'">
+																<td class="col3">
+																	
+																	<span style="cursor:pointer" th:text="${info.stuFamName}"></span>
+																</td>
+																<td class="col5">
+																	<span style="cursor:pointer" th:if="${info.stuFamSex == '1'}" th:text="女"></span>
+																	<span style="cursor:pointer" th:if="${info.stuFamSex == '0'}" th:text="男"></span>
+																</td>
+																<td class="col6">
+																<span style="cursor:pointer" th:text="${info.stuFamTel}"></span>
+																</td>
+																<td class="col8">
+																<span style="cursor:pointer" th:text="${info.stuFamIdNumber}"></span>
+																</td>
+																<td class="col9">
+																<span style="cursor:pointer"  th:text="${info.stuFamRelation}"></span>
+																</td>
+																<td class="col10">
+																	<span style="cursor:pointer" th:text="${info.stuFamOtherRelation}"></span>
+																</td>
+															</tr> 
+														</table>
+													</div>
+												</div>
+											</div>
+															</form>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!-- ============================= 页面内容 结束============================= -->
+								</div>
+							</div>
+						</div>
+					</div>
+					<div th:include="commonTemplate :: leftMenus"></div>
+				</div>
+			</div>
+			<div th:include="commonTemplate :: footer"></div>
+		</div>
+		<div th:include="commonTemplate :: processBar" />
+		<script th:inline="javascript"> 
+		function notSupJump(id){
+				locationHref([[@{'/stu/notSupJump.ht'}]]+ "?stuId=" + id);
+		};
+		function notEduJump(id){
+				locationHref([[@{'/stu/notEduJump.ht'}]]+ "?stuId=" + id);
+		};
+		function notstuJump(id){
+				locationHref([[@{'/stu/notstuJump.ht'}]]+ "?stuId=" + id);
+		};
+	
+		</script>
+		
+	</body>
+</html>

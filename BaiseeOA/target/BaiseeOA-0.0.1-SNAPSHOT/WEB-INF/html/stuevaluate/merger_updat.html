@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:include="commonTemplate :: header">
+
+</head>
+
+
+<body class="bgcolor-body">
+<div class="cont-box">
+    <form th:action="@{leave/toreceive.ht}" method="post" id="frm"
+          name="frm">
+        <div class="search-box">
+            <div class="right"></div>
+        </div>
+        <table>
+            <tr>
+                <td>
+                    <div class="center">
+                        <div class="td1">
+                            <span class="red">*</span><span>选择班级：</span>
+                            <input type="hidden" id="id" name="id" th:value="${ids}"  />
+                        </div>
+                        <div class="td2">
+                            <div class="control-css3select css3select-icon-hide">
+                                <select name="claId" id="claId" class="radius3">
+                                    <option th:each="info:${list}"
+                                            th:value="${info.cId}" th:text="${info.cName}"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <div class="redbutton control-button JsW" data-control-type="button" data-control-config="{'buttonCls':'button'}" style="text-align: right;margin-right: 150px;margin-top: 36px">
+            <span> <input type="button" value="确认"  id="radius5"  class="radius5 button ks-pop-close1" style="width: 88px;height: 28px" onclick="save()" /></span>
+            <span class="grey"> <input value="关闭" id="radius6"  type="button" class="radius5 button ks-pop-close1" onclick="onCancel();" style="width: 88px;height: 28px" /></span>
+            <span id="del"></span>
+        </div>
+    </form>
+</div>
+
+
+<script th:inline="javascript">
+
+    function save() {
+        var id = $("#id").val();
+        var cid = $("#claId").val();
+        $.ajax({
+            async: false,
+            url:[[@{/stuevaluate/updatMerger.ht}]],
+        data:{
+            "id":id,"cid":cid
+        },
+        type:'post',
+            success:function(data){
+            console.log(data)
+            if (data.code == "000") {
+                onCancel();
+            }else {
+                _alert("合班失败！")
+            }
+        }
+    })
+    }
+    function onCancel() {
+        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+        parent.layer.close(index); //再执行关闭
+    }
+</script>
+</body>
+</html>

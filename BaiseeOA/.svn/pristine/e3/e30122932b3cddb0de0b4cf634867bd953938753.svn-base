@@ -1,0 +1,25 @@
+package cn.baisee.oa.service;
+
+import java.util.List;
+
+import cn.baisee.oa.model.BaiseeMenu;
+import org.springframework.ui.Model;
+
+import javax.servlet.http.HttpServletRequest;
+
+public interface MenuService {
+
+	public BaiseeMenu getMenusByMenuId(String menuId);
+	
+	public List<BaiseeMenu> getMenusByUserId(String userId);
+	
+	public List<BaiseeMenu> selectChilds(String menuId); 
+	
+	public List<BaiseeMenu> selectAll(String name,String menuid);
+
+	public Integer Save(HttpServletRequest request, Model model, BaiseeMenu menu);
+
+	public Integer Modify(HttpServletRequest request, Model model, BaiseeMenu menu);
+
+	public Integer delete(String menu_id);
+}

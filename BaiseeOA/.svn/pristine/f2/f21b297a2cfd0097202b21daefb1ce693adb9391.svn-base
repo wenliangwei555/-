@@ -1,0 +1,264 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head th:include="commonTemplate :: header">
+</head>
+<style>
+.test {
+	width: 170px;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	display: inline-block;
+	cursor: pointer;
+}
+</style>
+
+<body class="bgcolor-body">
+	<div id="page">
+		<div th:include="commonTemplate :: headerDiv"></div>
+		<div id="content" class="layout">
+			<div class="grid-s5m0">
+				<!-- ============================= 页面内容 开始============================= -->
+				<div class="col-main">
+					<div class="main-wrap">
+						<div class="skin-box">
+							<div class="skin-box-bd">
+								<div class="cur-position">
+									<span><a href="javascript:void(0);">评价问题信息管理</a> </span> <span>&gt;</span>
+									<span><a th:href="@{eva/selectListPage.ht}">评价表管理</a> </span> <span>&gt;</span>
+									<span><a th:href="@{eva/selectTgesPage.ht}">评价问题管理</a> </span>
+								</div>
+								<form th:action="@{eva/selectTgesPage.ht}" id="frm" name="frm"
+									method="post">
+									<div class="cont-box">
+										<div class="search-box">
+											<div class="left">
+												<span class="add JsW"><a
+													th:href="@{eva/selectListPage.ht}" class="ks-pop-nav"
+													title="返回上一级" style="cursor: pointer; color: #ffffff"
+													onmouseover="javascript:this.style.color='#dbdbdb'"
+													onmouseout="javascript:this.style.color='#ffffff'">返回上一级</a>
+												</span> <span class="add JsW"><a
+													th:href="@{eva/toAddThes.ht}" class="ks-pop-nav"
+													title="添加问题" style="cursor: pointer; color: #ffffff"
+													onmouseover="javascript:this.style.color='#dbdbdb'"
+													baisee:ctrl="PJXX_TJPJXX"
+													onmouseout="javascript:this.style.color='#ffffff'">新增问题</a>
+												</span> <span class="del"><a bms:ctrl="PJXX_SCPJXX"
+													href="javascript:void(0);"
+													th:onclick="'del(\'frm\', \''+ @{/eva/delAllthes.ht} + '\')'"
+													title="删除问题" style="cursor: pointer; color: #ffffff"
+													onmouseover="javascript:this.style.color='#dbdbdb'"
+													onmouseout="javascript:this.style.color='#ffffff'">删除问题</a>
+												</span> <input class="add JsW" style="cursor: pointer; color: red;"
+													type="button" onclick="Bysubmit()" value="生成评价表" /> <input
+													type="hidden" name="spID" id="spID" th:value="${gID}" /> <input
+													type="hidden" name="suID" id="suID" th:value="${suID}" />
+												<input type="hidden" name="operationSuccess"
+													id="operationSuccess" th:value="${operationSuccess}" />
+											</div>
+										</div>
+										<div class="list-table">
+											<div class="list-table-cont">
+												<div class="table2">
+													<table class="ks-inputall">
+														<tr class="th">
+															<td class="col1">
+																<div class="JsW control-checkbox"
+																	data-control-type="checkboxall">
+																	<input type="checkbox"
+																		onclick="selectAllCheckBox(document.frm.ids,document.frm.checkbox,this);" />
+																</div>
+															</td>
+															<td class="col3">问题</td>
+															<td class="col5">创建人</td>
+															<td class="col6">创建时间</td>
+															<td class="col6">修改时间</td>
+															<td class="col6">操作</td>
+														</tr>
+														<!-- <tr th:if="${pageResult.list == null || pageResult.list.size() == 0}">
+															
+															</tr> -->
+														<tr th:each="info:${pageResult.list}"
+															th:if="${pageResult.list != null &amp;&amp; pageResult.list.size() > 0}"
+															onmouseover="this.style.backgroundColor='#e3f1ff'"
+															onmouseout="this.style.backgroundColor='#ffffff'">
+															<td class="col1">
+																<div class="JsW control-checkbox"
+																	data-control-type="checkbox">
+																	<input type="checkbox" name="ids" id="ids"
+																		th:value="${info.stID}" th:each="pro:${proInfo}"
+																		th:if="${info.stID == pro.stID}" checked="checked" />
+																	<input type="checkbox" name="ids" id="ids"
+																		th:value="${info.stID}" />
+																</div>
+															</td>
+
+															<td class="col3"><span style="cursor: pointer"
+																th:onclick="'edit(\'' + ${info.stID} + '\')'"
+																th:text="${info.stTitle}"></span></td>
+															<td class="col4"><span style="cursor: pointer"
+																th:onclick="'edit(\'' + ${info.stID} + '\')'"
+																th:text="${info.Founder}"></span></td>
+															<td class="col5"><span style="cursor: pointer"
+																th:onclick="'edit(\'' + ${info.stID} + '\')'"
+																baisee:fmt="yyyy-MM-dd HH:mm:ss,${info.Creationtime}"></span>
+															</td>
+															<td class="col5"><span style="cursor: pointer"
+																th:onclick="'edit(\'' + ${info.stID} + '\')'"
+																baisee:fmt="yyyy-MM-dd HH:mm:ss,${info.Modificationtime}"></span>
+															</td>
+															<td class="col5"><a style="color: red;"
+																href="javascript:void(0);"
+																th:onclick="'preview(\'' + ${info.stID} + '\')'">预览</a>
+															</td>
+														</tr>
+													</table>
+												</div>
+											</div>
+											<div th:include="commonTemplate :: pageBox"></div>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- ============================= 页面内容 结束============================= -->
+				<div th:include="commonTemplate :: leftMenus"></div>
+			</div>
+		</div>
+		<div th:include="commonTemplate :: footer"></div>
+	</div>
+	<div th:include="commonTemplate :: processBar" />
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+		$(function(){
+			var operationSuccess = $("#operationSuccess").val();
+			if(operationSuccess != ""){
+				_alert(operationSuccess);
+			}
+		});
+		
+		
+	function preview(iId){
+		tamp = "mailFrom";
+		layer.open({
+			type : 2,
+			title : "查询问题",
+			shadeClose : true,
+			shade : 0.8,
+			area : [ '500px', '400px' ],
+			content : '/BaiseeOA/eva/getIdProblemInfo.ht?stID='+iId
+		});
+	}
+	
+	function edit(stId) {
+		var url = [[@{'/eva/toAddThes.ht?stID='}]] + stId;
+		locationHref(url);
+	}
+	
+	function Bysubmit() {
+		var ids = document.getElementsByName("ids");  
+		var claName = $("#claName").val();
+		var empName = $("#empName").val();
+		var str="";
+		for(var i=0;i<ids.length;i++){
+			if(ids[i].checked == true){
+				str = ids[i].checked;
+			}
+		}
+		if(str == "" ){
+			 _alert("请选择要评价的问题！")
+		}/* else if(claName == null  || claName == ""){
+			_alert("请选择要评价的班级！")				
+		}else if(empName == null || empName == ""){
+			_alert("请选择要评价的老师！")
+		} */
+		else{
+			layer.open({
+				  title: '添加标题名'
+				  ,content: '输入评价标题：<input  type="text" class="radius3 input" name="TitleName" id="TitleName" onKeypress="javascript:if(event.keyCode == 32)event.returnValue = false;"/>'
+				  ,yes:function(index,layero){
+						var TitleName = $("#TitleName").val();
+						if(TitleName == ''){
+							_alert("请输入标题名！")
+						}else{
+							var logUrl1 = [[@{'/eva/validateTitleName.ht?TitleName='}]]+ TitleName;
+							$.ajax({
+								url: logUrl1,
+								type:'post',
+								success:function(data){
+									if (data.flag == "success") {
+										_alert("标题名已存在,不可以重复！");
+									}  else {  
+										var logUrl = [[@{'/eva/saveCreTeb.ht?TitleName='}]]+ TitleName;
+										$.ajax({
+											url: logUrl,
+											type:'post',
+											data: $('#frm').serialize(),
+											success:function(data){
+												if (data.flag == "success") {
+													_alert("生成表成功");
+													 var succ=[[@{'/eva/selectListPage.ht'}]]; 
+													locationHref(succ);
+												}  else {
+													_alert("生成表失败");
+												}
+											}
+										})
+									  layer.close(index); //关闭弹出框
+									}
+								}
+							})
+						}
+					  }
+				});	
+	 	  }
+	}
+
+	function ValidaClaName(){
+		var claName = $("#claName").val();
+		var suID = $("#suID").val();
+		var logUrl = [[@{'/eva/validaClaName.ht?claName='}]]+ claName+"&suID="+suID;
+		$.ajax({
+			url: logUrl,
+			type:'post',
+			success:function(data){
+				if (data.flag == "success") {
+					_alert("评价班级已存在")
+					$("#claName").val("");
+				}
+			}
+		})
+	}
+	
+	// 点击取消跳转列表页面
+	function returnBack(){
+		var url = [[@{'/eva/selectListPage.ht'}]];
+		locationHref(url);
+	} 	
+	
+	
+	function returnAjax() {
+		var logUrl = [[@{'/eva/saveCreTeb.ht'}]];
+		$.ajax({
+			url: logUrl,
+			type:'post',
+			data: $('#frm').serialize(),
+			success:function(data){
+				if (data.flag == "success") {
+					_alert("生成表成功");
+					 var succ=[[@{'/eva/selectListPage.ht'}]]; 
+					locationHref(succ);
+				}  else {
+					_alert("生成表失败");
+				}
+			}
+		})
+	}
+	/*]]>*/
+	</script>
+</body>
+</html>

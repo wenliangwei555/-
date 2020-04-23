@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.baisee.BiseeRepertoryMapper">
+<resultMap type="cn.baisee.oa.model.goods.BaiseeGoodsRepertory" id="goodsRepertory">
+       <id column="goods_id"  property="goodsId" />
+       <result column="goods_name"  property="goodsName" />
+       <result column="goods_type_id"  property="goodsTypeId" />
+       <result column="goods_num"  property="goodsNum" />
+       <result column="standards"  property="standards" />
+       <result column="update_time"  property="updateTime" />
+	   <result column="update_person"  property="updatePerson" />
+	   <result column="dept_id"  property="deptId" />
+	  
+    </resultMap>
+
+<sql id="baisee_goods_repertory">
+goods_id,goods_name,goods_type_id,goods_num,standards,update_time,update_person,dept_id
+</sql>
+
+
+<!-- 查询所有物品库存信息 -->
+	<select id="selectGoodsRepertoryList" resultMap="goodsRepertory" parameterType="map">
+	select 
+	<include refid="baisee_goods_repertory" />
+	 from baisee_goods_repertory 
+	 			<where>
+	 				<if test="goodsTypeId != null">
+	 					goods_type_id = #{goodsTypeId}
+	 				</if>
+					<if test="goodsName != null">
+						AND goods_name LIKE "%"#{goodsName}"%"
+					</if>
+				</where>
+	 order by update_time desc
+	</select>
+	
+<!-- 根据物品id查询单条数据并返回 -->
+	<select id="selectOneGodsRepertory" resultMap="goodsRepertory" parameterType="java.lang.String" >
+	select 
+	<include refid="baisee_goods_repertory" />
+	from baisee_goods_repertory where goods_id=#{id}
+	</select>
+	
+<!-- 根据物品goodsTypeId，查询该物品的库存信息 -->
+	<select id="findGoodsRepertoryByGoodsTypeId" resultMap="goodsRepertory" parameterType="java.lang.String" >
+	select 
+	<include refid="baisee_goods_repertory" />
+	from baisee_goods_repertory where goods_type_id=#{goodsTypeId}
+	</select>
+	
+	<!-- 查询所有库存 -->
+	<select id="findALLRpertory" resultMap="goodsRepertory" parameterType="java.lang.String" >
+	select 
+	<include refid="baisee_goods_repertory" />
+	from baisee_goods_repertory 
+	</select>
+	
+	<!-- 根据物品的goodsId修改库存物品的数量 -->
+	<update id="updateOneGodsRepertory" parameterType="cn.baisee.oa.model.goods.BaiseeGoodsRepertory">
+			update baisee_goods_repertory set goods_num=#{goodsNum} where goods_id=#{goodsId}
+	</update>
+	
+	<!-- 根据物品的goodsTypeId修改库存物品的数量 -->
+	<update id="updateGodsRepertoryGoodsNum" parameterType="cn.baisee.oa.model.goods.BaiseeGoodsRepertory">
+			update baisee_goods_repertory set goods_num=#{goodsNum} where goods_type_id=#{goodsTypeId}
+	</update>
+
+
+
+<insert id="addOneGodsRepertory" parameterType="cn.baisee.oa.model.goods.BaiseeGoodsRepertory">
+	insert into baisee_goods_repertory values(#{goodsId},#{goodsName},#{goodsTypeId},#{goodsNum},#{standards},#{updateTime},#{updatePerson},#{deptId})
+</insert>
+
+
+
+<!-- 根据物品id批量删除库存物品 -->
+	<delete id="removeGodsRepertory" parameterType="java.lang.String">
+		<if test="array.length > 0 ">
+			delete from baisee_goods_repertory
+			<where>
+				goods_id in
+				<foreach collection="array" open="(" close=")" item="goodsId" separator="," >
+					#{goodsId}
+				</foreach>
+			</where>
+		</if>
+	</delete>
+	
+<!-- 根据所属分类Id批量删除库存物品 -->
+	<delete id="removeGoodsRepertoryByPid" parameterType="java.lang.String">
+		<if test="array.length > 0 ">
+			delete from baisee_goods_repertory
+			<where>
+				goods_type_id in
+				<foreach collection="array" open="(" close=")" item="goodsTypeId" separator="," >
+					#{goodsTypeId}
+				</foreach>
+			</where>
+		</if>
+	</delete>	
+	
+</mapper>

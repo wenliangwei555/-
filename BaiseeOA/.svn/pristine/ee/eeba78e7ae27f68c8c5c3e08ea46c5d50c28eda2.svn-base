@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="commonTemplate :: header">
+
+</head>
+
+<body>
+<div class="lyear-layout-web">
+	<div class="lyear-layout-container">
+
+		<!--左侧导航-->
+		<div th:replace="commonTemplate :: leftMenus"></div>
+		<!--End 左侧导航-->
+
+		<!--头部信息-->
+		<div th:replace="commonTemplate :: headerDiv"></div>
+		<!--End 头部信息-->
+
+		<!--页面主要内容-->
+		<main class="lyear-layout-content">
+
+			<div class="container-fluid">
+				<form  th:action="@{cla/toClaList.ht}"   id="frm" name="frm" method="post" onsubmit="return check();">
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="card">
+
+								<div class="card-toolbar clearfix " >
+									<div class="pull-right search-bar" >
+										<div class="input-group">
+											<input type="text"  th:value="${clazz.cName}" name="cName" id="cName" class="form-control" value="" placeholder="班级名"/>
+											<div class="input-group-btn">
+												<input type="hidden" name="prompt" id="prompt" th:value="${prompt}" />
+												<submit class="btn btn-success" onclick="stuAuditionStartTime()" id="search-btn1" type="button" aria-haspopup="true" aria-expanded="false">
+													查询
+												</submit>
+											</div>
+										</div>
+									</div>
+
+									<div class="pull-right search-bar" >
+                                       <span
+											   style="">
+										   <select name="cType"  class="form-control" style="width: 150px;">
+																<option value="">--班级状态--</option>
+																<option value="1" th:if="${clazz.cType eq '1'}"   selected="selected">正式</option>
+																<option value="1" th:if="${clazz.cType ne'1'}"   >正式</option>
+																<option value="0" th:if="${clazz.cType ne'0'}"   >试听</option>
+																<option value="0" th:if="${clazz.cType eq '0'}" selected="selected">试听</option>
+															</select>
+													</span>
+									</div>
+
+									<div class="pull-right search-bar" >
+										<div class="input-group">
+                                           <span style=""> <select name="cStatus" th:if="${#strings.isEmpty(userType)}" class="form-control" style="width: 150px;">
+																<option value="">--班级学籍--</option>
+																<option value="1" th:if="${clazz.cStatus eq '1'}" selected="selected">高中</option>
+																<option value="1" th:if="${clazz.cStatus ne'1'}" >高中</option>
+																<option value="2" th:if="${clazz.cStatus ne'2'}" >高中开发</option>
+																<option value="2" th:if="${clazz.cStatus eq '2'}" selected="selected">高中开发</option>
+																<option value="3" th:if="${clazz.cStatus ne'3'}" >高中测试</option>
+																<option value="3" th:if="${clazz.cStatus eq '3'}" selected="selected">高中测试</option>
+																<option value="0" th:if="${clazz.cStatus ne'0'}" >初中</option>
+																<option value="0" th:if="${clazz.cStatus eq '0'}" selected="selected">初中</option>
+															</select>
+													</span>
+										</div>
+									</div>
+									<div class="toolbar-btn-action">
+										<div class="btn btn-success" onclick="toadd()">
+											新增
+										</div>
+									</div>
+								</div>
+								<div class="card-body">
+
+									<div class="table-responsive">
+										<table class="table table-bordered">
+											<thead>
+											<tr>
+												<!--<th>-->
+													<!--<label class="lyear-checkbox checkbox-primary">-->
+														<!--<input type="checkbox" id="check-all"/><span></span>-->
+													<!--</label>-->
+												<!--</th>-->
+												<td class="col2">班级ID</td>
+												<td class="col3">班级名</td>
+												<td class="col4">班级状态</td>
+												<td class="col5">班级学籍</td>
+												<td class="col6">班主任</td>
+												<td class="col1">毕业</td>
+												<td class="col1">删除</td>
+											</tr>
+											</thead>
+											<tbody>
+											<tr th:each="info:${pageResult.list}" th:if="${pageResult.list != null &amp;&amp; pageResult.list.size() > 0}" onmouseover="this.style.backgroundColor='#e3f1ff'" onmouseout="this.style.backgroundColor='#ffffff'">
+												<!--<td>-->
+													<!--<label class="lyear-checkbox checkbox-primary">-->
+														<!--<input type="checkbox" name="ids[]" /><span></span>-->
+													<!--</label>-->
+												<!--</td>-->
+												<td >
+													<span style="cursor:pointer" title="点击可编辑" th:onclick="'edit(\'' + ${info.cId} + '\')'" th:text="${info.cId}"></span>
+												</td>
+												<td >
+													<span style="cursor:pointer" title="点击可编辑" th:onclick="'edit(\'' + ${info.cId} + '\')'" th:text="${info.cName}"></span>
+												</td>
+												<td>
+													<span style="cursor:pointer" title="点击可编辑" th:onclick="'edit(\'' + ${info.cId} + '\')'" th:if="${info.cType eq '0'}" >试听</span>
+													<span style="cursor:pointer" title="点击可编辑" th:onclick="'edit(\'' + ${info.cId} + '\')'" th:if="${info.cType eq '1'}" >正式</span>
+												</td>
+												<td>
+													<span style="cursor:pointer" title="点击可编辑" th:onclick="'edit(\'' + ${info.cId} + '\')'" th:if="${info.cStatus eq '0'}" >初中</span>
+													<span style="cursor:pointer" title="点击可编辑" th:onclick="'edit(\'' + ${info.cId} + '\')'" th:if="${info.cStatus eq '1'}" >高中</span>
+													<span style="cursor:pointer" title="点击可编辑" th:onclick="'edit(\'' + ${info.cId} + '\')'" th:if="${info.cStatus eq '2'}" >高中开发</span>
+													<span style="cursor:pointer" title="点击可编辑" th:onclick="'edit(\'' + ${info.cId} + '\')'" th:if="${info.cStatus eq '3'}" >高中测试</span>
+												</td>
+												<td>
+													<span style="cursor:pointer" title="点击可编辑" th:onclick="'edit(\'' + ${info.cId} + '\')'" th:if="${info.emp != null}" th:text="${info.emp.empName}"></span>
+													<span style="cursor:pointer" title="点击可编辑" th:onclick="'edit(\'' + ${info.cId} + '\')'" th:if="${info.emp == null}"></span>
+												</td>
+												<td >
+													<span style="cursor:pointer" title="试听或初中班级,不可进行毕业操作" th:if="${info.cType eq '0'} or ${info.cStatus eq '0'}" ><font color="#ADADAD">不可操作</font></span>
+													<!-- <span style="cursor:pointer" title="初中班级,不可进行毕业操作" th:if="${info.cStatus eq '0'}" ><font color="#ADADAD">初中班级</font></span> -->
+													<span th:if="${info.cType eq '1'} and (${info.cStatus eq '1'} or ${info.cStatus eq '2'} or ${info.cStatus eq '3'})">
+																		<span style="cursor:pointer"  baisee:ctrl="BJGL_BJBY" title="点击毕业" th:onclick="'graduate(\'' + ${info.cId} + '\')'" th:if="${info.isGraduate == '0'}" ><font color="#ff0000">点击毕业班级</font></span>
+																		<span style="cursor:pointer" title="该班级已毕业" th:if="${info.isGraduate == '1'}" ><font color="#9AFF02">已毕业</font></span>
+																	</span>
+												</td>
+												<td >
+													<span style="cursor:pointer"  title="点击删除" th:onclick="'delCla(\'' + ${info.cId} + '\')'"><font color="#ff0000">删除该班级</font></span>
+
+												</td>
+
+											</tr>
+
+											</tbody>
+										</table>
+									</div>
+									<ul class="pagination" th:if="${pageResult != null}" th:object="${pageResult}">
+										<li><a href="javascript:void(0);" th:onclick="*{hasPreviousPage} ? 'go(1)' : 'return false;'">首页</a></li>
+										<li><a href="javascript:void(0);" th:onclick="*{hasPreviousPage} ? 'go(' + *{prePage} + ')' : 'return false;'">上一页</a></li>
+										<li><a href="javascript:void(0);" th:onclick="*{hasNextPage} ? 'go(' + *{nextPage} + ')' : 'return false;'">下一页</a></li>
+										<li><a href="javascript:void(0);" th:onclick="*{hasNextPage} ? 'go(' + *{pages} + ')' : 'return false;'">末页</a></li>
+										<li><a href="javascript:void(0);" onclick="go($('#pagenumber').val());">跳转至</a></li>
+										<li><a href="#1"><input name="pageNum" id="pagenumber" th:value="*{pageNum}" />/<span id="_pages" th:text="*{pages == 0} ? 1 : *{pages}"></span></a></li>
+										<li><a href="#1">页</a></li>
+									</ul>
+
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</form>
+			</div>
+
+		</main>
+		<!--编辑-->
+		<form method="post" id="editForm"  th:action="@{cla/toClaInfo.ht}">
+			<input type="hidden" id="cId" name="cId"/>
+		</form>
+		<!--End 页面主要内容-->
+	</div>
+</div>
+<script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap.min.js" th:src="@{static/js/bootstrap.min.js}"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+<script type="text/javascript" src="js/bootstrap-datepicker.min.js" th:src="@{js/bootstrap-datepicker.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap-datepicker.zh-CN.min.js" th:src="@{js/bootstrap-datepicker.zh-CN.min.js}"></script>
+<script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/layer/layer.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/form/jquery.form.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/validate/jquery.validate.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/My97DatePicker/WdatePicker.js}"></script>
+<script type="text/javascript" src="/BaiseeOA_war_exploded/js/jquery-confirm.js"></script>
+<script type="text/javascript" th:inline="javascript">
+	/*<![CDATA[*/
+	var basePath = /*[[@{/}]]*/;
+	/*]]>*/
+</script>
+<script th:inline="javascript">
+	function delCla(cid){
+		var logUrl = basePath+'/cla/delCla.ht?cId='+ cid;
+		layer.confirm('确定删除该班级吗？', {
+			btn : [ '确定', '取消' ]//按钮
+		}, function(index) {
+			layer.close(index);
+			//此处请求后台程序，下方是成功后的前台处理……
+			//var index = layer.load(0,{shade: [0.7, '#393D49']}, {shadeClose: true}); //0代表加载的风格，支持0-2
+			$.ajax({
+				url: logUrl,
+				type:'post',
+				success:function(data){
+					if (data.flag == "success") {
+						var succ=basePath+'/cla/toClaList.ht';
+						location.href=succ;
+						_alert("删除成功");
+					} else if(data.flag == "undeletable"){
+						_alert("该班级有学生，不可删除");
+					} else {
+						_alert("删除失败");
+					}
+				}
+			})
+		});
+	};
+
+</script>
+<script th:inline="javascript">
+	function graduate(cid){
+		var logUrl =  basePath+'cla/graCla.ht?cId=' + cid;
+		layer.confirm('确定毕业吗？', {
+			btn : [ '确定', '取消' ]//按钮
+		}, function(index) {
+			layer.close(index);
+			$.ajax({
+				url: logUrl,
+				type:'post',
+				success:function(data){
+					if (data.prompt == "success") {
+						var succ=basePath + '/cla/toClaList.ht';
+						location.href = succ;
+						_alert("操作成功！");
+					} else if(data.prompt == "stuInput"){
+						_alert("修改班级内学生出错！");
+					} else if(data.prompt == "error"){
+						_alert("该班级不可进行此操作");
+					} else {
+						_alert("操作失败！！！");
+					}
+				}
+			})
+		});
+	};
+</script>
+<script th:inline="javascript">
+	function edit(id){
+		$("#cId").val(id);
+		$("#editForm").submit();
+	}
+	function check(){
+		var cName=$("#cName").val();
+		if (isNaN(cName)){
+			_alert("非法字符，只能输入数字！！！");
+			$("#cName").val('');
+		}
+	}
+
+	function stuAuditionStartTime(){
+		document.getElementById("frm").submit();
+	}
+	$(function(){
+		var prompt=$("#prompt").val();
+		if(prompt != ""){
+			_alert(prompt);
+		}
+	})
+	function toadd() {
+		location.href = basePath+'/cla/toClaInfo.ht';
+	}
+</script>
+</body>
+</html>

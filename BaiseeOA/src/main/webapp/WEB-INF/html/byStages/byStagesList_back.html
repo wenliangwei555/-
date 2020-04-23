@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head th:include="commonTemplate :: header">
+</head>
+<body class="bgcolor-body">
+	<div id="page">
+		<div th:include="commonTemplate :: headerDiv"></div>
+		<div id="content" class="layout">
+			<div class="grid-s5m0">
+				<!-- ============================= 页面内容 开始============================= -->
+				<div class="col-main">
+					<div class="main-wrap">
+						<div class="skin-box">
+							<div class="skin-box-bd">
+								<div class="cur-position">
+									<span><a href="javascript:void(0);">信息管理</a> </span> <span>&gt;</span>
+									<span><a th:href="@{stages/toStagesList.ht}">分期规则管理</a>
+									</span>
+								</div>
+								<form th:action="@{stages/toStagesList.ht}" id="frm" name="frm"
+									method="post">
+									<div class="cont-box">
+										<div class="search-box">
+											<div class="left">
+												<span class="add JsW"><a
+													th:href="@{stages/toStagesInfo.ht}" baisee:ctrl="FQGL_FQXZ"
+													class="ks-pop-nav" title="添加分期规则"
+													style="cursor: pointer; color: #ffffff"
+													onmouseover="javascript:this.style.color='#dbdbdb'"
+													onmouseout="javascript:this.style.color='#ffffff'">新增</a> </span>
+												<span class="del"><a bms:ctrl="busDict.delDict"
+													href="javascript:void(0);" baisee:ctrl="FQGL_FQSC"
+													th:onclick="'del(\'frm\', \''+ @{/stages/delStages.ht} + '\')'"
+													title="删除业务字典" style="cursor: pointer; color: #ffffff"
+													onmouseover="javascript:this.style.color='#dbdbdb'"
+													onmouseout="javascript:this.style.color='#ffffff'">删除</a> </span>
+											</div>
+											<div class="right">
+												<div class="search-box-cont"></div>
+											</div>
+										</div>
+										<div class="list-table">
+											<div class="list-table-cont">
+												<div class="table2">
+													<table class="ks-inputall">
+														<tr class="th">
+															<td class="col1" baisee:ctrl="FQGL_FQSC">
+																<div class="JsW control-checkbox"
+																	data-control-type="checkboxall" baisee:ctrl="FQGL_FQSC">
+																	<input type="checkbox"
+																		onclick="selectAllCheckBox(document.frm.ids,document.frm.checkbox,this);" />
+																</div>
+															</td>
+															<td class="col2"><span style="cursor: pointer"
+																th:text="分期名称"></span></td>
+															<td class="col2"><span style="cursor: pointer"
+																th:text="期数"></span></td>
+															<td class="col3"><span style="cursor: pointer"
+																th:text="金额"></span></td>
+															<td class="col4"><span style="cursor: pointer"
+																th:text="操作"></span></td>
+														</tr>
+														<tr th:each="info:${tuitionStagesList}">
+															<td class="col1" baisee:ctrl="FQGL_FQSC">
+																<div class="JsW control-checkbox"
+																	data-control-type="checkbox">
+																	<input type="checkbox" name="ids"
+																		th:value="${info.tuStId}" />
+																</div>
+															</td>
+															<td class="co12"><span style="cursor: pointer"
+																th:text="${info.tuStName}"></span></td>
+															<td class="co12"><span style="cursor: pointer"
+																th:text="${info.tuStCycle}+'期'"></span></td>
+															<td class="co13" th:if="${info.tuMonet != null}"><span
+																style="cursor: pointer" th:text="${info.tuMonet}+'元'"></span></td>
+															<td class="col3" th:if="${info.tuMonet == null}"><span
+																style="cursor: pointer">暂无学费关联</span></td>
+															<td class="col4"><a name="colors"
+																style="text-indent: 0px; text-align: center;"
+																class="right info-upanddown" href="javascript:void(0);"
+																th:onclick="'detailed(\'' + ${info.tuStId} + '\')'">查看详细</a>
+																<span class="right info-upanddown"><a
+																	href="javascript:void(0);"
+																	th:onclick="'update(\'' + ${info.tuStId} + '\')'"
+																	style="text-indent: 0px;">修改</a>&emsp; </span></td>
+														</tr>
+													</table>
+												</div>
+											</div>
+										</div>
+										<div th:include="commonTemplate :: pageBox"></div>
+										<br />
+
+										<div class="list-table" style="display: none;" id="dis">
+											<div class="list-table-cont">
+												<div class="table2">
+													<table class="ks-inputall" id="detaileds">
+													</table>
+												</div>
+											</div>
+										</div>
+
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- ============================= 页面内容 结束============================= -->
+				<div th:include="commonTemplate :: leftMenus"></div>
+			</div>
+		</div>
+		<div th:include="commonTemplate :: footer"></div>
+	</div>
+	<div th:include="commonTemplate :: processBar" />
+
+	<script th:inline="javascript">
+		$(function(){
+			$("td a").click(function(){
+				$("td a").css("color","")
+				$(this).css("color","red")
+			})
+		})
+		function detailed( datas){
+		 /*<![CDATA[*/
+			$.ajax({
+				url:[[@{/stages/toStagesLists.ht}]],
+				type: 'post', 
+				data: {tuStId: datas},
+				success:function(data){
+					var _html = "";
+					
+					$.each(data,function(i,item) {
+						_html += "<tr><td class='col1'><span style='cursor: pointer'>最低金额："+item.tuStRuleMinimumTuition+"元</span></td>";
+						_html += "<td class='col1'><span style='cursor: pointer'>最高金额："+item.tuStRuleHighestTuition+"元</span></td>";
+						_html += "<td class='col1'><span style='cursor: pointer'>时限："+item.tuStRuleTimeLimit+"个月</span></td></tr>";
+					})
+					document.getElementById("dis").style.display=""; 
+					document.getElementById("detaileds").innerHTML=_html;
+				}  
+			}); 
+		 /*]]>*/
+		}
+		
+		function update(tuStId){
+			locationHref([[@{/stages/toStagesInfo.ht}]] + "?tuStId=" + tuStId);
+		}
+	</script>
+</body>
+</html>

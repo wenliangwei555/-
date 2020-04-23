@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<title>Insert title here</title>
+</head>
+<body>
+ <!--  简单显示 -->
+ <span th:text="${userName}"></span>
+ <input type="text" th:value="${userName}"/>
+ 
+ <select>
+ 	<option  th:each="list:${lists}"  th:if="'2' eq ${list[value]}" th:value="${list[value]}" th:text="${list[key]}"></option>
+ </select>
+ 
+</body>
+</html>

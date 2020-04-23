@@ -1,0 +1,63 @@
+package cn.baisee.oa.controller;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+
+import cn.baisee.oa.annotation.Role;
+import cn.baisee.oa.model.tuition.TuitionStages;
+import cn.baisee.oa.model.tuition.TuitionStagesRule;
+import cn.baisee.oa.service.BaiseeStagesService;
+import cn.baisee.oa.utils.ParamUtils;
+
+@Controller
+@RequestMapping("/stages")
+public class BaiseeByStagesController {
+	
+	
+	@Autowired
+	private BaiseeStagesService stagesService;
+	
+	
+	@RequestMapping("/toStagesList") 
+	@Role(value = "FQGL_FQCK") 
+	public ModelAndView getStagesList() {
+		ModelAndView mv = new ModelAndView("byStages/byStagesList");
+		List<TuitionStages> list = stagesService.getTuStCycleList();
+		mv.addObject("tuitionStagesList", list);
+		return mv;
+	}
+	
+	@RequestMapping("/toStagesLists") 
+	@Role(value = "FQGL_FQCK") 
+	@ResponseBody
+	public List<TuitionStagesRule> getStagesLists(HttpServletRequest request){
+		String tuStId = ParamUtils.getParameter(request, "tuStId");
+		List<TuitionStagesRule> list = stagesService.getTuitionStagesRuleList( tuStId);
+		return list;
+	}
+	
+	@RequestMapping("/toStagesInfo") 
+	@Role(value = "FQGL_FQXZ") 
+	public ModelAndView toStagesInfo(HttpServletRequest request) {
+		return stagesService.toStagesInfo(request);
+	}
+	@RequestMapping("/saveOrUpdate")
+	@Role(value = "FQGL_FQXZ") 
+	public ModelAndView saveOrUpdate(TuitionStages stages,HttpServletRequest request) {
+		return stagesService.saveOrUpdate(stages, request);
+	}
+	@RequestMapping("/delStages")
+	@ResponseBody
+	@Role(value = "FQGL_FQSC")
+	public Object delStages(HttpServletRequest request) {
+		stagesService.delStages(request);
+		return getStagesList();
+	}
+}

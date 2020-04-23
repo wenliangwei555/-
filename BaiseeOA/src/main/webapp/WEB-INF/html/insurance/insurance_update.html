@@ -1,0 +1,214 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+	<head th:include="commonTemplate :: header">
+	</head>
+	<body class="bgcolor-body">
+		<div id="page">
+			<div th:include="commonTemplate :: headerDiv"></div>
+			<div id="content" class="layout">
+				<div class="grid-s5m0">
+					<div class="col-main">
+						<div class="main-wrap">
+							<div class="skin-box">
+								<div class="skin-box-bd">
+									<div class="cur-position">
+										<span><a href="javascript:void(0)">保险管理</a> </span>
+										<span>&gt;</span>
+										<span><a th:href="@{insurance/input/toSelectPageIns.ht}">保险录入</a> </span>
+										<span>&gt;</span>
+										<span><a href="javascript:void(0)">修改保险</a></span>
+									</div>
+									<!-- ==================================== 页面内容开始 ============================= -->
+									<div class="cont-box">
+										<div class="JsW skin-box-bd" data-widget-type="tab" data-widget-config="{'activeIndex':0}">
+											<div class="skin-bd-box">
+												<div class="list-table">
+													<div class="list-table-cont">
+														<div class="table6">
+															<form id="busInsForm" th:action="@{insurance/input/updInsurance.ht }"  method="post"  >
+																<input type="hidden" name="operationSuccess" id="operationSuccess" th:value="${operationSuccess}"/>
+																<input type="hidden" name="id" id="id" th:value="${insurance.id}"></input>
+																<table id="insurance">
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span class="require red">*</span><span>学生：</span>
+																				</div>
+																				<div class="td2">
+																						<span th:text="${insurance.stuName}">
+																							
+																						</span>																				</div>
+																			</div>
+																		</td>
+																	</tr>
+																	<tr > 
+																		<td>
+																	 		<div class = 'left'> 
+																	 			<div class='td1'> 
+																					 <span class='require red'>*</span>
+																					 <span>学生身份证号：</span>
+																					 <span></span>
+																	 			</div> 
+																	 			<div class='td2' >
+																	 			   <span id="idNumber" th:text="${insurance.stuIdNumber}"></span>
+																	 			</div> 
+																	 		</div> 
+																	 	</td>
+																	 	</tr>
+																	<tr >
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span class="require red">*</span><span>学生所在班级：</span>
+																				</div>
+																				<div class="td2" id="stuClass" th:text="${insurance.className}">
+																					
+																				</div>
+																			</div>
+																		</td>
+																	</tr>
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span class="require red">*</span><span>是否包含在学费中：</span>
+																				</div>
+																				<div class="td2">
+																					<div class="control-css3select css3select-icon-hide">
+																						<select class="radius3" id="isConTuition"
+																						name="isConTuition"
+																						onchange="isMoney(this.value)">
+																						<option ></option>
+																						<option value="1">是</option>
+																						<option value="0">否</option>
+																					</select>
+																					</div>
+																					
+																				</div>
+																			</div>
+																		</td>
+																	</tr>
+																		<tr id="money" style="display :none;">
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span class="require red">*</span><span>保险金额：</span>
+																				</div>
+																				<div class="td2">
+																					<span><input type="text" class="radius3 input" id="iMoney" name="iMoney" th:value="${insurance.iMoney}" onkeyup="check(this.value);" /></span>
+																				</div>
+																			</div>
+																		</td>
+																	</tr>
+																</table>
+																<div class="redbutton control-button JsW" data-control-type="button" data-control-config="{'buttonCls':'button'}">
+																	<span baisee:ctrl="BXGL_LRXG"> <input  th:if="${insurance.status &lt;= '1'}" value="保存" type="submit" class="radius5 button ks-pop-close1" /> </span>
+																	<span class="grey"> <input value="取消" type="button" class="radius5 button ks-pop-close1" onclick="returnBack();"/> </span>
+																	<span id="del"></span>
+																</div>
+															</form>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!-- ============================= 页面内容 结束============================= -->
+								</div>
+							</div>
+						</div>
+					</div>
+					<div th:include="commonTemplate :: leftMenus"></div>
+				</div>
+			</div>
+			<div th:include="commonTemplate :: footer"></div>
+		</div>
+		<div th:include="commonTemplate :: processBar" />
+		<script th:inline="javascript"> 
+		$(function(){
+			setValidate($("#busInsForm"),{
+				rules: {
+					isConTuition:{required: true},
+					iMoney:{required: true,maxlength:5}
+				},
+				messages:{
+					isConTuition:{required: "必选"},
+					iMoney:{required: "必选",maxlength:"金额过大!"}
+				}
+			});
+		
+			var operationSuccess = $("#operationSuccess").val();
+			if(operationSuccess != ""){
+				_alert(operationSuccess);
+			}
+			//访问时就给 是否包含学费 赋值
+			var isConTuition=[[${insurance.isConTuition}]];
+			$("#isConTuition").val(isConTuition);
+			var tuDiType = $("#tuDiType").val();
+			if (isConTuition =='0') {
+				//如果 等于 0 就是不包含，让金额显示
+				money.style.display = '';
+			}else {
+				money.style.display = 'none';
+			}
+		});
+		function returnBack(){
+			var url = [[@{'/insurance/input/toSelectPageIns.ht'}]];
+			locationHref(url);
+		}
+		function check(isMoney){
+			//判断输入的保险金额是否是数字
+			if(isNaN(isMoney)){
+				_alert("保险只能输入数字！");
+				$("#iMoney").val("");
+			}
+		}
+		
+		
+	//是否显示保险金额 	
+	function isMoney(isConTuition){
+		if (isConTuition != '') {
+			var tuDiType = $("#tuDiType").val();
+			if (isConTuition =='0') {//等于0 为不包含，就显示
+				money.style.display = '';
+			}else {
+				//不等于0 为包含，则不显示
+				$("#iMoney").val("");
+				money.style.display = 'none';
+			}
+		}
+		
+	}
+
+	/*<![CDATA[*/
+	var basePath = /*[[@{/}]]*/;
+	/*]]>*/
+	
+	function getStuId(select){
+		var id =select.value;
+		 /*<![CDATA[*/
+		$.ajax({
+			url:basePath + "/stu/select2StuList.ht",
+			data:{itemlableSearch:id },
+			type:"get",
+			dataType:"json",
+			success:function(data){
+				var idNumber = "" ;
+				var claName = "" ;
+				$.each(data.list,function(i,result){ 
+					if(id == data.list[i].stuId){
+						idNumber ="<span>"+data.list[i].stuIdNumber+"</span>";           
+						claName  ="<span>"+data.list[i].claName+"</span> ";
+					}
+					
+				}); 
+				$("#idNumber").html(idNumber);
+				$("#stuClass").html(claName);
+			}
+		});
+		/*]]>*/
+	}
+		</script>
+	</body>
+</html>

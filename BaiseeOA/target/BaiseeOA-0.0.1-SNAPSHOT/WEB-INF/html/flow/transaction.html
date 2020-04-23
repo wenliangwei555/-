@@ -1,0 +1,221 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head th:include="commonTemplate :: header">
+</head>
+<body class="bgcolor-body">
+	<div id="page">
+		<div th:include="commonTemplate :: headerDiv"></div>
+		<div id="content" class="layout">
+			<div class="grid-s5m0">
+				<!-- ============================= 页面内容 开始============================= -->
+				<div class="col-main">
+					<div class="main-wrap">
+						<div class="skin-box">
+							<div class="skin-box-bd" >
+								<div class="cur-position">
+									<span><a href="javascript:void(0);">缴费管理</a> </span> <span>&gt;</span>
+									<span><a th:href="@{emp/toEmpList.ht}">查看信息</a> </span>
+								</div>
+
+								学生编号:<input type="text" name="userID" id="userID"
+									placeholder="请输入要查询的ID" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;查询类型:<select
+									name="type" id="type">
+									<option>请选择</option>
+									<option value="学费">学费</option>
+									<option value="返费">返费</option>
+									<option value="退费">退费</option>
+									<option value="试听费">试听费</option>
+								</select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;账单类型:<select
+									name="bill" id="bill">
+									<option>请选择</option>
+									<option value="0">总金额</option>
+									<option value="1">单笔金额</option>
+									<option value="2">优惠金额</option>
+									<option value="3">抵充金额</option>
+								</select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<input type="button" value="查看" onclick="changeAction()"
+									style="margin: 5px auto 10px; height: 25px; width: 100px; font-size: 16px; background-color: #ccc" />
+								<table id="flow" cellspacing="0" border="1" align="center"
+									style="margin-top: 100px; margin-left: 100px;">
+
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- ============================= 页面内容 结束============================= -->
+				<div th:include="commonTemplate :: leftMenus"></div>
+			</div>
+		</div>
+		<div th:include="commonTemplate :: footer"></div>
+	</div>
+	<div th:include="commonTemplate :: processBar" />
+
+	<script th:inline="javascript">
+		function changeAction() {
+			var userID = $("#userID").val();
+			var type = $("#type").val();
+			var bill = $("#bill").val();
+			$("#flow").empty();
+			if (userID == "") {
+				alert("学号不能为空！");
+			} else if (type == "请选择") {
+				alert("请选择要查询的学费类型！");
+			} else if (bill == 0) {
+				$
+						.ajax({
+							url : "./getTotalMoney.ht",
+							data : {
+								userID : userID,
+								type : type
+							},
+							type : "post",
+							dataType : "json",
+							success : function(obj) {
+								if (obj.data == "") {
+									alert("对方没有此项缴费记录！");
+									return;
+								}
+								var dom = '';
+								var d = '<tr><th  class="lefttd">交易流水号</th><th  class="lefttd">操作人员</th><th  class="lefttd">缴费金额</th><th  class="lefttd">缴费时间</th></tr>';
+								$("#flow").html(d);
+
+								$.each(obj.data, function(i, item) {
+									var flowID = item.transactionID;
+									var operUser = item.userID;
+									var amount = item.amount;
+									var time = item.time;
+									dom = '<tr ><td class="flowtd">' + flowID
+											+ '</td>' + '<td class="flowtd">'
+											+ operUser + '</td>'
+											+ '<td class="flowtd">' + amount
+											+ '</td>' + '<td class="flowtd">'
+											+ time + '</td></tr>';
+									$("#flow").append(dom);
+									$(".flowtd").css({
+										"width" : "200px",
+										"text-align" : "center"
+									});
+								})
+							}
+						});
+			} else if (bill == 1) {
+				$
+						.ajax({
+							url : "./getServiceAccount.ht",
+							data : {
+								userID : userID,
+								type : type
+							},
+							type : "post",
+							dataType : "json",
+							success : function(obj) {
+								if (obj.data == "") {
+									alert("对方没有此项缴费记录！");
+									return;
+								}
+								var dom = '';
+								var d = '<tr><th  class="lefttd">业务流水号</th><th  class="lefttd">缴费金额</th><th  class="lefttd">备注</th><th  class="lefttd">缴费时间</th></tr>';
+								$("#flow").html(d);
+								$.each(obj.data, function(i, item) {
+									var flowID = item.serviceID;
+									var remarks = item.remarks;
+									var amount = item.amount;
+									var time = item.time;
+									dom = '<tr>' + '<td class="flowtd">'
+											+ flowID + '</td>'
+											+ '<td class="flowtd">' + amount
+											+ '</td>' + '<td class="flowtd">'
+											+ remarks + '</td>'
+											+ '<td class="flowtd">' + time
+											+ '</td></tr>';
+									$("#flow").append(dom);
+									$(".flowtd").css({
+										"width" : "200px",
+										"text-align" : "center"
+									});
+								})
+							}
+						});
+			} else if (bill == 2) {
+				$
+						.ajax({
+							url : "./getPaymentDiscounts.ht",
+							data : {
+								userID : userID,
+								type : type
+							},
+							type : "post",
+							dataType : "json",
+							success : function(obj) {
+								if (obj.data == "") {
+									alert("对方没有此项缴费记录！");
+									return;
+								}
+								var dom = '';
+								var d = '<tr><th  class="lefttd">优惠流水号</th><th  class="lefttd">优惠金额</th><th  class="lefttd">优惠类型</th><th  class="lefttd">缴费时间</th></tr>';
+								$("#flow").html(d);
+								$.each(obj.data, function(i, item) {
+									var flowID = item.transactionID;
+									var transactionType = item.transactionType;
+									var amount = item.amount;
+									var time = item.time;
+									dom = '<tr>' + '<td class="flowtd">'
+											+ flowID + '</td>'
+											+ '<td class="flowtd">' + amount
+											+ '</td>' + '<td class="flowtd">'
+											+ transactionType + '</td>'
+											+ '<td class="flowtd">' + time
+											+ '</td></tr>';
+									$("#flow").append(dom);
+									$(".flowtd").css({
+										"width" : "200px",
+										"text-align" : "center"
+									});
+								})
+							}
+						});
+			} else if (bill == 3) {
+				$
+						.ajax({
+							url : "./getFillFlowMeter.ht",
+							data : {
+								userID : userID,
+								type : type
+							},
+							type : "post",
+							dataType : "json",
+							success : function(obj) {
+								if (obj.data == "") {
+									alert("对方没有此项缴费记录！");
+									return;
+								}
+								var dom = '';
+								var d = '<tr><th  class="lefttd">抵充流水号</th><th  class="lefttd">抵充金额</th><th  class="lefttd">抵充来源：</th><th  class="lefttd">抵充时间</th></tr>';
+								$("#flow").html(d);
+								$.each(obj.data, function(i, item) {
+									var flowID = item.transactionID;
+									var transactionType = item.transactionType;
+									var amount = item.amount;
+									var time = item.time;
+									dom = '<tr>' + '<td class="flowtd">'
+											+ flowID + '</td>'
+											+ '<td class="flowtd">' + amount
+											+ '</td>' + '<td class="flowtd">'
+											+ transactionType + '</td>'
+											+ '<td class="flowtd">' + time
+											+ '</td></tr>';
+									$("#flow").append(dom);
+									$(".flowtd").css({
+										"width" : "200px",
+										"text-align" : "center"
+									});
+								})
+							}
+						});
+			}
+		}
+	</script>
+</body>
+</html>

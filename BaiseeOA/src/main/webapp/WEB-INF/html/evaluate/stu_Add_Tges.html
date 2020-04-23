@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head th:include="commonTemplate :: header">
+</head>
+<body class="bgcolor-body">
+	<div id="page">
+		<div th:include="commonTemplate :: headerDiv"></div>
+		<div id="content" class="layout">
+			<div class="grid-s5m0">
+				<div class="col-main">
+					<div class="main-wrap">
+						<div class="skin-box">
+							<div class="skin-box-bd">
+								<div class="cur-position">
+									<span><a href="javascript:void(0)">信息管理</a> </span> <span>&gt;</span>
+									<span><a th:href="@{eva/selectTgesPage.ht}">学生评价词句信息</a>
+									</span> <span>&gt;</span> <span><a href="javascript:void(0)">编辑评价信息</a>
+									</span>
+								</div>
+								<!-- ==================================== 页面内容开始 ============================= -->
+								<div class="cont-box">
+									<div class="JsW skin-box-bd" data-widget-type="tab"
+										data-widget-config="{'activeIndex':4}">
+										<div class="skin-bd-box">
+											<div class="list-table">
+												<div class="list-table-cont">
+													<div class="table6">
+														<form id="basefrm" name="basefrm"
+															th:action="@{eva/insertEvaInfo.ht}" method="post"
+															enctype="multipart/form-data">
+
+															<table id="famTable">
+																<tr>
+																	<td>
+																		<div class="left">
+																			<div class="td1">
+																				<span class="red">*</span><span>评价词汇：</span>
+																			</div>
+																			<div class="td2">
+																				<span> <input type="text"
+																					class="radius3 input" id="word" name="word" />
+																				</span>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+															</table>
+															<div class="redbutton control-button JsW">
+																<span class="grey"> <input value="返回上级"
+																	type="button" onclick="returnBack();"
+																	class="radius5 button ks-pop-close1" />
+																</span> <span baisee:ctrl="PJXX_TJPJXX"> <input
+																	value="确定保存" type="submit"
+																	class="radius5 button ks-pop-close1" />
+																</span>
+
+															</div>
+														</form>
+													</div>
+												</div>
+											</div>
+
+										</div>
+									</div>
+								</div>
+								<!-- ============================= 页面内容 结束============================= -->
+							</div>
+						</div>
+					</div>
+				</div>
+				<div th:include="commonTemplate :: leftMenus"></div>
+			</div>
+		</div>
+		<div th:include="commonTemplate :: footer"></div>
+	</div>
+	<div th:include="commonTemplate :: processBar" />
+	<script th:inline="javascript"> 
+		function returnBack(){
+			var url = [[@{'/eva/selectTgesPage.ht'}]];
+			locationHref(url);
+		};
+		</script>
+</body>
+</html>

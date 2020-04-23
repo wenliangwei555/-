@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.baisee.BaiseeRefundMapper">
+	<resultMap
+		type="cn.baisee.oa.model.student.BaiseeStudentRefund" id="refund_map">
+		<id column="R_ID" jdbcType="VARCHAR" property="rId" />
+		<result column="R_NAME" jdbcType="VARCHAR"
+			property="rName" />
+		<result column="REFUND_FORMULA" jdbcType="VARCHAR"
+			property="refundFormula" />
+		<result column="FORMULA_DESCRIBE" jdbcType="VARCHAR"
+			property="formulaDescribe" />
+		<result column="UPDATE_TIME" jdbcType="VARCHAR"
+			property="updateTime" />
+		<result column="INVALID_TIME" jdbcType="VARCHAR"
+			property="invalidTime" />
+	</resultMap>
+	<!-- 查询所有的退费规则 -->
+	<select id="getRefundList" resultMap="refund_map">
+		SELECT R_ID,R_NAME,REFUND_FORMULA,
+		FORMULA_DESCRIBE,UPDATE_TIME,INVALID_TIME
+		FROM baisee_student_refund
+	</select>
+	<!-- 添加退费规则 -->
+	<insert id="insertRefund"
+		parameterType="cn.baisee.oa.model.student.BaiseeStudentRefund">
+		<selectKey resultType="java.lang.String" order="AFTER"
+			keyProperty="rId">
+			SELECT R_ID FROM baisee_student_refund
+			ORDER BY R_ID
+			DESC LIMIT 1
+		</selectKey>
+		INSERT INTO baisee_student_refund
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			R_ID,
+			<if test="rName != null and rName != ''">
+				R_NAME,
+			</if>
+			<if test="refundFormula != null and refundFormula != ''">
+				REFUND_FORMULA,
+			</if>
+			<if test="formulaDescribe != null and formulaDescribe != ''">
+				FORMULA_DESCRIBE,
+			</if>
+			<if test="invalidTime != null and invalidTime != ''">
+				INVALID_TIME,
+			</if>
+			UPDATE_TIME
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			pkval('RFID'),
+			<if test="rName != null and rName != ''">
+				#{rName, jdbcType=VARCHAR},
+			</if>
+			<if test="refundFormula != null and refundFormula != ''">
+				#{refundFormula, jdbcType=VARCHAR},
+			</if>
+			<if test="formulaDescribe != null and formulaDescribe != ''">
+				#{formulaDescribe, jdbcType=VARCHAR},
+			</if>
+			<if test="invalidTime != null and invalidTime != ''">
+				#{invalidTime, jdbcType=VARCHAR},
+			</if>
+			DATE_FORMAT(now(),'%Y%m%d%H%i%m')
+		</trim>
+	</insert>
+	<!-- 添加学费-退费关联表 -->
+	<insert id="insertTuitionRefund" parameterType="map">
+		INSERT INTO baisee_tuition_refund
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="tuId != null and tuId != ''">
+				TU_ID,
+			</if>
+			<if test="rId != null and rId != ''">
+				R_ID
+			</if>
+
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="tuId != null and tuId != ''">
+				#{tuId, jdbcType=VARCHAR},
+			</if>
+			<if test="rId != null and rId != ''">
+				#{rId, jdbcType=VARCHAR}
+			</if>
+
+		</trim>
+	</insert>
+	<!-- 修改学费退费关联 -->
+	<update id="updateTuitionRefund" parameterType="map">
+		UPDATE baisee_tuition_refund
+		<set>
+			<if test="rId != null and rId != ''">
+				R_ID=#{rId, jdbcType=VARCHAR}
+			</if>
+		</set>
+		<where>
+			<if test="tuId != null and tuId != ''">
+				TU_ID=#{tuId, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</update>
+	<!-- 根据ID查询要修改退费规则 -->
+	<select id="getRefundById" resultMap="refund_map"
+		parameterType="map">
+		SELECT R_ID,R_NAME,REFUND_FORMULA,FORMULA_DESCRIBE,INVALID_TIME FROM
+		baisee_student_refund
+		<where>
+			<if test="rId != null and rId != ''">
+				R_ID=#{rId,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	<!-- 修改退费规则 -->
+	<update id="updateRefund"
+		parameterType="cn.baisee.oa.model.student.BaiseeStudentRefund">
+		UPDATE baisee_student_refund
+		<set>
+			<if test="rName != null and rName != ''">
+				R_NAME=#{rName, jdbcType=VARCHAR},
+			</if>
+			<if test="refundFormula != null and refundFormula != ''">
+				REFUND_FORMULA=#{refundFormula, jdbcType=VARCHAR},
+			</if>
+			<if test="formulaDescribe != null and formulaDescribe != ''">
+				FORMULA_DESCRIBE=#{formulaDescribe, jdbcType=VARCHAR},
+			</if>
+			<if test="invalidTime != null and invalidTime != ''">
+				INVALID_TIME=#{invalidTime, jdbcType=VARCHAR},
+			</if>
+			UPDATE_TIME=DATE_FORMAT(now(),'%Y%m%d')
+		</set>
+		<where>
+			<if test="rId != null">
+				R_ID=#{rId, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</update>
+	<!-- 根据学费ID 查询对应的退费id -->
+	<select id="getRidByTuid" parameterType="map"
+		resultType="java.lang.String">
+		SELECT R_ID AS rId FROM baisee_tuition_refund
+		<where>
+			<if test="tuId != null and tuId != ''">
+				TU_ID=#{tuId, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	<!-- 通过ID删除退费规则 -->
+	<delete id="delRefund" parameterType="map">
+		<if test="rId != null and rId != ''">
+			DELETE FROM baisee_student_refund
+			<where>
+				R_ID=#{rId, jdbcType=VARCHAR}
+			</where>
+		</if>
+	</delete>
+	<!-- 通过学费ID删除学费 退费关联表 -->
+	<delete id="delTiitionRefund" parameterType="map">
+		<if test="tuId != null and tuId != ''">
+			DELETE FROM baisee_tuition_refund
+			<where>
+				TU_ID=#{tuId, jdbcType=VARCHAR}
+			</where>
+		</if>
+	</delete>
+	<!-- 通过退费ID删除学费 退费关联表 -->
+	<delete id="delTiitionRefundByRid" parameterType="map">
+		<if test="rId != null and rId != ''">
+			DELETE FROM baisee_tuition_refund
+			<where>
+				R_ID=#{rId, jdbcType=VARCHAR}
+			</where>
+		</if>
+	</delete>
+	<!-- 通过ID查询退费规则 -->
+	<select id="getRefundByRid" resultMap="refund_map"
+		parameterType="map">
+		SELECT R_ID,R_NAME,REFUND_FORMULA,FORMULA_DESCRIBE,INVALID_TIME FROM
+		baisee_student_refund
+		<where>
+			<if test="rId != null and rId != ''">
+				R_ID=#{rId,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+</mapper>

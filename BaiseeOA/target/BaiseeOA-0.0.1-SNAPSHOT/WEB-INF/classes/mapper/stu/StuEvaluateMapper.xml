@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.stu.StuEvaluateMapper">
+
+	<resultMap type="cn.baisee.oa.model.evaluate.BaiseeStuEva"
+		id="stuEvaResultMap">
+		<id column="EID" property="eId" jdbcType="VARCHAR" />  <!-- 评价ID -->
+		<result column="CS_ID" property="csId" jdbcType="VARCHAR" />  <!-- 课程ID -->
+		<result column="CS_NAME" property="csName" jdbcType="VARCHAR" />  <!-- 课程名 -->
+		<result column="CONTENT" property="content" jdbcType="VARCHAR" />   <!-- 内容 -->
+		<result column="CLASSNAME" property="className" jdbcType="VARCHAR" /><!-- 
+			班级名 -->
+		<result column="STU_ID" property="stuId" jdbcType="VARCHAR" />    <!-- 学生ID -->
+		<result column="CREATIONTIME" property="creationTime" jdbcType="VARCHAR" />   <!-- 创建时间 -->
+		<result column="UPDATETIME" property="updateTime" jdbcType="VARCHAR" />   <!-- 更新时间 -->
+		<result column="SORD" property="sord" jdbcType="VARCHAR" />    <!-- 排序字段 -->
+		<result column="STATE" property="state" jdbcType="VARCHAR" />    <!-- 评价状态 -->
+		<result column="objName" property="objName" jdbcType="VARCHAR" />  <!-- 评价对象 -->
+		<result column="TITLENAME" property="titleName" jdbcType="VARCHAR" />  <!-- 标题名 -->
+		<result column="APPRAISER" property="evaName" jdbcType="VARCHAR" /><!-- 评价对象 -->
+			<result column="ECID" property="ecid" jdbcType="VARCHAR" /><!-- 序号 -->
+	</resultMap>
+
+	<resultMap type="cn.baisee.oa.model.evaluate.Problem" id="theResultMap">
+		<id column="stID" property="stID" jdbcType="VARCHAR" />
+		<result column="stTitle" property="stTitle" jdbcType="VARCHAR" />
+		<result column="stOptionA" property="stOptionA" jdbcType="VARCHAR" />
+		<result column="stOptionB" property="stOptionB" jdbcType="VARCHAR" />
+		<result column="stOptionC" property="stOptionC" jdbcType="VARCHAR" />
+		<result column="stOptionD" property="stOptionD" jdbcType="VARCHAR" />
+		<result column="Founder" property="Founder" jdbcType="VARCHAR" />
+		<result column="Modifier" property="Modifier" jdbcType="VARCHAR" />
+		<result column="Creationtime" property="Creationtime" jdbcType="VARCHAR" />
+		<result column="Modificationtime" property="Modificationtime"
+			jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap type="cn.baisee.oa.model.evaluate.EvaGenTeb" id="ResultMapEvaGen">
+		<id column="SPID" property="spID" jdbcType="VARCHAR" />
+		<result column="SUID" property="suID" jdbcType="VARCHAR" />
+		<result column="CREATIONNAME" property="creationName" jdbcType="VARCHAR" />
+		<result column="UPDATENAME" property="udpateName" jdbcType="VARCHAR" />
+		<result column="CREATIONTIME" property="creationTime" jdbcType="VARCHAR" />
+		<result column="CREATIONTIME" property="updateTime" jdbcType="VARCHAR" />
+		<result column="STATE" property="state" jdbcType="VARCHAR" />
+		<result column="TITLENAME" property="TitleName" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap type="cn.baisee.oa.model.evaluate.SuPr" id="resultMapSuPr">
+		<id column="SUID" property="suID" jdbcType="VARCHAR" />
+		<id column="STID" property="stID" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap type="cn.baisee.oa.model.evaluate.EvaControl" id="EvaConResultMap">
+		<id column="ECID" property="ecID" jdbcType="VARCHAR" />
+		<result column="SPID" property="spID" jdbcType="VARCHAR" />
+		<result column="CLANAME" property="claName" jdbcType="VARCHAR" />
+		<result column="EMPNAME" property="empName" jdbcType="VARCHAR" />
+		<result column="STATE" property="state" jdbcType="VARCHAR" />
+		<result column="CREATIONTIME" property="creationTime" jdbcType="VARCHAR" />
+		<result column="OPENNAME" property="openName" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap type="cn.baisee.oa.model.evaluate.EvaAndControl"
+		id="EvaAndConResultMap">
+		<id column="ECID" property="ecID" />
+		<result column="TITLENAME" property="TitleName" />
+		<result column="CLANAME" property="claName" />
+		<result column="EMPNAME" property="empName" />
+		<result column="CREATIONTIME" property="creationTime" />
+		<result column="OPENNAME" property="openName" />
+	</resultMap>
+	
+	
+	<resultMap type="cn.baisee.oa.model.evaluate.BaiseeStuEvaone"
+		id="BaiseeStuEvaoneMap">
+		<result column="CLASSNAME" property="className" />
+		<result column="TITLENAME" property="titleName" />
+		<result column="CS_NAME" property="cs_Name" />
+		<result column="CONTENT" property="content" />
+		<result column="numa" property="numa" />
+		<result column="numb" property="numb" />
+		<result column="numc" property="numc" />
+	</resultMap>
+
+	<!-- 查询单个班级的学生评价列表 -->
+	<select id="selectStuEvaPage" resultMap="stuEvaResultMap"
+		parameterType="java.lang.String">
+	SELECT TITLENAME,CLASSNAME,APPRAISER,STATE, MAX(CREATIONTIME) CREATIONTIME,ECID FROM baisee_s_evaluate s
+ WHERE STATE=#{state} AND CLASSNAME=#{className}
+ GROUP BY ECID,TITLENAME,CLASSNAME,APPRAISER,STATE
+
+		<!-- SELECT MAX(STU_ID) STU_ID, MAX(EID) EID,MAX(CLASSNAME) CLASSNAME,MAX(CREATIONTIME) 
+			CREATIONTIME,MAX(STATE) STATE,TITLENAME FROM baisee_s_evaluate <where> <if 
+			test="param != null and param != '' "> AND CLASSNAME = #{param,jdbcType=VARCHAR} 
+			</if> <if test="state != null and state != '' "> AND STATE = #{state} </if> 
+			</where> -->
+	 <!-- 	GROUP BY TITLENAME --> 
+	</select>
+	
+	
+		<!-- 查询每个班评价表的详情-->
+	<select id="selectEvapro" resultMap="theResultMap"
+		parameterType="java.lang.String">
+SELECT CS_NAME stTitle,sum(if(CONTENT='A',1,0 ))stOptionA,sum(if(CONTENT='B',1,0 ))stOptionB,sum(if(CONTENT='C',1,0 ))stOptionC,sum(if(CONTENT='D',1,0 ))stOptionD from baisee_s_evaluate
+WHERE ECID=#{ecid} GROUP BY CS_NAME
+	</select>
+
+	<!-- 查询每个班评价表里面问题的答案详情-->
+	<select id="selectratioEvapro" resultMap="BaiseeStuEvaoneMap"
+		parameterType="map">
+
+			SELECT
+			a.CLASSNAME as CLASSNAME,
+			a.TITLENAME as TITLENAME,
+				a.CS_NAME as CS_NAME,
+				a.CONTENT as CONTENT,
+			  (select COUNT(DISTINCT t.STU_ID) from baisee_s_evaluate t where t.CS_NAME=a.CS_NAME  and t.CLASSNAME =#{param} and t.TITLENAME = #{titleName} group by t.CS_NAME) as  numa,
+				COUNT(DISTINCT a.STU_ID) numb,
+				COUNT(*) numc
+			FROM
+				baisee_s_evaluate a
+			WHERE 
+			a.CLASSNAME =#{param} and a.TITLENAME = #{titleName} and a.CS_NAME=#{csName}
+			GROUP BY
+				CS_NAME,
+				CONTENT
+		
+
+	</select>
+
+	<!-- 查询每个班的评价表 -->
+	<select id="selectEvaPage" resultMap="stuEvaResultMap"
+		parameterType="map">
+		SELECT TITLENAME,
+		STATE,CLASSNAME,CREATIONTIME,CS_NAME,CONTENT,STU_ID from
+		baisee_s_evaluate where
+		CLASSNAME =#{param} and STATE=#{state} group by TITLENAME
+
+	</select>
+
+	<!-- 查询单个学生下面评价的内容 -->
+	<select id="selectEverEvaPage" resultMap="stuEvaResultMap"
+		parameterType="map">
+		SELECT TITLENAME,
+		STATE,CLASSNAME,CREATIONTIME,CS_NAME,CONTENT,STU_ID from
+		baisee_s_evaluate where
+		TITLENAME=#{titleName} and CLASSNAME =#{param} and STATE=#{state} and STU_ID=#{stuId}
+
+	</select>
+
+	<!-- 查询班级下面评价列表里面的内容 -->
+	<select id="selectTitlEvaPage" resultMap="stuEvaResultMap"
+		parameterType="map">
+		SELECT TITLENAME, STATE,CLASSNAME,CREATIONTIME,STU_ID
+		from baisee_s_evaluate where
+		TITLENAME=#{titleName} and CLASSNAME =#{param} and STATE=#{state} group by STU_ID
+
+
+	</select>
+
+	<select id="selClaTit" resultMap="stuEvaResultMap"
+		parameterType="java.lang.String">
+		SELECT CLASSNAME,TITLENAME FROM baisee_s_evaluate
+		GROUP BY CLASSNAME,TITLENAME having CLASSNAME=#{param}
+	</select>
+
+	<!-- 添加学生评价内容 -->
+	<insert id="insertEvaInfo" parameterType="cn.baisee.oa.model.evaluate.Problem">
+		INSERT INTO
+		baisee_student.baisee_s_problem
+		(
+		stTitle, stOptionA, stOptionB,
+		stOptionC, stOptionD, Founder,
+		Modifier, Creationtime, Modificationtime
+		)
+		VALUES(
+		#{stTitle}, #{stOptionA},
+		#{stOptionB},
+		#{stOptionC}, #{stOptionD}, #{Founder}, #{Modifier},
+		DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'), DATE_FORMAT(NOW(),
+		'%Y%m%d%H%i%s'));
+	</insert>
+
+	<!-- 分页查询所有问题的信息 -->
+	<select id="selectTgesPage" resultMap="theResultMap"
+		parameterType="map">
+		select * from baisee_s_problem
+		<where>
+			<if test="userType != null and userType != '' and userType >= 1">
+				Founder = #{userName,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<!-- 查看生产评价表 -->
+	<select id="selectListPage" resultMap="ResultMapEvaGen"
+		parameterType="map">
+		select * from baisee_eva_gen_tab
+		<where>
+			<if test="userType != null and userType != '' and userType >= 1">
+				CREATIONNAME = #{userName,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<!-- 单个删除 <delete id="delThes" parameterType="java.lang.String"> DELETE 
+		FROM baisee_s_thesaurus WHERE TID=#{tId,jdbcType=VARCHAR}; </delete> -->
+
+	<!-- 上线评价信息 <update id="goOnline" parameterType="map"> UPDATE baisee_s_thesaurus 
+		SET UPDATEPEOPLE=#{userName,jdbcType=VARCHAR}, UPDATETIME= DATE_FORMAT(NOW(), 
+		'%Y%m%d%H%i%s'), STATE='1' WHERE TID= #{tId,jdbcType=VARCHAR}; </update> -->
+
+	<!-- 下线评价信息 x <update id="Offline" parameterType="map"> UPDATE baisee_s_thesaurus 
+		SET UPDATEPEOPLE=#{userName,jdbcType=VARCHAR}, UPDATETIME= DATE_FORMAT(NOW(), 
+		'%Y%m%d%H%i%s'), STATE='0' WHERE TID= #{tId,jdbcType=VARCHAR}; </update> -->
+
+	<!-- 批量删除设置的评价信息 -->
+	<delete id="delAllThes" parameterType="java.lang.String">
+
+		<if test="array.length > 0">
+			DELETE FROM baisee_s_problem
+			<where>
+				stID IN
+				<foreach collection="array" open="(" close=")" item="stid"
+					separator=",">
+					#{stid, jdbcType=VARCHAR}
+				</foreach>
+			</where>
+		</if>
+	</delete>
+
+	<!-- 批量删除设置的评价信息 -->
+	<delete id="delAllEvaGens" parameterType="java.lang.String">
+		DELETE
+		baisee_eva_gen_tab,baisee_su_pr
+		FROM baisee_eva_gen_tab
+		LEFT JOIN baisee_su_pr ON baisee_eva_gen_tab.SUID = baisee_su_pr.SUID
+		<where>
+			baisee_eva_gen_tab.SUID IN
+			<foreach collection="array" open="(" close=")" item="ids"
+				separator=",">
+				#{ids}
+			</foreach>
+		</where>
+	</delete>
+
+
+	<!-- 批量删除学生评价信息 -->
+	<delete id="delAllEva" parameterType="java.lang.String">
+		<if test="array.length > 0">
+			DELETE FROM baisee_s_evaluate
+			<where>
+				STU_ID IN
+				<foreach collection="array" open="(" close=")" item="eId"
+					separator=",">
+					#{eId, jdbcType=VARCHAR}
+				</foreach>
+			</where>
+		</if>
+	</delete>
+
+	<!-- 更新评价信息 -->
+	<update id="updateState" parameterType="java.lang.String">
+		UPDATE
+		baisee_student.baisee_s_evaluate
+		SET STATE='1',
+		UPDATETIME=DATE_FORMAT(NOW(), '%Y%m%d%H%i%s')
+	   WHERE ECID=#{ecid};
+	</update>
+
+	<!-- 根据评价ID查询评价内容 -->
+	<select id="getEidStuEva" resultMap="stuEvaResultMap"
+		parameterType="java.lang.String">
+		SELECT * FROM baisee_s_evaluate WHERE STU_ID =
+		#{eId,jdbcType=VARCHAR}
+	</select>
+
+	<!-- 预览 问题向详细信息 -->
+	<select id="getIdProblemInfo" resultMap="theResultMap"
+		parameterType="java.lang.String">
+		SELECT * FROM baisee_s_problem WHERE stID =
+		#{stID,jdbcType=VARCHAR}
+	</select>
+
+	<!--回显生产问题 详细信息 -->
+	<select id="getIdEvaGenInfo" resultMap="ResultMapEvaGen"
+		parameterType="java.lang.String">
+		SELECT * FROM baisee_eva_gen_tab WHERE SPID =
+		#{spID,jdbcType=VARCHAR}
+	</select>
+
+	<!-- 修改问题信息 -->
+	<update id="updateEvaInfo" parameterType="cn.baisee.oa.model.evaluate.Problem">
+		UPDATE baisee_s_problem
+		SET stTitle=#{stTitle}, stOptionA=#{stOptionA},
+		stOptionB=#{stOptionB},
+		stOptionC=#{stOptionC}, stOptionD=#{stOptionD}, Modifier=#{Modifier},
+		Modificationtime=DATE_FORMAT(NOW(), '%Y%m%d%H%i%s')
+		WHERE stID=#{stID};
+	</update>
+
+	<!-- 添加开户学生的信息 -->
+	<insert id="insertStuUser" parameterType="cn.baisee.oa.model.student.BaiseeStuUser">
+		INSERT INTO
+		baisee_student.baisee_student_user
+		(
+		SID, CID, S_NAME, LOGIN_NAME,
+		LOGIN_PWD, FOUNDER, CREATE_TIME
+		)
+		VALUES
+		(
+		#{userId}, #{claId},
+		#{userName}, #{loginName},
+		#{loginPwd}, #{Founder},DATE_FORMAT(NOW(),
+		'%Y%m%d%H%i%s')
+		);
+	</insert>
+
+	<!-- 删除学生账户 -->
+	<delete id="deleteStuUser" parameterType="java.lang.String">
+		DELETE FROM
+		baisee_student.baisee_student_user
+		WHERE SID=#{sId};
+	</delete>
+
+	<delete id="deleteStuUsers" parameterType="java.lang.String">
+		<if test="array.length > 0">
+			DELETE FROM baisee_student_user
+			<where>
+				SID IN
+				<foreach collection="array" open="(" close=")" item="sid"
+					separator=",">
+					#{sid, jdbcType=VARCHAR}
+				</foreach>
+			</where>
+		</if>
+	</delete>
+
+	<insert id="saveCreTeb" parameterType="map">
+		INSERT INTO baisee_student.baisee_su_pr
+		(SUID, STID)
+		VALUES(#{suID}, #{ids});
+	</insert>
+
+	<insert id="saveEvaGen" parameterType="map">
+		INSERT INTO
+		baisee_student.baisee_eva_gen_tab
+		(
+		SPID, SUID,
+		CREATIONNAME, UPDATENAME, CREATIONTIME, UPDATETIME,STATE,TITLENAME
+		)
+		VALUES
+		(
+		#{spID},
+		#{suID},
+		#{userName}, #{userName},
+		DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'), DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'),0,#{TitleName}
+		);
+
+	</insert>
+
+	<select id="getSuIdProInfos" resultMap="theResultMap"
+		parameterType="java.lang.String">
+		select * FROM baisee_su_pr where SUID = #{suID}
+	</select>
+
+	<!-- 根据 SUID删除supr表的信息 -->
+	<delete id="deleteSuPr" parameterType="java.lang.String">
+		DELETE FROM
+		baisee_student.baisee_su_pr
+		WHERE SUID=#{suID};
+	</delete>
+
+	<!-- 修改supr 表 -->
+	<insert id="insertSuPr" parameterType="map">
+		INSERT INTO
+		baisee_student.baisee_su_pr
+		(SUID, STID)
+		VALUES(#{suID}, #{stID});
+	</insert>
+
+	<!-- 修改生成的评价表 -->
+	<update id="updateEvaGenInfo" parameterType="map">
+		UPDATE
+		baisee_student.baisee_eva_gen_tab
+		SET CLANAME=#{claName},
+		EVANAME=#{evaName}, UPDATENAME=#{userName},
+		UPDATETIME=DATE_FORMAT(NOW(), '%Y%m%d%H%i%s')
+		WHERE SPID=#{uspID};
+
+	</update>
+
+	<select id="getStidProInfo" parameterType="int" resultMap="theResultMap">
+		SELECT
+		*
+		FROM
+		baisee_student.baisee_s_problem where stID = #{stID};
+
+	</select>
+
+	<!-- 校验评价班级 -->
+	<select id="validaClaName" resultMap="ResultMapEvaGen"
+		parameterType="map">
+		SELECT
+		*
+		FROM baisee_eva_control
+		where CLANAME = #{claName}
+	</select>
+
+	<!-- 修改评价问题使用状态 -->
+	<update id="updateEvaGenState" parameterType="map">
+		UPDATE
+		baisee_student.baisee_eva_gen_tab
+		SET UPDATENAME=#{userName},
+		UPDATETIME=DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'),STATE=#{state}
+		WHERE
+		SPID=#{spID};
+	</update>
+
+	<select id="getDelThesInfo" resultMap="resultMapSuPr"
+		parameterType="java.lang.String">
+		SELECT * FROM baisee_su_pr
+		<where>
+			STID IN
+			<foreach collection="array" open="(" close=")" item="sid"
+				separator=",">
+				#{sid, jdbcType=VARCHAR}
+			</foreach>
+		</where>
+	</select>
+
+	<insert id="saveEvaAndEvaControlTable" parameterType="map">
+		INSERT INTO
+		baisee_student.baisee_eva_control
+		(SPID, CLANAME, EMPNAME, STATE,
+		CREATIONTIME,OPENNAME)
+		VALUES(#{spID}, #{claName}, #{empName}, 1,
+		DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'),#{openName});
+	</insert>
+
+	<!-- 查询所有开启评价信息· -->
+	<select id="selectEvaConPage" resultMap="EvaAndConResultMap"
+		parameterType="java.util.List">
+		SELECT
+		ECID, TITLENAME, CLANAME, EMPNAME, egt.CREATIONTIME,OPENNAME
+		FROM
+		baisee_eva_control AS ec,baisee_eva_gen_tab AS egt
+		WHERE
+		<if test="list != null and list.size > 0 ">
+			ec.CLANAME IN
+			<foreach collection="list" index="index" item="item" open="("
+				separator="," close=")">
+				#{item.cName}
+			</foreach>
+		</if>
+		AND
+		ec.SPID = egt.SPID
+	</select>
+
+	<!-- 查询所有开启评价信息· <select id="getEva" resultMap="EvaAndConResultMap"> SELECT 
+		ECID, TITLENAME, CLANAME, EMPNAME, egt.CREATIONTIME,OPENNAME FROM baisee_eva_control 
+		AS ec,baisee_eva_gen_tab AS egt WHERE ec.SPID = egt.SPID </select> -->
+
+	<select id="getEvaCons" parameterType="java.lang.String"
+		resultMap="EvaAndConResultMap">
+		SELECT
+		*
+		FROM baisee_eva_control
+		WHERE SPID IN
+
+		<foreach collection="array" open="(" close=")" item="sid"
+			separator=",">
+			#{sid, jdbcType=VARCHAR}
+		</foreach>
+
+	</select>
+
+	<!-- 关闭评价 -->
+	<delete id="closeEva" parameterType="java.lang.String">
+		DELETE FROM
+		baisee_student.baisee_eva_control
+		WHERE ECID= #{ecId};
+	</delete>
+
+	<select id="selectStuEvaListPage" parameterType="list"
+		resultMap="stuEvaResultMap">
+		<!-- SELECT STU_ID, MAX(EID),CLASSNAME,CREATIONTIME,STATE,TITLENAME FROM 
+			baisee_s_evaluate -->
+		SELECT
+		MAX(STU_ID) STU_ID, MAX(EID) EID,CLASSNAME,MAX(CREATIONTIME)
+		CREATIONTIME,MAX(STATE) STATE,MAX(TITLENAME) TITLENAME
+		FROM baisee_s_evaluate
+		<where>
+			<if test="list != null and list.size > 0 ">
+				CLASSNAME IN
+				<foreach collection="list" index="index" item="item" open="("
+					separator="," close=")">
+					#{item.cName}
+				</foreach>
+			</if>
+		</where>
+		GROUP BY CLASSNAME
+	</select>
+
+	<!-- 校验标题名 -->
+	<select id="validateTitleName" parameterType="java.lang.String"
+		resultMap="ResultMapEvaGen">
+		SELECT
+		*
+		FROM
+		baisee_eva_gen_tab
+		<where>
+			TITLENAME = #{TitleName}
+		</where>
+	</select>
+	<!-- 效验问题名不能重复 	int stTitleValidate(String stTitle); -->
+	<select id="stTitleValidate" parameterType="java.lang.String" resultType="int">
+	SELECT COUNT(1) FROM baisee_s_problem WHERE stTitle=#{stTitle}
+	</select>
+</mapper>

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+	<head th:replace="commonTemplate :: header">
+	</head>
+<body>
+	<script type="text/javascript" th:inline="javascript">
+	/*<![CDATA[*/
+	var basePath = /*[[@{/}]]*/;
+	/*]]>*/
+	</script>
+
+	<div class="lyear-layout-web">
+		<div class="lyear-layout-container">
+			<!-- 左侧导航开始 -->
+			<div th:replace="commonTemplate :: leftMenus"></div>
+			<!-- 左侧导航结束 -->
+			<!-- 头部信息 -->
+			<div th:replace="commonTemplate :: headerDiv"></div>
+			<!-- 头部信息结束 -->
+			<!-- 页面主要内容 -->
+			<!--页面主要内容-->
+			<main class="lyear-layout-content">
+				<div class="container-fluid">
+					<form th:action="@{insurance/toHandleList.ht}"  id="frm" name="frm" method="post">
+						<div class="row">
+							<div class="col-lg-12">
+								<div class="card">
+									<div class="card-toolbar clearfix " >
+										<div class="pull-right search-bar" >
+											<div class="input-group">
+												<input type="text"  name="stuName" id="stuName" class="form-control" value="" placeholder="请输入姓名"/>
+												<div class="input-group-btn">
+													<button class="btn btn-success" th:onclick="'conditionCheck()'" id="search-btn1" type="button" aria-haspopup="true" aria-expanded="false">
+														查询
+													</button>
+												</div>
+											</div>
+										</div>
+										<div class="pull-right search-bar">
+                                        		<span>
+													<input type="text"
+														   placeholder="请输入保单号" class="form-control" id="iNo"
+														   style="width:135px;" name="iNo" th:value="${condition.iNo}" />
+												</span>
+										</div>
+										<div class="pull-right search-bar" >
+                                        		<span style="">
+													<select name="stuStatus" class="form-control" id="stuStatus" style="widows: 135px;">
+															<option th:selected="${condition.stuStatus == '2'}" value="2">--学生状态--</option>
+															<option th:selected="${condition.stuStatus == '0'}"
+																	value="0">试听</option>
+															<option th:selected="${condition.stuStatus == '1'}"
+																	value="1">试听结束</option>
+															<option th:selected="${condition.stuStatus == '2'}"
+																	value="2">正式</option>
+															<option th:selected="${condition.stuStatus == '3'}"
+																	value="3">毕业</option>
+																<option th:selected="${condition.stuStatus == '4'}"
+																		value="4">休学</option>
+																<option th:selected="${condition.stuStatus == '5'}"
+																		value="5">退学</option>
+																<option th:selected="${condition.stuStatus == '6'}"
+																		value="6">开除</option>
+																<option th:selected="${condition.stuStatus == '7'}"
+																		value="7">已退费</option>
+													</select>
+												</span>
+										</div>
+
+										<div class="pull-right search-bar" >
+                                        		<span style="">
+													<select name="className" class="form-control" id="className">
+															<option th:selected="${condition.className == 'b'}" value="">--选择班级--</option>
+															<option th:selected="${condition.className == clazz.cName}"
+																	th:each="clazz:${clazzs}" th:value="${clazz.cName}"
+																	th:text="${clazz.cName}"></option>
+													</select>
+												</span>
+										</div>
+										<div class="pull-right search-bar" >
+												<span>
+													<select name="status" class="form-control" id="status">
+															<option th:selected="${condition.status == 'a'}" value="">--选择状态--</option>
+															<option th:selected="${condition.status == '0'}"
+																	value="0">未投保</option>
+															<option th:selected="${condition.status == '1'}"
+																	value="1">投保中</option>
+															<option th:selected="${condition.status == '2'}"
+																	value="2">已投保</option>
+															<option th:selected="${condition.status == '3'}"
+																	value="3">已到期</option>
+															<option th:selected="${condition.status == '4'}"
+																	value="4">快到期</option>
+													</select>
+												</span>
+										</div>
+										<div class="pull-right search-bar" >
+												<span>
+													<select name="iComName" class="form-control" id="iComName">
+															<option th:selected="${condition.iComName == '1'}"
+																	value="">--选择保险公司--</option>
+															<option th:each="dict:${dicts}"
+																	th:value="${dict.dictDestination}"
+																	th:selected="${condition.iComName == dict.dictDestination}"
+																	th:text="${dict.dictDestination}"></option>
+													</select>
+												</span>
+										</div>
+										<div class="toolbar-btn-action">
+											<!--<a class="btn btn-success m-r-5" href="#!"
+											   onclick="exportExcel()"
+											   style="cursor: pointer; color: #ffffff"
+											   onmouseover="javascript:this.style.color='#dbdbdb'"
+											   onmouseout="javascript:this.style.color='#ffffff'"
+											></a>-->
+
+											<button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-lg">
+												<i class="mdi mdi-launch"></i>导出Excel
+											</button>
+
+											<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+												<div class="modal-dialog modal-lg" role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+															<h4 class="modal-title" id="myLargeModalLabel">信息</h4>
+														</div>
+														<div class="modal-body">
+															导出成功后请重新刷新页面。
+														</div>
+														<div class="modal-footer">
+															<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+															<button type="button" class="btn btn-primary" data-dismiss="modal" th:onclick="'exportExcel()'">确定</button>
+														</div>
+													</div>
+												</div>
+											</div>
+
+										</div>
+									</div>
+
+									<div class="card-body">
+										<div class="table-responsive">
+											<table class="table table-bordered">
+												<thead>
+												<tr>
+													<th>学生姓名</th>
+													<th>班级</th>
+													<th>学生状态</th>
+													<th>是否包含学费</th>
+													<th>保险费</th>
+													<th>状态</th>
+													<th>保险公司</th>
+													<th>保单号</th>
+													<th>入保时间</th>
+													<th>到期时间</th>
+													<th>创建时间</th>
+													<th>操作</th>
+												</tr>
+												</thead>
+												<tbody>
+
+													<tr th:each="list,info:${pageResult.list}" th:id="${list.id}"
+														th:if="${pageResult.list != null &amp;&amp; pageResult.list.size() > 0}"
+														onmouseout="this.style.backgroundColor='#ffffff'"  >
+														<!-- <td class="col1">
+															<div class="JsW control-checkbox"
+																data-control-type="checkbox">
+															</div>
+															<input  type="button" onclick="getDay(+7);" value="点击"/>
+														</td> -->
+
+														<!-- 学生姓名 -->
+														<td><span
+																th:text="${list.stuName}"></span></td>
+
+														<!-- 学生班级 -->
+														<td><span
+																th:text="${list.className}"></span></td>
+														<!-- 学生状态 -->
+														<td><span
+																th:if="${list.stuStatus} == 2"> <span
+																style="cursor: pointer" title="点击可编辑" th:text="正式"></span>
+																</span> <span th:if="${list.stuStatus} == 3"> <span
+																style="cursor: pointer" title="点击可编辑" th:text="毕业"></span>
+																</span> <span th:if="${list.stuStatus} == 4"> <span
+																style="cursor: pointer" title="点击可编辑" th:text="休学"></span>
+																</span> <span th:if="${list.stuStatus} == 5"> <span
+																style="cursor: pointer" title="点击可编辑" th:text="退学"></span>
+																</span> <span th:if="${list.stuStatus} == 6"> <span
+																style="cursor: pointer" title="点击可编辑" th:text="开除"></span>
+																</span> <span th:if="${list.stuStatus} == 7"> <span
+																style="cursor: pointer" title="该学员已退费" th:text="已退费"></span>
+																</span></td>
+														<!-- 学费是否包含保险费 -->
+														<td><span
+																th:text="${list.isConTuition == '0'?'未包含':'包含'}"></span>
+														</td>
+
+														<!-- 保险费金额 -->
+														<td><span
+																th:text="${list.iMoney}"></span></td>
+
+														<!-- 学生保险状态 -->
+														<td>
+																	<span  th:if="${list.status == '0'}"
+																		   th:text="未投保">
+																	</span>
+															<span  th:if="${list.status == '1'}"
+																   title="点击可编辑"
+																   th:onclick="'edit(\'' + ${list.id} + '\')'"
+																   th:text="投保中">
+																	</span>
+															<span  th:if="${list.status == '2'}"
+																   th:text="已投保">
+																	</span>
+															<span style="color: red;" th:if="${list.status == '3'}"
+																  th:text="已到期">
+																	</span>
+															<span style="color: red;" th:if="${list.status == '4'}"
+																  th:text="快到期">
+																	</span>
+														</td>
+
+														<!-- 保险公司姓名 -->
+														<td><span
+																th:text="${list.iComName != null?list.iComName:''}"></span></td>
+
+														<!-- 保险单号 -->
+														<td><span
+																th:text="${list.iNo != null?list.iNo:''}"></span></td>
+
+														<!-- 入包期 -->
+														<td >
+																	<span
+																			th:text="${list.iInTime != null?list.iInTime:''}"
+																	></span>
+														</td>
+
+														<!-- 保险到期 -->
+														<td >
+																	<span th:if="${list.iOutTime != null &amp;&amp; week &lt; list.iOutTime}"
+																		  th:text="${list.iOutTime != null?list.iOutTime:''}"
+																	></span>
+
+															<span style="color: red;" th:if="${list.iOutTime != null &amp;&amp; week &gt;= list.iOutTime}"
+																  th:text="${list.iOutTime != null?list.iOutTime:''}"
+															></span>
+														</td>
+
+														<!-- 创建时间 -->
+														<td><span
+																th:text="${list.createTime}"
+														></span></td>
+
+														<!-- 操作 -->
+														<td >
+															<span th:if="${list.status == '1'}" baisee:ctrl="BXGL_BDBL"
+																		  style="cursor: pointer; color: red;" title="办理"
+																		  th:onclick="'handle(\'' + ${list.id} + '\',\'' + ${list.status} + '\')'" th:text="办理"></span>
+
+															<span th:if="${list.status &gt;= '2'}"
+																  style="cursor: pointer; color: red;" title="点击可展开"
+																  class="see"
+																  th:onclick="'showDetails(\'' + ${list.id} + '\',\'' + ${info.index} + '\')'" th:text="展开" th:id="${info.index}"></span>
+
+															<span th:if="${list.status == '3'}" baisee:ctrl="BXGL_BDBL"
+																  style="cursor: pointer; color: red;" title="点击可展开"
+																  th:onclick="'edit(\'' + ${list.id} + '\')'" th:text="修改"></span>
+														</td>
+													</tr>
+
+												</tbody>
+											</table>
+										</div>
+
+										<ul class="pagination" th:if="${pageResult != null}" th:object="${pageResult}">
+											<li><a href="javascript:void(0);" th:onclick="*{hasPreviousPage} ? 'go(1)' : 'return false;'">首页</a></li>
+											<li><a href="javascript:void(0);" th:onclick="*{hasPreviousPage} ? 'go(' + *{prePage} + ')' : 'return false;'">上一页</a></li>
+											<li><a href="javascript:void(0);" th:onclick="*{hasNextPage} ? 'go(' + *{nextPage} + ')' : 'return false;'">下一页</a></li>
+											<li><a href="javascript:void(0);" th:onclick="*{hasNextPage} ? 'go(' + *{pages} + ')' : 'return false;'">末页</a></li>
+											<li><a href="javascript:void(0);" onclick="go($('#pagenumber').val());">跳转至</a></li>
+											<li><a href="#1"><input name="pageNum" id="pagenumber" th:value="*{pageNum}" />/<span id="_pages" th:text="*{pages == 0} ? 1 : *{pages}"></span></a></li>
+											<li><a href="#1">页</a></li>
+										</ul>
+
+									</div>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</main>
+		</div>
+	</div>
+
+	<script th:inline="javascript">
+	$(function(){
+		var operationSuccess = $("#operationSuccess").val();
+		if(operationSuccess != ""){
+			_alert(operationSuccess);
+		}
+	})
+	
+		/* 搜索 */	
+		function conditionCheck() {
+			$("#frm").submit();
+		}
+		
+		/* 导出excel */		
+		function exportExcel() {
+			var dom=document.getElementById('downloadcsv');
+			var stuName =$("#stuName").val();
+			var iNo =$("#iNo").val();
+			var className =$("#className").val();
+			var status =$("#status").val();
+			var iComName =$("#iComName").val();
+			/*<![CDATA[*/
+				window.location.href=basePath+"/insurance/exportExcel.ht?stuName="+stuName+"&iNo="+iNo+"&className="+className+"&status="+status+"&iComName="+iComName+"";
+			/*]]>*/
+		}
+		
+		/* 办理保险 */
+		function handle(id,status) {
+			locationHref([[@{/insurance/toInHandlePage.ht}]] + "?iId=" + id);
+		}
+		
+		/* 修改 */
+		function edit(id) {
+			locationHref([[@{/insurance/toInHandlePage.ht}]] + "?iId=" + id);	
+		}
+		
+		/* 展开   收起 */
+		function showDetails(iId,i) {
+			var iId=iId;
+			var url = basePath+"/insurance/toRemarks.ht";
+			if ($("#" + i).text() == "展开") {
+				$("#" + i).text("收起");
+				$.ajax({
+		             type: "post",
+		             url: url,
+		             data: {id:iId},
+		             dataType: "json",
+		             success: function(data){
+		            	 if(data.remarks == null ){
+		            		 data.remarks='';
+		            	 }
+		            	 var d='<td class="test" colspan="12" style="text-align:left;">'+data.remarks+'</td>';
+		            	 		 $("#"+iId).after(d);
+		            }
+		         });
+			}else if ($("#" + i).text() == "收起") {
+				$(".see").text("展开");
+				$(".test").remove();
+			}
+		}
+		
+		
+		 
+		function getDay(day){
+	 	　　var today = new Date();
+		　　var targetday_milliseconds=today.getTime() + 1000*60*60*24*day;
+		　　today.setTime(targetday_milliseconds); //注意，这行是关键代码
+		　　var tYear = today.getFullYear();
+		　　var tMonth = today.getMonth();
+		　　var tDate = today.getDate();
+		　　tMonth = doHandleMonth(tMonth + 1);
+		　　tDate = doHandleMonth(tDate);
+		　return tYear+"-"+tMonth+"-"+tDate;
+			alert(tYear+"-"+tMonth+"-"+tDate)
+		}
+
+		function doHandleMonth(month){
+		　　var m = month;
+		　　if(month.toString().length == 1){
+		　　　　m = "0" + month;
+		　　}
+		　　return m;
+		}
+		
+	</script>
+	<script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+	<script type="text/javascript" src="js/bootstrap.min.js" th:src="@{static/js/bootstrap.min.js}"></script>
+	<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+	<script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+	<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+
+</body>
+</html>

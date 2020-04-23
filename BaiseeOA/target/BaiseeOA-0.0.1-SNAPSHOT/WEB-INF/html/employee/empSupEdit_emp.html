@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="commonTemplate :: header">
+</head>
+<body>
+<div class="lyear-layout-web">
+	<div class="lyear-layout-container">
+		<!--左侧导航-->
+		<div th:replace="commonTemplate :: leftMenus"></div>
+		<!--End 左侧导航-->
+
+		<!--头部信息-->
+		<div th:replace="commonTemplate :: headerDiv"></div>
+		<!--End 头部信息-->
+
+		<!--页面主要内容-->
+		<main class="lyear-layout-content">
+			<!-- ==================================== 页面内容开始 ============================= -->
+			<div class="container-fluid">
+				<form id="basefrm" th:action="@{emp/toSaveEmps.ht(empTable=employeeSupplement)}" autocomplete="off" enctype="multipart/form-data" method="post">
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="card">
+								<div class="card-body">
+									<ul id="myTabs" class="nav nav-tabs" role="tablist">
+										<li>
+											<a href="javascript:void(0)"> <span onclick="notEmpJump();" >基本信息</span> <span class="separator"></span> </a>
+										</li>
+										<li class="active">
+											<a href="javascript:void(0)" > <span>附加信息</span> <span class="separator"></span> </a>
+										</li>
+										<li>
+											<a href="javascript:void(0)"><span onclick="notEduJump();">教育信息</span> <span class="separator"></span> </a>
+										</li>
+										<li>
+											<a href="javascript:void(0)"> <span onclick="notWorkJump();">履历信息</span> <span class="separator"></span> </a>
+										</li>
+										<li>
+											<a href="javascript:void(0)"> <span onclick="notFamJump();">家庭信息</span> <span class="separator"></span> </a>
+										</li>
+									</ul>
+									<table class="table table-hover">
+										<tr>
+											<td align="right" width="25%">
+												<span>输入座机号码：</span>
+											</td>
+											<td>
+												<span><input type="text" class="form-control" id="empSeatNumber" placeholder="输入座机号码" name="empSeatNumber" th:value="${sup.empSeatNumber}"/></span>
+
+											</td>
+										</tr>
+										<tr>
+											<td align="right" width="25%">
+												<span>输入邮箱：</span>
+											</td>
+											<td>
+											<span>
+																							<input type="hidden" id="PK_BESI" name="PK_BESI" th:value="${sup.PK_BESI}" />
+																							<input type="hidden" id="empId" name="empId" th:value="${sup.empId}" />
+																							<input type="hidden" name="operationSuccess" id="operationSuccess" th:value="${operationSuccess}"/>
+																							<input type="text" class="form-control" id="empMailbox" name="empMailbox" placeholder="输入邮箱"  th:value="${sup.empMailbox}" />
+																						</span>
+											</td>
+										</tr>
+										<tr>
+											<td align="right" width="25%">
+												<span>输入QQ号码：</span>
+											</td>
+											<td>
+												<input type="text" class="form-control" id="empQQNumber" name="empQQNumber" placeholder="输入QQ号码" th:value="${sup.empQQNumber}" />
+											</td>
+										</tr>
+										<tr>
+											<td align="right" width="25%">
+												<span>输入微信号码：</span>
+											</td>
+											<td>
+												<input type="text" class="form-control" id="empWeChatNumber" name="empWeChatNumber" placeholder="输入微信号码" th:value="${sup.empWeChatNumber}"  />
+											</td>
+										</tr>
+										<tr>
+											<td align="right" width="25%">
+												<span>输入家庭住址：</span>
+											</td>
+											<td>
+												<input type="text" class="form-control" id="empHomeAddress" name="empHomeAddress" placeholder="输入家庭住址" th:value="${sup.empHomeAddress}" />
+											</td>
+										</tr>
+										<tr>
+											<td align="right" width="25%">
+												<span>输入籍贯：</span>
+											</td>
+											<td>
+												<input type="text" class="form-control" id="empPlace" name="empPlace"  th:value="${sup.empPlace}" placeholder="输入籍贯"/>
+											</td>
+										</tr>
+										<tr>
+											<td align="right" width="25%">
+												<span>输入政治面貌：</span>
+											</td>
+											<td>
+												<select name="empPolicalOutlook" id="empPolicalOutlook"  class="form-control">
+													<option></option>
+													<option value="0" th:if="${sup.empPolicalOutlook == '0'}" selected="selected">群众</option>
+													<option value="0" th:if="${sup.empPolicalOutlook != '0'}" >群众</option>
+													<option value="1" th:if="${sup.empPolicalOutlook == '1'}" selected="selected" >中共党员</option>
+													<option value="1" th:if="${sup.empPolicalOutlook != '1'}" >中共党员</option>
+												</select>
+											</td>
+										</tr>
+										<tr>
+											<td align="right" width="25%">
+												<span>户口所在地：</span>
+											</td>
+											<td>
+												<input type="text" class="form-control" id="empRegisteredResidence" name="empRegisteredResidence" placeholder="输入户口所在地" th:value="${sup.empRegisteredResidence}" />
+											</td>
+										</tr>
+									</table>
+									<div align="center">
+										<span class="grey"> <input value="返回上级"
+																   type="button" onclick="returnBack();"
+																   class="btn btn-warning	" />
+																</span> <span> <input value="确定保存" type="submit"
+																					  class="btn btn-success" />
+																</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<!-- ============================= 页面内容 结束 ============================= -->
+		</main>
+		<!-- END 页面主要内容  -->
+	</div>
+</div>
+
+<script type="text/javascript" th:src="@{js/jquery-1.11.3.min.js}"></script>
+<script type="text/javascript" th:src="@{js/main.min.js}"></script>
+<script type="text/javascript" th:src="@{js/public-obj.js}"></script>
+<script type="text/javascript" th:src="@{js/bind.js}"></script>
+<script type="text/javascript" th:src="@{js/controls.js}"></script>
+<script type="text/javascript" th:src="@{js/slide.js}"></script>
+<script type="text/javascript" th:src="@{js/switch.js}"></script>
+<script type="text/javascript" th:src="@{js/initial.js}"></script>
+<script type="text/javascript" th:src="@{js/printhtml.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/My97DatePicker/WdatePicker.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/file/uploadify/jquery.uploadify.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/layer/layer.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/select2/i18n/zh-CN.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/treeview/jquery.treeview.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/form/jquery.form.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/ztree/jquery.ztree.core-3.5.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/ztree/jquery.ztree.excheck-3.5.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/constant.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/comm/appconstans.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/bmsAjax.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/validata.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/validate/jquery.validate.min.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/validate/localization/messages_zh.min.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/validate/regValidate.js}"></script>
+<script type="text/javascript" th:src="@{js/popup_layer.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/kxbdmarquee/js/jquery.kxbdmarquee.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/textScroll.js}"></script>
+<script type="text/javascript" th:src="@{js/app.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/layer/layui.js}"></script>
+<script type="text/javascript" th:src="@{js/bootstrap-datepicker.min.js}"></script>
+<script type="text/javascript" th:src="@{js/bootstrap-datepicker.zh-CN.min.js}"></script>
+<script type="text/javascript" th:src="@{js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{js/perfect-scrollbar.min.js}"></script>
+<script th:inline="javascript">
+	$(function(){
+		var operationSuccess = $("#operationSuccess").val();
+		if(operationSuccess != ""){
+			_alert(operationSuccess);
+		}
+	});
+
+	$(function(){
+		setValidate($("#supFrm"),{
+			rules: {
+				empSeatNumber:{seat_number: true,maxlength: 13},
+				empMailbox:{email:true},
+				empWeChatNumber:{wechat: true},
+				empQQNumber:{minlength: 5,qq: true}
+			},
+			messages:{
+				empSeatNumber:{maxlength:"请输入正确的座机号码"},
+				empMailbox:{email:"请输入正确的邮箱"},
+				empQQNumber:{minlength: "最少输入5位字符"}
+
+			}
+		});
+		/*===========================================座机号码校验=================================*/
+		$.validator.addMethod("seat_number", function(value, element) {
+			var length = value.length;
+			var seat_number = /0\d{2,3}-\d{7,8}/
+			return this.optional(element) || (seat_number.test(value));
+		}, "座机号码格式错误");
+		/*=====================================微信号验证=============================================*/
+		$.validator.addMethod("wechat",function(value,element,params){
+			var wechat=/^[u0391-uFFE5w]/;
+			return this.optional(element) || (wechat.test(value));
+		},"微信号中不能含有文字");
+		/*======================================QQ号码检验=================================================*/
+		$.validator.addMethod("qq", function(value, element) {
+			var tel = /^[1-9]\d{4,9}$/;
+			return this.optional(element) || (tel.test(value));
+		}, "qq号码格式错误");
+		/* =========================================中文校验======================================================= */
+		$.validator.addMethod("chinese", function(value, element) {
+			var chinese = /^[\u4e00-\u9fa5]+$/;
+			return this.optional(element) || (chinese.test(value));
+		}, "只能输入中文");
+
+	});
+	$(function(){
+		$("#empPolicalOutlook").select2({
+			placeholder : "请选择政治面貌"
+		});
+	});
+	function notSupJump(){
+		var empId = document.getElementById("empId").value;
+		if(empId==null || empId == ""){
+			_alert("请先保存当前页面");
+		}else {
+			locationHref(basePath+'/emp/empPageJump.ht'+ "?empTable=employeeSupplementJump");
+		}
+	};
+	function notEduJump(){
+		var empId = document.getElementById("empId").value;
+		if(empId==null || empId == ""){
+			_alert("请先保存当前页面");
+		}else {
+			locationHref(basePath+'/emp/empPageJump.ht' + "?empTable=employeeEducationJump");
+		}
+	};
+	function notEmpJump(){
+		var empId = document.getElementById("empId").value;
+		if(empId==null || empId == ""){
+			_alert("请先保存当前页面");
+		}else {
+			locationHref(basePath+'/emp/empPageJump.ht' + "?empTable=employeeEmployeeJump");
+		}
+	};
+
+	function notWorkJump(){
+		var empId = document.getElementById("empId").value;
+		if(empId==null || empId == ""){
+			_alert("请先保存当前页面");
+		}else {
+			locationHref(basePath+'/emp/empPageJump.ht' + "?empTable=employeeWorkJump");
+		}
+	};
+	function notFamJump(){
+		var empId = document.getElementById("empId").value;
+		if(empId==null || empId == ""){
+			_alert("请先保存当前页面");
+		}else {
+			locationHref(basePath+'/emp/empPageJump.ht'+ "?empTable=employeeFamilyJump");
+		}
+	};
+
+	function returnBack(){
+		var url = basePath+'/emp/toEmpList.ht';
+		locationHref(url);
+	};
+
+</script>
+</body>
+</html>

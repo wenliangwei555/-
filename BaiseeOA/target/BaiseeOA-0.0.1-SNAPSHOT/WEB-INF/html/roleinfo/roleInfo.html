@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="commonTemplate :: header">
+</head>
+<body>
+<div class="lyear-layout-web">
+	<div class="lyear-layout-container">
+
+		<!--左侧导航-->
+		<div th:replace="commonTemplate :: leftMenus"></div>
+		<!--End 左侧导航-->
+
+		<!--头部信息-->
+		<div th:replace="commonTemplate :: headerDiv"></div>
+		<!--End 头部信息-->
+
+		<!--页面主要内容-->
+		<main class="lyear-layout-content">
+			<div class="container-fluid">
+				<form id="roleForm" th:action="*{#strings.isEmpty(roleId)} ? @{role/roleAdd.ht} : @{role/roleUpd.ht}" name="roleForm" method="post" th:object="${roleInfo}">
+					<input type="hidden" name="roleId" th:value="*{roleId}" />
+					<table class="table">
+						<tbody>
+						<tr>
+							<td>
+								<div class="left">
+									<div class="td1">
+										<span>角色名称：</span>
+									</div>
+									<div class="td2">
+										<span><input type="text" class="form-control" name="roleName" id="roleName" th:value="*{roleName}" required="required" placeholder="请输入角色名称" /> </span>
+									</div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="menu-tree-box">
+									<div class="tree-box">
+										<ul id="menu_tree" class="filetree" baisee:menus="2">
+										</ul>
+										<div id="roleMenuIds" th:if="${roleMenuInfo} != null" th:each="rm : ${roleMenuInfo}">
+											<input type="hidden" name="oldMenuIds" class="form-control" th:value="${rm.menuId}" />
+										</div>
+									</div>
+									<div class="td1">
+										<span>关联菜单：</span>
+									</div>
+								</div>
+							</td>
+						</tr>
+						</tbody>
+					</table>
+					<div
+							style="width: 100%;text-align: center;"
+							class="redbutton control-button JsW"
+							data-control-type="button"
+							data-control-config="{'buttonCls':'button'}">
+						<span> <input value="保存" type="button" onclick="saveRole()"
+									  style="width: 150px;line-height: 30px;border: 1px solid lightskyblue;background-color: dodgerblue;color: white;"/></span>
+						<span class="grey"> <input value="取消" type="button"  th:onclick="'locationHref(\'' + @{/role/showList.ht} + '\')'"
+												   style="width: 150px;line-height: 30px;border: 1px solid #F9AF2E;background-color: #FFEA77;color: white;"/>
+						</span> <span id="del"></span>
+					</div>
+				</form>
+			</div>
+		</main>
+		<!--End 页面主要内容-->
+	</div>
+</div>
+<script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+<script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/bmsAjax.js}"></script>
+<script type="text/javascript" src="js/bootstrap.min.js" th:src="@{static/js/bootstrap.min.js}"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"  th:src="@{js/bootstrap.min.js}"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap-3.0.0/js/bootstrap-datepicker.min.js" th:src="@{js/bootstrap-datepicker.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap-3.0.0/js/bootstrap-datepicker.zh-CN.min.js" th:src="@{js/bootstrap-datepicker.zh-CN.min.js}"></script>
+<script type="text/javascript" src="js/main.min.js" th:src="@{js/main.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/layer/layer.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/My97DatePicker/WdatePicker.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/validata.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/validate/jquery.validate.min.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/treeview/jquery.treeview.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/form/jquery.form.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+	/*<![CDATA[*/
+	var basePath = /*[[@{/}]]*/;
+	/*]]>*/
+</script>
+<script th:inline="javascript">
+	$(document).ready(function() {
+
+		setValidate($("#roleForm"), {
+			rules: {
+				roleName : {required: true,
+					remote:{       //验证费项名称是否存在
+						type : "POST",
+						url : basePath+"/role/isExsit.ht",
+		data : {
+			roleName : function(){return $("#roleName").val();},
+			roleId : [[${roleInfo.roleId}]]
+		}
+	}
+	}
+	},
+		messages:{
+			roleName: { required: "角色名称不能为空",
+					remote : "角色已存在"},
+		}
+	});
+
+		$("#menu_tree").treeview();
+		$("#menu_tree input[type=checkbox]").each(function() {
+			var mCheckbox = $(this);
+			$("#roleMenuIds input[name=oldMenuIds]").each(function() {
+				if ($(this).val() == mCheckbox.val()) {
+					mCheckbox.attr("checked", true);
+				}
+			});
+		});
+
+		$("#menu_tree input[type=checkbox]").change(function() {
+			checkParent(this);
+			checkChild(this);
+		});
+	});
+
+	function checkParent(obj) {
+		var value = $(obj).attr("pid");
+		if (value != '0') {
+			var nextObj = $("#menu_tree input[type=checkbox][value='" + value + "']");
+			if ($("#menu_tree input[type=checkbox][pid='" + value + "']:checked").length > 0) {
+				nextObj.prop("checked", true);
+			} else {
+				nextObj.prop("checked", false);
+			}
+			checkParent(nextObj);
+		}
+	}
+
+	function checkChild(obj) {
+		var value = $(obj).val();
+		var nextObj = $("#menu_tree input[type=checkbox][pid='" + value + "']");
+		if (nextObj.length > 0) {
+			$.each(nextObj, function(index) {
+				$(this).prop("checked", obj.checked);
+				checkChild(this);
+			});
+		}
+	}
+
+	function saveRole() {
+		bmsAjaxForm($("#roleForm"), function(data){
+			if(data.code == 1) {
+				_alert("保存失败"  + data.message);
+			} else {
+				locationHref(basePath+"/role/showList.ht");
+			}
+		})
+	}
+</script>
+</body>
+</html>

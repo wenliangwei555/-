@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+	<head th:include="commonTemplate :: header">
+	</head>
+	<style>
+		.test{ width: 170px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; display: inline-block; cursor:pointer; }
+	</style>
+	<body class="bgcolor-body">
+		<div id="page">
+			<div th:include="commonTemplate :: headerDiv"></div>
+			<div id="content" class="layout">
+				<div class="grid-s5m0">
+					<!-- ============================= 页面内容 开始============================= -->
+					<div class="col-main">
+						<div class="main-wrap">
+							<div class="skin-box">
+								<div class="skin-box-bd">
+									<div class="cur-position">
+										<span><a href="javascript:void(0);">考试信息管理</a> </span>
+										<span>&gt;</span>
+										<span><a href="javascript:void(0);">试卷管理</a> </span>
+									</div>
+									<form th:action="@{testPaper/testPaperList.ht}"  id="frm" name="frm" method="post">
+										<div class="cont-box">
+											<div class="search-box">
+												<div class="left">
+												    <span class="add JsW"><a th:href="@{testPaper/testPaperjudge.ht}" class="ks-pop-nav" title="添加试卷" style="cursor:pointer;color: #ffffff" 
+													onmouseover="javascript:this.style.color='#dbdbdb'"  baisee:ctrl="KSGL_XZSJ"
+													onmouseout="javascript:this.style.color='#ffffff'">新增</a> </span>
+													<span class="del"><a baisee:ctrl="KSGL_SCSJ" href="javascript:void(0);"
+													 th:onclick="'del(\'frm\', \''+ @{/testPaper/delTestPaper.ht} + '\')'" title="删除试卷" style="cursor:pointer;color: #ffffff" 
+													onmouseover="javascript:this.style.color='#dbdbdb'" 
+													onmouseout="javascript:this.style.color='#ffffff'">删除</a> </span>
+												</div>
+												<div class="right">
+													<div class="search-box-cont" baisee:ctrl="KSGL_SGGL">
+														<span> <input class="button" type="button" onclick="checksTo()" value="搜索" /> </span>
+														<span> &nbsp;&nbsp;&nbsp;&nbsp; 
+														<input class="input radius3" id="itemlableSearch" onkeydown="return checks(event)"  
+															name="itemlableSearch" th:value="${itemlableSearch}" type="text" 
+															placeholder="输入试卷名称" style="width: 226px"/></span>
+														<!-- <span> &nbsp;&nbsp;&nbsp;&nbsp;<select  
+															name="dictId" id="dictId" class="m-select" style="width: 150px; margin-top: 2px;">
+															<option value="">课程类型</option>
+															<option th:each="name:${dictName}" th:text="${name.dictValue}" th:value="${name.dictId}"></option>
+														</select></span> -->        
+														<span><select 
+															name="empId" id="empId" class="m-select" style="width: 150px; margin-top: 2px;">
+															<option value="">--选择创建人--</option>
+															<option th:each="ename:${empNames}" th:text ="${ename.empName}" th:value="${ename.empId}"></option>
+														</select></span>
+														</div>
+												</div>
+											</div>
+											<div class="list-table">
+												<div class="list-table-cont">
+													<div class="table2">
+														<table class="ks-inputall">
+															<tr class="th">
+																<td class="col1" baisee:ctrl="KSGL_SCSJ">
+																	<div class="JsW control-checkbox" data-control-type="checkboxall">
+																		<input type="checkbox" onclick="selectAllCheckBox(document.frm.ids,document.frm.checkbox,this);" />
+																	</div>
+																</td>
+																<td class="col4">试卷名称</td>
+																<td class="col3">创建人</td>
+																<td class="col5">创建时间</td>
+																<td class="col6">更新时间</td>
+																<td class="col6" baisee:ctrl="KSGL_CXSJ">操作</td>
+															</tr>
+															 <tr th:if="${pageResult.list == null || pageResult.list.size() == 0}">
+															
+															</tr>
+															<tr th:each="info:${pageResult.list}" th:if="${pageResult.list != null &amp;&amp; pageResult.list.size() > 0}" onmouseover="this.style.backgroundColor='#e3f1ff'" onmouseout="this.style.backgroundColor='#ffffff'">
+																<td class="col1" baisee:ctrl="KSGL_SCSJ">
+																	<div class="JsW control-checkbox" data-control-type="checkbox">
+																		<input type="checkbox" name="ids" id="ids" th:value="${info.tid}" />
+																	</div>
+																</td>
+																<td class="col3">
+																	<span style="cursor:pointer" th:text="${info.paperName}"></span>
+																</td>
+																<td class="col2">
+																	<span class="test" style="cursor:pointer" th:text="${info.createUser}"></span>
+																</td>
+																<td class="col4">
+																	<span style="cursor:pointer" baisee:fmt="yyyy-MM-dd HH:mm:ss,${info.createTs}"></span>
+																</td>
+																<td class="col5">
+																	<span style="cursor:pointer" baisee:fmt="yyyy-MM-dd HH:mm:ss,${info.updateTs}"></span>
+																</td>
+																<td class="col5" baisee:ctrl="KSGL_CXSJ">
+																	<a style="color: red;" href="javascript:void(0);" th:onclick="'checkingPapers(\'' + ${info.tid} + '\',\'' + ${info.createTs} + '\',\'' + ${info.createUser} + '\')'">预览</a>
+																</td>
+															</tr> 
+														</table>
+													</div>
+												</div>
+											</div>
+											<div th:include="commonTemplate :: pageBox"></div>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- ============================= 页面内容 结束============================= -->
+					<div th:include="commonTemplate :: leftMenus"></div>
+				</div>
+			</div>
+			<div th:include="commonTemplate :: footer"></div>
+		</div>
+		<div th:include="commonTemplate :: processBar" />
+	<script th:inline="javascript">
+		$(function(){
+			/*<![CDATA[*/
+			var itemlableSearch = [[${itemlableSearch}]]; // 题目
+			var empId = [[${empId}]];// 创建人
+			if(itemlableSearch != '' && itemlableSearch != null){
+				$("#itemlableSearch").val(itemlableSearch);
+			}
+			if(empId != '' && empId != null){
+				$("#empId").val(empId);
+			}
+			/*]]>*/
+		})
+		
+		/* 根据ID查询试卷数据 */
+		function checkingPapers( tid, createTs, createUser){
+			/*<![CDATA[*/
+			tamp = "mailFrom";
+			layer.open({
+				type : 2,
+				title : "查询试卷",
+				shadeClose : true,
+				shade : 0.8,
+				area : [ '500px', '400px' ],
+				content : '/BaiseeOA/testPaper/queryPapers.ht?tid='+tid+'&createTs='+createTs+'&createUser='+createUser
+			}); 
+			/*]]>*/
+		}
+		
+		/* 删除试卷提示信息 */
+		$(function(){
+			/*<![CDATA[*/
+				var message = [[${returnInfo.message}]];
+				if(message != '' && message != null){
+					_alert(message);
+				}
+			/*]]>*/
+		})
+		
+		/* 修改试卷信息 */
+		function edit( tid){
+			var url = [[@{'/testPaper/testPaperjudge.ht?tid='}]] + tid;
+			locationHref(url);
+		}
+		function checks(e){
+			/*<![CDATA[*/
+			  var chinese = /^[A-Za-z0-9\u4e00-\u9fa5]+$/;
+			  var itemlableSearch = $("#itemlableSearch").val();
+			  if (e.keyCode == 13) {
+				  if(itemlableSearch != '' && itemlableSearch != null){
+					  if(!chinese.test(itemlableSearch)){
+						  	alert("试卷名称只能输入汉字或者26位英文字或者数字");
+						  $("#itemlableSearch").val("");
+					  }else{
+						  $("#frm").submit();
+					  }  
+				  }else{
+					  $("#frm").submit();
+				  }
+			  }
+			 /*]]>*/
+		}
+		
+		function checksTo(){
+			/*<![CDATA[*/
+			  var chinese = /^[A-Za-z0-9\u4e00-\u9fa5]+$/;
+			  var itemlableSearch = $("#itemlableSearch").val();
+			  if(itemlableSearch != '' && itemlableSearch != null){
+				  if(!chinese.test(itemlableSearch)){
+					  	alert("试卷名称只能输入汉字或者26位英文字或者数字");
+					  $("#itemlableSearch").val("");
+				  }else{
+					  $("#frm").submit();
+				  }  
+			  }else{
+				  $("#frm").submit();
+			  }
+			 /*]]>*/
+		}
+		
+	</script>
+	</body>
+</html>

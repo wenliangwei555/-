@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.baisee.BaiseeATokenMapper">
+	
+	<resultMap type="cn.baisee.oa.model.BaiseeAToken" id="aToken">
+		<id column="id" property="id"/>
+		<result column="access_token" property="aToken"/>
+		<result column="ticket" property="ticket"/>
+		<result column="create_time" property="createTime"/>
+	</resultMap>
+	
+    <select id="getToken" resultMap="aToken">
+    	select * from baisee_access_token where id = 1
+    </select>
+	
+</mapper>

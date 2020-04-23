@@ -1,0 +1,200 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head th:include="commonTemplate :: header">
+</head>
+<body class="bgcolor-body">
+
+	<div id="page">
+		<div th:include="commonTemplate :: headerDiv"></div>
+		<div id="content" class="layout">
+			<div class="grid-s5m0">
+				<div class="col-main">
+					<div class="main-wrap">
+						<div class="skin-box">
+							<div class="skin-box-bd">
+								<div class="cur-position">
+									<span><a href="javascript:void(0)">信息管理</a> </span> <span>&gt;</span>
+									<span><a th:href="@{disc/toDisList.ht}">优惠管理</a> </span> <span>&gt;</span>
+									<span><a href="javascript:void(0)">编辑优惠信息</a></span>
+								</div>
+								<!-- ==================================== 页面内容开始 ============================= -->
+								<div class="cont-box">
+									<div class="JsW skin-box-bd" data-widget-type="tab"
+										data-widget-config="{'activeIndex':0}">
+										<div class="skin-bd-box">
+											<div class="list-table">
+												<div class="list-table-cont">
+													<div class="table6">
+														<form id="DiscForm"
+															th:action="@{disc/saveOrUpdateDisc.ht}" method="post">
+															<input type="hidden" name="tuDiId" id="tuDiId"
+																th:value="${discInfo.tuDiId}" /> <input type="hidden"
+																name="prompt" id="prompt" th:value="${prompt}" />
+															<table>
+																<tr>
+																	<td>
+																		<div class="left">
+																			<div class="td1">
+																				<span class="require red">*</span><span>优惠名称：</span>
+																			</div>
+																			<div class="td2">
+																				<span><input type="text"
+																					onKeypress="javascript:if(event.keyCode == 32)event.returnValue = false;"
+																					class="radius3 input" id="tuDiName"
+																					onkeyup="check();" name="tuDiName"
+																					th:value="${discInfo.tuDiName}" /></span>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+																<tr>
+																	<td>
+																		<div class="left">
+																			<div class="td1">
+																				<span class="require red">*</span><span>优惠类型：</span>
+																			</div>
+																			<div class="td2">
+																				<div class="control-css3select css3select-icon-hide">
+																					<select class="radius3" id="tuDiType"
+																						name="tuDiType"
+																						onchange="tuDiReduceChoice(this.value)">
+																						<option></option>
+																						<option value="0">物质优惠</option>
+																						<option value="1">金额优惠</option>
+																					</select>
+																				</div>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+																<tr>
+																	<td>
+																		<div class="left">
+																			<div class="td1">
+																				<span class="require red">*</span><span>优惠详情：</span>
+																			</div>
+																			<div class="td2">
+																				<span><input type="text"
+																					onKeypress="javascript:if(event.keyCode == 32)event.returnValue = false;"
+																					class="radius3 input" id="tuDiThing"
+																					onkeyup="check();" name="tuDiThing"
+																					th:value="${discInfo.tuDiThing}" /></span>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+																<tr style="display: none;" id="tuDiReduceTr">
+																	<td>
+																		<div class="left">
+																			<div class="td1">
+																				<span class="require red">*</span><span>优惠金额：</span>
+																			</div>
+																			<div class="td2">
+																				<span><input type="text"
+																					onKeypress="javascript:if(event.keyCode == 32)event.returnValue = false;"
+																					class="radius3 input" id="tuDiReduce"
+																					onkeyup="check();" name="tuDiReduce"
+																					th:value="${discInfo.tuDiReduce}" /></span>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+															</table>
+															<div class="redbutton control-button JsW"
+																data-control-type="button"
+																data-control-config="{'buttonCls':'button'}">
+																<span> <input value="保存" type="submit"
+																	class="radius5 button ks-pop-close1" />
+																</span> <span class="grey"> <input value="取消"
+																	type="button" class="radius5 button ks-pop-close1"
+																	onclick="returnBack();" />
+																</span> <span id="del"></span>
+															</div>
+														</form>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<!-- ============================= 页面内容 结束============================= -->
+							</div>
+						</div>
+					</div>
+				</div>
+				<div th:include="commonTemplate :: leftMenus"></div>
+			</div>
+		</div>
+		<div th:include="commonTemplate :: footer"></div>
+	</div>
+	<div th:include="commonTemplate :: processBar" />
+	<script th:inline="javascript"> 
+		$(function(){
+			var tuDiId = $("#tuDiId").val();
+			setValidate($("#DiscForm"),{
+				rules: {
+					tuDiName:{required: true, maxlength: 20},
+					tuDiType:{required: true},
+					tuDiThing:{required: true},
+					tuDiReduce:{required: true}
+				},
+				messages:{
+					tuDiThing:{required: "必填",maxlength: "最多20个字符，太长"},
+					tuDiThing:{required: "必填"},
+					tuDiType:{required: "必选"},
+					tuDiReduce:{required: "必填"}
+				}
+			});
+		});
+		
+		$(function(){
+			var prompt=$("#prompt").val();
+			if(prompt != ""){
+				_alert(prompt);
+			}
+			
+		})
+		
+		function returnBack(){
+			var url = [[@{'/disc/toDisList.ht'}]];
+			locationHref(url);
+		} 
+		/* 优惠类型默认选中 */
+		$(function () {
+			var tuDiType=[[${discInfo.tuDiType}]];
+			$("#tuDiType").val(tuDiType);
+		});
+		
+		$(function(){
+			$("#tuDiType").select2({
+				placeholder : "请选择优惠类型"
+			});
+		});
+		
+		$(function (){
+			var tuDiType = $("#tuDiType").val();
+			if (tuDiType =='1') {
+				tuDiReduceTr.style.display = '';
+			}else {
+				tuDiReduceTr.style.display = 'none';
+				$("#tuDiReduce").val("0");
+			}
+		})
+		
+		function tuDiReduceChoice(tuDiTypeSelect){
+			if (tuDiTypeSelect != '') {
+				var tuDiType = $("#tuDiType").val();
+				if (tuDiType =='1') {
+					tuDiReduceTr.style.display = '';
+					$("#tuDiReduce").val("");
+				}else {
+					tuDiReduceTr.style.display = 'none';
+					$("#tuDiReduce").val("0");
+				}
+			}
+		}
+		
+		</script>
+</body>
+</html>

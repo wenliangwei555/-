@@ -1,0 +1,1527 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.baisee.BaiseeStuMapper">
+    <!-- 1.学生基本信息多个属性,加入附加表的信息 一对一 -->
+    <resultMap id="BaseResultStuMap" type="cn.baisee.oa.model.student.BaiseeStudent">
+
+        <id column="SID" jdbcType="VARCHAR" property="stuId"/>
+        <result column="CID" jdbcType="VARCHAR" property="claId"/>
+        <result column="AUDCID" jdbcType="VARCHAR" property="audCid"/>
+        <result column="claName" jdbcType="VARCHAR" property="claName"/>
+        <result column="oldCname" jdbcType="VARCHAR" property="oldCname"/>
+        <result column="S_NAME" jdbcType="VARCHAR" property="stuName"/>
+        <result column="S_SEX" jdbcType="VARCHAR" property="stuSex"/>
+        <result column="stuAge" jdbcType="VARCHAR" property="stuAge"/>
+        <result column="MOBILE" jdbcType="VARCHAR" property="stuMobile"/>
+        <result column="S_ID_NUMBER" property="stuIdNumber"/>
+        <result column="S_STATUS" jdbcType="VARCHAR" property="stuStatus"/>
+        <result column="S_TYPE" jdbcType="VARCHAR" property="stuType"/>
+        <result column="S_FORMAL_NO" jdbcType="VARCHAR" property="stuFormalNo"/>
+        <result column="S_SPECIALTY" jdbcType="VARCHAR" property="stuSpecialty"/>
+        <result column="S_BIRTH_DATE" jdbcType="VARCHAR" property="stuBirthDate"/>
+        <result column="OLD_CID" jdbcType="VARCHAR" property="oldCid"/>
+        <result column="S_AUDITION_START_TIME" jdbcType="VARCHAR"
+                property="stuAuditionStartTime"/>
+        <result column="S_AUDITION_END_TIME" jdbcType="VARCHAR"
+                property="stuAuditionEndTime"/>
+        <result column="S_ENROLMENT_TIME" jdbcType="VARCHAR" property="stuEnrolmentTime"/>
+        <result column="S_STATUS_DATE" jdbcType="VARCHAR" property="stuStatusDate"/>
+        <result column="S_LEAVE_START_TIME" jdbcType="VARCHAR"
+                property="stuLeaveStartTime"/>
+        <result column="S_LEAVE_END_TIME" jdbcType="VARCHAR" property="stuLeaveEndTime"/>
+        <result column="S_Province" jdbcType="VARCHAR" property="stuProvince"/>
+        <result column="S_City" jdbcType="VARCHAR" property="stuCity"/>
+        <result column="S_Area" jdbcType="VARCHAR" property="stuArea"/>
+        <!-- 学生属于哪个地区，地区名字 -->
+        <result column="stuAreaName" jdbcType="VARCHAR" property="stuAreaName"/>
+        <!-- 学费主键 -->
+        <result column="TU_ID" jdbcType="VARCHAR" property="tuId"/>
+        <result column="TUITIOIN_STATUS" jdbcType="VARCHAR" property="tuitioinStatus"/>
+        <!-- 到现在缴纳了多少钱 -->
+        <result column="totalMoney" property="totalMoney" jdbcType="VARCHAR"/>
+        <!-- 这个学生的总学费 -->
+        <result column="xfTotal" property="xfTotal" jdbcType="VARCHAR"/>
+
+        <!-- 学生分期的主键 -->
+        <result column="TU_ST_ID" jdbcType="VARCHAR" property="tuStId"/>
+        <!-- 此学生正在缴纳的是第缴纳清楚 LiFQ -->
+        <result column="TUITIOIN_PERIODS_NOW" jdbcType="VARCHAR"
+                property="tuitioinPeriodsNow"/>
+        <result column="UPDATE_TIME" property="updateTime"/>
+        <!-- 学费缴纳状态 -->
+        <result column="TUITIOIN_STATUS" property="tuitioinStatus"/>
+        <result column="RETURN_STATUS" property="returnStatus"/>
+        <result column="S_REMARK" property="stuRemark"/>
+        <result column="OPENHOUSEHOLDSTATE" property="openHouseholdState"/>
+        <!-- 一对多，学生信息对多个家人电话 -->
+        <collection property="stuFamTel"
+                    ofType="cn.baisee.oa.model.student.BaiseeStudentFamily">
+            <result column="stuFamTel" property="stuFamTel"/>
+        </collection>
+
+    </resultMap>
+    <!-- 2.学生家庭信息多个属性 -->
+    <resultMap type="cn.baisee.oa.model.student.BaiseeStudentFamily"
+               id="BaseResultStuFamMap">
+        <id column="PK_BEFI" property="pkBefi"/>
+        <result column="SID" property="stuId"/>
+        <result column="S_FAM_NAME" property="stuFamName"/>
+        <result column="S_FAM_SEX" property="stuFamSex"/>
+        <result column="S_FAM_TEL" property="stuFamTel"/>
+        <result column="S_FAM_ID_NUMBER" property="stuFamIdNumber"/>
+        <result column="S_FAM_RELATION" property="stuFamRelation"/>
+        <result column="S_FAM_OTHER_RELATION" property="stuFamOtherRelation"/>
+        <result column="UPDATE_TIME" property="updateTime"/>
+    </resultMap>
+    <!-- 3.学生教育信息多个属性 -->
+    <resultMap type="cn.baisee.oa.model.student.BaiseeStudentEducation"
+               id="BaseResultStuEduMap">
+        <id column="PK_BEGI" property="pkBegi"/>
+        <result column="SID" property="stuId"/>
+        <result column="START_TIME" property="stuStartTime"/>
+        <result column="END_TIME" property="stuEndTime"/>
+        <result column="S_GRADUATED_SCHOOL" property="stuGraduatedSchool"/>
+        <result column="S_DEGREE" property="stuDegree"/>
+        <result column="S_MAJOR" property="stuMajor"/>
+        <result column="UPDATE_TIME" property="updateTime"/>
+    </resultMap>
+    <!-- 4.学生附加信息多个属性 -->
+    <resultMap type="cn.baisee.oa.model.student.BaiseeStudentSupplement"
+               id="BaseResultStuSupMap">
+        <id column="PK_BESI" property="pkBesi"/>
+        <result column="SID" property="stuId"/>
+        <result column="S_MAILBOX" property="stuMailBox"/>
+        <result column="S_QQ_NUMBER" property="stuQQNumber"/>
+        <result column="S_WECHAT_NUMBER" property="stuWecharNumber"/>
+        <result column="S_Province" property="stuProvince"/>
+        <result column="S_City" property="stuCity"/>
+        <result column="S_Area" property="stuArea"/>
+        <result column="S_RealProvince" property="stuRealProvince"/>
+        <result column="S_RealCity" property="stuRealCity"/>
+        <result column="S_RealArea" property="stuRealArea"/>
+        <result column="S_HOME_ADDRESS" property="stuHomeAddress"/>
+        <result column="HEAD_PHOTO_DIR" property="stuHeadPhotoDir"/>
+    </resultMap>
+
+
+    <!-- S_TYPE：学生类型：0试听生，1正式生 -->
+    <!-- S_STATUS：学生状态：0试听，1试听结束，2正式，3毕业，4休学，5退学，6开除7.已退费 -->
+    <!-- S_BIRTH_DATE出生时间 -->
+    <!-- S_SEX :性别：0男，1女 -->
+    <sql id="Base_Column_List">
+		a.SID,TU_ID,S_NAME,S_STATUS,S_AUDITION_START_TIME,S_ENROLMENT_TIME,b.S_Province
+		S_Province,b.S_City S_City,b.S_Area S_Area,MOBILE,S_SEX,
+		TUITIOIN_STATUS,a.CID,a.AUDCID,
+		a.S_SPECIALTY,a.S_REMARK,
+		CONCAT(f.S_FAM_TEL,'(',f.S_FAM_RELATION,')')AS stuFamTel,
+		case 
+		when c.C_STATUS = '1' then concat(c.C_NAME, '(高中)')
+		when c.C_STATUS = '2' then concat(c.C_NAME, '(高中开发)')
+		when c.C_STATUS = '3' then concat(c.C_NAME, '(高中测试)')
+		when c.C_STATUS = '0' then concat(c.C_NAME, '(初中)')
+		end as claName,
+		S_FORMAL_NO,
+		CONCAT((LEFT(now(),4)-LEFT(S_BIRTH_DATE,4)),'岁') as stuAge,
+		RETURN_STATUS
+	</sql>
+    <!-- 查询所有试听学生信息，显示到页面 -->
+    <select id="selectAllAudStu" resultMap="BaseResultStuMap"
+            parameterType="map">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from baisee_student a
+        LEFT JOIN baisee_student_supplement b on
+        a.SID=b.SID
+        LEFT JOIN baisee_class
+        c ON a.CID = c.CID
+        LEFT JOIN (select
+        SID, max(S_FAM_TEL) as S_FAM_TEL,max(S_FAM_RELATION) as S_FAM_RELATION
+        from baisee_student_family where
+        S_FAM_TEL !='' group by SID) f ON
+        f.SID=a.SID
+        <where>
+            and a.S_TYPE='0'
+            <if
+                    test="itemlableSearch != null and itemlableSearch != '' and itemlableSearch.length()  &lt;= 3 ">
+                and (
+                a.S_NAME LIKE "%"#{itemlableSearch,jdbcType=VARCHAR}"%"
+                OR
+                c.C_NAME
+                LIKE "%"#{itemlableSearch,jdbcType=VARCHAR}"%")
+            </if>
+            <if
+                    test="itemlableSearch != null and itemlableSearch != '' and  itemlableSearch.length()  &gt; 3">
+                and (
+                a.S_NAME LIKE "%"#{itemlableSearch,jdbcType=VARCHAR}"%"
+                OR
+                a.MOBILE
+                LIKE "%"#{itemlableSearch,jdbcType=VARCHAR}"%")
+            </if>
+            <if test="status != null and status != '' ">
+                and
+                a.S_STATUS = #{status,jdbcType=VARCHAR}
+            </if>
+            <if test="startTime != null and startTime != '' ">
+                and left(replace(S_AUDITION_START_TIME,'-',''), 8) &gt;=
+                #{startTime,jdbcType=VARCHAR}
+            </if>
+            <if test="endTime != null and endTime != '' ">
+                and left(replace(S_AUDITION_START_TIME,'-',''),8) &lt;=
+                #{endTime,jdbcType=VARCHAR}
+            </if>
+            <if test="cStatus == 1">
+                and a.CID in (SELECT CID FROM baisee_class where
+                C_STATUS in ('1','2','3') )
+            </if>
+            <if test="cStatus = 0">
+                and a.CID in (SELECT CID FROM baisee_class where
+                C_STATUS=#{cStatus,jdbcType=VARCHAR} )
+            </if>
+            <!-- <if test="cIds != null and cIds.length>0"> and a.CID in <foreach
+                collection="cIds" open="(" close=")" item="cid" separator=","> #{cid,jdbcType=VARCHAR}
+                </foreach> </if> -->
+            <if test="areas!=null and areas !=''">
+                and b.S_Area=#{areas,jdbcType=VARCHAR}
+            </if>
+        </where>
+        ORDER BY
+        c.CID,a.UPDATE_TIME DESC
+    </select>
+
+    <!-- 查询所有正式学生信息，显示到页面 -->
+    <select id="selectAllForStu" resultMap="BaseResultStuMap"
+            parameterType="map">
+        SELECT
+        <include refid="Base_Column_List"/>,
+        case
+        when s.C_STATUS = '1' then concat(s.C_NAME, '(高中)')
+        when s.C_STATUS = '2' then concat(s.C_NAME, '(高中开发)')
+        when s.C_STATUS = '3' then concat(s.C_NAME, '(高中测试)')
+        when s.C_STATUS = '0' then concat(s.C_NAME, '(初中)')
+        end as oldCname
+        from baisee_student a
+        LEFT JOIN baisee_student_supplement b on
+        a.SID=b.SID
+        LEFT JOIN baisee_class
+        c ON a.CID = c.CID
+        LEFT JOIN baisee_class
+        s ON a.OLD_CID = s.CID
+        LEFT JOIN (select
+        SID, max(S_FAM_TEL) as S_FAM_TEL,max(S_FAM_RELATION) as S_FAM_RELATION
+        from baisee_student_family where
+        S_FAM_TEL !='' group by SID) f ON
+        f.SID=a.SID
+        <where>
+            <if test="choiceStuState != null and choiceStuState != ''">
+                and a.S_TYPE= #{choiceStuState,jdbcType=VARCHAR}
+            </if>
+            <if test="choiceStuState == null or choiceStuState == ''">
+                and a.S_TYPE='1'
+            </if>
+
+            <if
+                    test="itemlableSearch != null and itemlableSearch != '' and itemlableSearch.length()  &lt;= 3 ">
+                and (
+                a.S_NAME LIKE "%"#{itemlableSearch,jdbcType=VARCHAR}"%"
+                OR
+                c.C_NAME
+                LIKE "%"#{itemlableSearch,jdbcType=VARCHAR}"%")
+            </if>
+            <if
+                    test="itemlableSearch != null and itemlableSearch != '' and  itemlableSearch.length()  &gt; 3">
+                and (
+                a.S_NAME LIKE "%"#{itemlableSearch,jdbcType=VARCHAR}"%"
+                OR
+                a.MOBILE
+                LIKE "%"#{itemlableSearch,jdbcType=VARCHAR}"%")
+            </if>
+            <if test="status != null and status != '' ">
+                and
+                a.S_STATUS = #{status,jdbcType=VARCHAR}
+            </if>
+            <if test="startTime != null and startTime != '' ">
+                and left(replace(S_ENROLMENT_TIME,'-',''), 8) &gt;=
+                #{startTime,jdbcType=VARCHAR}
+            </if>
+            <if test="endTime != null and endTime != '' ">
+                and left(replace(S_ENROLMENT_TIME,'-',''), 8) &lt;=
+                #{endTime,jdbcType=VARCHAR}
+            </if>
+            <if test="returnFeeStatus != null and returnFeeStatus != ''">
+                and RETURN_STATUS = #{returnFeeStatus,jdbcType=VARCHAR}
+            </if>
+            <if test="cStatus == 1">
+                and a.CID in (SELECT CID FROM baisee_class where
+                C_STATUS in ('1','2','3') )
+            </if>
+            <if test="cStatus = 0">
+                and a.CID in (SELECT CID FROM baisee_class where
+                C_STATUS=#{cStatus,jdbcType=VARCHAR} )
+            </if>
+            <if test="cIds != null and cIds.length>0">
+                and a.CID in
+                <foreach collection="cIds" open="(" close=")" item="cid"
+                         separator=",">
+                    #{cid,jdbcType=VARCHAR}
+                </foreach>
+            </if>
+            <if test="areas!=null and areas !=''">
+                and b.S_Area=#{areas,jdbcType=VARCHAR}
+            </if>
+            <!-- <if test="choiceStuState != null and choiceStuState != ''"> <choose>
+                <when test="choiceStuState &lt;= 1"> and a.S_STATUS &lt;= #{choiceStuState,jdbcType=VARCHAR}
+                </when> <otherwise> and a.S_STATUS &gt;= #{choiceStuState,jdbcType=VARCHAR}
+                </otherwise> </choose> </if> -->
+        </where>
+        ORDER BY
+        c.CID DESC,a.S_ENROLMENT_TIME DESC
+    </select>
+
+    <!-- 通过学生id去操作表查询该id -->
+    <select id="selectSidFromOperation" parameterType="java.lang.String"
+            resultType="java.lang.String">
+        select SID from baisee_student_operation
+        <where>
+            and SID=#{stuId, jdbcType=VARCHAR}
+        </where>
+
+    </select>
+    <!-- 通过学生id去操作表查询最后一次操作时间 -->
+    <select id="selectUpdateTime" parameterType="java.lang.String"
+            resultType="java.lang.String">
+        select UPDATE_TIME from baisee_student_operation
+        <where>
+            and SID=#{stuId, jdbcType=VARCHAR}
+        </where>
+
+    </select>
+    <!-- 在学生表修改学生状态 -->
+    <update id="updateStatus" parameterType="java.lang.String">
+        update baisee_student
+        <set>
+            <if test="addParam == 1">
+                S_STATUS='1',
+                S_AUDITION_END_TIME=DATE_FORMAT(NOW(),
+                '%Y%m%d%H%i%s'),
+            </if>
+            <if test="addParam == 2">
+                S_TYPE = '1',
+                S_STATUS='2',
+                S_ENROLMENT_TIME=DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'),
+            </if>
+            <if test="addParam == 3">
+                S_STATUS='3',
+                TUITIOIN_STATUS = '2',
+            </if>
+            <if test="addParam == 4">
+                S_STATUS='4',
+            </if>
+            <if test="addParam == 5">
+                S_STATUS='5',
+                TUITIOIN_STATUS = '2',
+            </if>
+            <if test="addParam == 6">
+                S_STATUS='6',
+                TUITIOIN_STATUS = '2',
+            </if>
+            <if test="addParam == 7">
+                S_STATUS='7',
+            </if>
+        </set>
+        <where>
+            and SID=#{stuId, jdbcType=VARCHAR}
+        </where>
+    </update>
+    <!-- 在操作表中修改学生操作信息 -->
+    <update id="updateOperation" parameterType="java.lang.String">
+        update baisee_student_operation
+        <set>
+            OPERATION_START =DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'),
+            <if test="operationStart != null and operationStart != ''">
+                OPERATION_START =#{operationStart, jdbcType=VARCHAR},
+            </if>
+            <if test="operationEnd != null and operationEnd != ''">
+                OPERATION_END =#{operationEnd, jdbcType=VARCHAR},
+            </if>
+            <if test="operator != null">
+                OPERATOR=#{operator, jdbcType=VARCHAR},
+            </if>
+            UPDATE_TIME = DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'),
+        </set>
+        <where>
+            and SID=#{stuId, jdbcType=VARCHAR}
+        </where>
+    </update>
+
+    <!-- 在操作表中新增学生操作信息 -->
+    <insert id="insertOperation" parameterType="java.lang.String">
+        insert into baisee_student_operation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="stuId != null">
+                SID,
+            </if>
+            OPERATION_START,
+            <if test="operationEnd != null and operationEnd != ''">
+                OPERATION_END ,
+            </if>
+            <if test="operator != null">
+                OPERATOR,
+            </if>
+            UPDATE_TIME
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="stuId != null and stuId != ''">
+                #{stuId, jdbcType=VARCHAR},
+            </if>
+            <if test="operationStart == null">
+                DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'),
+            </if>
+            <if test="operationStart != null and operationStart != ''">
+                #{operationStart, jdbcType=VARCHAR},
+            </if>
+            <if test="operationEnd != null and operationEnd != ''">
+                #{operationEnd, jdbcType=VARCHAR},
+            </if>
+            <if test="operator != null and operator != ''">
+                #{operator, jdbcType=VARCHAR},
+            </if>
+            DATE_FORMAT(NOW(), '%Y%m%d%H%i%s')
+        </trim>
+    </insert>
+    <!-- 批量执行删除学员时，删除对应操作表信息 -->
+    <delete id="deleteOperation" parameterType="java.lang.String">
+        delete from baisee_student_operation
+        <where>
+            SID IN
+            <foreach collection="array" open="(" close=")" item="stuId"
+                     separator=",">
+                #{stuId, jdbcType=VARCHAR}
+            </foreach>
+        </where>
+    </delete>
+    <!-- 1.查询所有试听或正式班级，下拉显示，根据传过来的clatype -->
+    <select id="selectClass" resultType="cn.baisee.oa.model.BaiseeClazz"
+            parameterType="java.lang.String">
+        select a.CID,
+        case when C_STATUS = '1' then concat(a.C_NAME, '(高中)')
+        when C_STATUS = '2' then concat(a.C_NAME, '(高中开发)')
+        when C_STATUS = '3' then concat(a.C_NAME, '(高中测试)')
+        when C_STATUS = '0' then concat(a.C_NAME, '(初中)')
+        <!-- else concat(a.C_NAME, '(初中)') -->
+        end as cName
+        from baisee_class a
+        <where>
+            <if test="claType != null and claType != '' ">
+                and a.C_TYPE =#{claType, jdbcType=VARCHAR};
+            </if>
+        </where>
+    </select>
+    <!-- =================================添加======================================= -->
+    <!-- 1.添加学生基本信息 ，需手动添加4条信息 -->
+    <insert id="addStudent" parameterType="cn.baisee.oa.model.student.BaiseeStudent">
+        <selectKey resultType="java.lang.String" order="AFTER"
+                   keyProperty="stuId">
+            SELECT
+            SID
+            FROM
+            baisee_student
+            <where>
+                baisee_student.S_NAME = #{stuName, jdbcType=VARCHAR}
+                AND
+                baisee_student.S_SEX = #{stuSex, jdbcType=VARCHAR}
+                AND
+                baisee_student.MOBILE = #{stuMobile, jdbcType=VARCHAR}
+                AND
+                baisee_student.S_ID_NUMBER = #{stuIdNumber, jdbcType=VARCHAR}
+            </where>
+        </selectKey>
+        INSERT INTO baisee_student
+        (SID,AUDCID,CID,S_NAME,S_SEX,MOBILE,S_ID_NUMBER,S_STATUS,S_TYPE,S_SPECIALTY,S_AUDITION_START_TIME,UPDATE_TIME,RETURN_STATUS,S_REMARK)
+        VALUES
+        (
+        <choose>
+            <when test="stuId!=null and stuId!=''">
+                #{stuId, jdbcType=VARCHAR},
+            </when>
+            <otherwise>
+                pkval('STID'),
+            </otherwise>
+        </choose>
+        #{claId, jdbcType=VARCHAR},
+        #{claId,
+        jdbcType=VARCHAR},
+        #{stuName,
+        jdbcType=VARCHAR},
+        #{stuSex,
+        jdbcType=VARCHAR},
+        #{stuMobile,
+        jdbcType=VARCHAR},
+        #{stuIdNumber,
+        jdbcType=VARCHAR},
+        '0',
+        '0',
+        #{stuSpecialty, jdbcType=VARCHAR},
+        #{stuAuditionStartTime,
+        jdbcType=VARCHAR},
+        DATE_FORMAT(NOW(),
+        '%Y%m%d%H%i%s'),
+        '0',
+        #{stuRemark,
+        jdbcType=VARCHAR}
+        );
+    </insert>
+    <!-- 2.添加学生补充表信息 -->
+    <insert id="addStudentSupplement" parameterType="cn.baisee.oa.model.student.BaiseeStudentSupplement">
+        <selectKey order="AFTER" resultType="java.lang.Integer"
+                   keyProperty="pkBesi">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO baisee_student_supplement (
+        SID,
+        S_MAILBOX,
+        S_QQ_NUMBER,
+        S_WECHAT_NUMBER,
+        S_Province,
+        S_City,
+        S_Area,
+        S_RealProvince,
+        S_RealCity,
+        S_RealArea,
+        S_HOME_ADDRESS,
+        HEAD_PHOTO_DIR
+        ) VALUES(
+        #{stuId,
+        jdbcType=VARCHAR},
+        #{stuMailBox,
+        jdbcType=VARCHAR},
+        #{stuQQNumber,
+        jdbcType=VARCHAR},
+        #{stuWecharNumber,
+        jdbcType=VARCHAR},
+        #{stuProvince,
+        jdbcType=VARCHAR},
+        #{stuCity,
+        jdbcType=VARCHAR},
+        #{stuArea,
+        jdbcType=VARCHAR},
+        #{stuRealProvince, jdbcType=VARCHAR},
+        #{stuRealCity,
+        jdbcType=VARCHAR},
+        #{stuRealArea, jdbcType=VARCHAR},
+        #{stuHomeAddress,
+        jdbcType=VARCHAR},
+        #{stuHeadPhotoDir,
+        jdbcType=VARCHAR}
+        );
+    </insert>
+    <!-- 3.添加学生教育表信息 -->
+    <insert id="addStudentEducation" parameterType="cn.baisee.oa.model.student.BaiseeStudentEducation">
+        <selectKey order="AFTER" resultType="java.lang.Integer"
+                   keyProperty="pkBegi">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO baisee_student_education (
+        SID,
+        START_TIME,
+        END_TIME,
+        S_GRADUATED_SCHOOL,
+        S_DEGREE,
+        S_MAJOR,
+        UPDATE_TIME
+        )VALUES(
+        #{stuId,
+        jdbcType=VARCHAR},
+        #{stuStartTime, jdbcType=VARCHAR},
+        #{stuEndTime,
+        jdbcType=VARCHAR},
+        #{stuGraduatedSchool, jdbcType=VARCHAR},
+        #{stuDegree, jdbcType=VARCHAR},
+        #{stuMajor, jdbcType=VARCHAR},
+        DATE_FORMAT(NOW(), '%Y%m%d%H%i%s')
+        )
+    </insert>
+    <!-- 4.添加学生家庭信息表 -->
+    <insert id="addStudentFamily" parameterType="cn.baisee.oa.model.student.BaiseeStudentFamily">
+        <selectKey order="AFTER" resultType="java.lang.Integer"
+                   keyProperty="pkBefi">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO baisee_student_family (
+        SID,
+        S_FAM_NAME,
+        S_FAM_SEX,
+        S_FAM_TEL,
+        S_FAM_ID_NUMBER,
+        S_FAM_RELATION,
+        S_FAM_OTHER_RELATION,
+        UPDATE_TIME
+        )VALUES(
+        #{stuId, jdbcType=VARCHAR},
+        #{stuFamName,
+        jdbcType=VARCHAR},
+        #{stuFamSex, jdbcType=VARCHAR},
+        #{stuFamTel,
+        jdbcType=VARCHAR},
+        #{stuFamIdNumber, jdbcType=VARCHAR},
+        #{stuFamRelation, jdbcType=VARCHAR},
+        #{stuFamOtherRelation,
+        jdbcType=VARCHAR},
+        DATE_FORMAT(NOW(), '%Y%m%d%H%i%s')
+        )
+    </insert>
+
+    <!-- 查询学生身份证号，前台校验数据库是否已有 -->
+    <select id="selectStudentIDNumberVerification" parameterType="java.lang.String"
+            resultType="java.lang.String">
+        SELECT
+        S_ID_NUMBER
+        FROM
+        baisee_student
+        <where>
+            and S_ID_NUMBER = #{stuIdNumber, jdbcType=VARCHAR}
+            and SID !=
+            #{stuId, jdbcType=VARCHAR}
+        </where>
+    </select>
+    <!-- 查询学生身份证号，前台校验数据库是否已有 -->
+    <select id="selectStuIDNumberVerification" parameterType="java.lang.String"
+            resultType="java.lang.String">
+		SELECT
+		S_ID_NUMBER
+		FROM
+		baisee_student
+		where S_ID_NUMBER = #{stuIdNumber, jdbcType=VARCHAR}
+	</select>
+    <!-- 查询员工身份证号，前台校验数据库是否已有 -->
+    <select id="selectEmployeeIDNumberVerification" parameterType="java.lang.String"
+            resultType="java.lang.String">
+		SELECT
+		E_ID_NUMBER
+		FROM
+		baisee_employee
+		where E_ID_NUMBER =
+		#{empIdNumber, jdbcType=VARCHAR}
+	</select>
+    <!-- 查询学生手机号，前台校验数据库是否已有 -->
+    <select id="selectStudentMobileVerification" parameterType="java.lang.String"
+            resultType="java.lang.String">
+        SELECT
+        MOBILE
+        FROM
+        baisee_student
+        <where>
+            and MOBILE = #{stuMobile, jdbcType=VARCHAR}
+            and SID != #{stuId,
+			jdbcType=VARCHAR}
+        </where>
+    </select>
+    <!-- 查询员工手机号，前台校验数据库是否已有 -->
+    <select id="selectEmployeeMobileVerification" parameterType="java.lang.String"
+            resultType="java.lang.String">
+        SELECT
+        MOBILE
+        FROM
+        baisee_employee
+        <where>
+            <if test="empMobile != null and empMobile != '' ">
+                MOBILE = #{empMobile, jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+    <!-- =================================根据ID查询信息，修改时使用======================================= -->
+    <!-- 1.根据stuId查询学生基本信息 -->
+    <select id="selectByStudentId" parameterType="java.lang.String"
+            resultMap="BaseResultStuMap">
+        select a.*,
+        case
+        when b.C_STATUS = '1' then concat(b.C_NAME, '(高中)')
+        when b.C_STATUS = '2' then concat(b.C_NAME, '(高中开发)')
+        when b.C_STATUS = '3' then concat(b.C_NAME, '(高中测试)')
+        when b.C_STATUS = '0' then concat(b.C_NAME, '(初中)')
+        end as claName
+        FROM baisee_student a,baisee_class b
+        <where>
+            and a.CID = b.CID
+            and a.SID = #{stuId, jdbcType=VARCHAR}
+        </where>
+    </select>
+    <!-- 2.根据stuId查询学生家庭信息 -->
+    <select id="selectByStudentIdQueryFamily" parameterType="java.lang.String"
+            resultMap="BaseResultStuFamMap">
+        select * from baisee_student_family
+        <where>
+            and SID = #{stuId, jdbcType=VARCHAR}
+        </where>
+    </select>
+    <!-- 3.根据stuId查询学生教育信息 -->
+    <select id="selectByStudentIdQueryEducation" parameterType="java.lang.String"
+            resultMap="BaseResultStuEduMap">
+        select * from baisee_student_education
+        <where>
+            and SID = #{stuId, jdbcType=VARCHAR}
+        </where>
+    </select>
+    <!-- 4.根据stuId查询学生附加信息 -->
+    <select id="selectByStudentIdQuerySupplement" parameterType="java.lang.String"
+            resultMap="BaseResultStuSupMap">
+        select * from baisee_student_supplement
+        <where>
+            and SID = #{stuId, jdbcType=VARCHAR}
+        </where>
+    </select>
+
+
+    <!--=======================================修改学生信息========================================== -->
+    <!-- 1.修改学生基本信息 -->
+    <update id="updateStudentById" parameterType="cn.baisee.oa.model.student.BaiseeStudent">
+        UPDATE baisee_student
+        <set>
+            CID = #{claId, jdbcType=VARCHAR},
+            S_NAME = #{stuName,
+			jdbcType=VARCHAR},
+            S_SEX = #{stuSex, jdbcType=VARCHAR},
+            S_ID_NUMBER =
+            #{stuIdNumber, jdbcType=VARCHAR},
+            S_SPECIALTY = #{stuSpecialty,
+			jdbcType=VARCHAR},
+            S_BIRTH_DATE = #{stuBirthDate, jdbcType=VARCHAR},
+            S_ENROLMENT_TIME = #{stuEnrolmentTime, jdbcType=VARCHAR},
+            MOBILE =
+            #{stuMobile, jdbcType=VARCHAR},
+            S_AUDITION_START_TIME=#{stuAuditionStartTime, jdbcType=VARCHAR},
+            UPDATE_TIME =
+            DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'),
+            S_REMARK =
+            #{stuRemark,
+            jdbcType=VARCHAR},
+        </set>
+        <where>
+            and SID=#{stuId, jdbcType=VARCHAR}
+        </where>
+    </update>
+    <!-- 2.修改学生附加信息 -->
+    <update id="updateStudentSupById" parameterType="cn.baisee.oa.model.student.BaiseeStudentSupplement">
+        UPDATE baisee_student_supplement
+        <set>
+            <if test="stuMailBox != null and stuMailBox != ''">
+                S_MAILBOX = #{stuMailBox, jdbcType=VARCHAR},
+            </if>
+            <if test="stuQQNumber != null and stuQQNumber != ''">
+                S_QQ_NUMBER =#{stuQQNumber, jdbcType=VARCHAR},
+            </if>
+            <if test="stuWecharNumber != null and stuWecharNumber != ''">
+                S_WECHAT_NUMBER = #{stuWecharNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="stuProvince != null and stuProvince != ''">
+                S_Province =#{stuProvince,jdbcType=VARCHAR},
+            </if>
+            <if test="stuCity != null and stuCity != ''">
+                S_City = #{stuCity,jdbcType=VARCHAR},
+            </if>
+            <if test="stuArea != null and stuArea != ''">
+                S_Area = #{stuArea,jdbcType=VARCHAR},
+            </if>
+            S_RealProvince= #{stuRealProvince,jdbcType=VARCHAR},
+            S_RealCity=#{stuRealCity,jdbcType=VARCHAR},
+            S_RealArea=#{stuRealArea,jdbcType=VARCHAR},
+            <if test="stuHomeAddress != null and stuHomeAddress != ''">
+                S_HOME_ADDRESS = #{stuHomeAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="stuHeadPhotoDir != null and stuHeadPhotoDir != ''">
+                HEAD_PHOTO_DIR = #{stuHeadPhotoDir, jdbcType=VARCHAR},
+            </if>
+        </set>
+        <where>
+            and SID=#{stuId, jdbcType=VARCHAR}
+        </where>
+    </update>
+    <!-- 3.修改学生教育信息 -->
+    <update id="updateStudentEduById" parameterType="cn.baisee.oa.model.student.BaiseeStudentEducation">
+        UPDATE baisee_student_education
+        <set>
+            START_TIME = #{stuStartTime, jdbcType=VARCHAR},
+            END_TIME =
+            #{stuEndTime, jdbcType=VARCHAR},
+            S_GRADUATED_SCHOOL =
+            #{stuGraduatedSchool, jdbcType=VARCHAR},
+            S_DEGREE = #{stuDegree,
+			jdbcType=VARCHAR},
+            S_MAJOR = #{stuMajor, jdbcType=VARCHAR},
+            UPDATE_TIME = DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'),
+        </set>
+        <where>
+            and SID=#{stuId, jdbcType=VARCHAR}
+        </where>
+    </update>
+    <!-- 4.根据pkBefi修改学生家庭信息 -->
+    <update id="updateStudentFamById" parameterType="cn.baisee.oa.model.student.BaiseeStudentFamily">
+        UPDATE baisee_student_family
+        <set>
+            S_FAM_NAME = #{stuFamName, jdbcType=VARCHAR},
+            S_FAM_SEX =
+            #{stuFamSex, jdbcType=VARCHAR},
+            S_FAM_TEL = #{stuFamTel,
+			jdbcType=VARCHAR},
+            S_FAM_ID_NUMBER = #{stuFamIdNumber,
+			jdbcType=VARCHAR},
+            S_FAM_RELATION = #{stuFamRelation,
+			jdbcType=VARCHAR},
+            S_FAM_OTHER_RELATION = #{stuFamOtherRelation,
+			jdbcType=VARCHAR},
+            UPDATE_TIME = DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'),
+        </set>
+        <where>
+            and PK_BEFI=#{pkBefi, jdbcType=VARCHAR}
+        </where>
+    </update>
+    <!-- 5.试听生交费后，其班级改为正式班级，并修改学生类型，状态，学籍三个状态 -->
+    <update id="updateAudToFor" parameterType="java.lang.String">
+
+		{
+		CALL p_pay_money (
+		#{stuId, jdbcType=VARCHAR} ,
+		#{claId,
+		jdbcType=VARCHAR} ,
+		#{stuEnrolmentTime, jdbcType=VARCHAR}
+		)
+		}
+	</update>
+
+
+    <!-- ==================================删除学员======================================= -->
+
+    <!-- 1.删除学员基本信息 -->
+    <delete id="deleteStudent" parameterType="java.lang.String">
+        DELETE FROM
+        baisee_student
+        <where>
+            SID IN
+            <foreach collection="array" open="(" close=")" item="stuId"
+                     separator=",">
+                #{stuId, jdbcType=VARCHAR}
+            </foreach>
+        </where>
+    </delete>
+    <!-- 2.删除学员附加信息 -->
+    <delete id="deleteStudentSupplement" parameterType="java.lang.String">
+        DELETE
+        FROM
+        baisee_student_supplement
+        <where>
+            SID in
+            <foreach collection="array" open="(" close=")" item="stuId"
+                     separator=",">
+                #{stuId, jdbcType=VARCHAR}
+            </foreach>
+        </where>
+    </delete>
+    <!-- 3.删除学员教育信息 -->
+    <delete id="deleteStudentEducation" parameterType="java.lang.String">
+        DELETE
+        FROM
+        baisee_student_education
+        <where>
+            SID IN
+            <foreach collection="array" open="(" close=")" item="stuId"
+                     separator=",">
+                #{stuId, jdbcType=VARCHAR}
+            </foreach>
+        </where>
+    </delete>
+    <!-- 4.删除学员家庭信息 -->
+    <delete id="deleteStudentFamily" parameterType="java.lang.String">
+        DELETE
+        FROM
+        baisee_student_family
+        <where>
+            SID IN
+            <foreach collection="array" open="(" close=")" item="stuId"
+                     separator=",">
+                #{stuId, jdbcType=VARCHAR}
+            </foreach>
+        </where>
+    </delete>
+    <!--List<PhoneAndID> readPhoneAndID();获得学生的手机号和身份证 -->
+    <select id="readPhoneAndID" resultType="cn.baisee.oa.model.PhoneAndID">
+		SELECT MOBILE
+		phone,S_ID_NUMBER ID FROM baisee_student
+	</select>
+    <!-- void addImportExcel(List<BaseDto> list); 批量导入正式学生信息 -->
+    <insert id="addImportExcel" parameterType="cn.baisee.oa.model.student.BaiseeStudent">
+        <selectKey resultType="java.lang.String" order="AFTER"
+                   keyProperty="stuId">
+            SELECT
+            SID
+            FROM
+            baisee_student
+            <where>
+                baisee_student.S_NAME = #{stuName, jdbcType=VARCHAR}
+                AND
+                baisee_student.S_SEX = #{stuSex,
+				jdbcType=VARCHAR}
+                AND
+                baisee_student.MOBILE = #{stuMobile,
+				jdbcType=VARCHAR}
+                AND
+                baisee_student.S_ID_NUMBER = #{stuIdNumber,
+				jdbcType=VARCHAR}
+            </where>
+        </selectKey>
+        INSERT INTO baisee_student
+        (SID,CID,S_NAME,S_SEX,MOBILE,S_ID_NUMBER,S_STATUS,S_TYPE,S_ENROLMENT_TIME,UPDATE_TIME,RETURN_STATUS,S_SPECIALTY,S_REMARK)
+        VALUES
+        (
+        pkval('STID'),
+        #{claId, jdbcType=VARCHAR},
+        #{stuName,
+        jdbcType=VARCHAR},
+        #{stuSex, jdbcType=VARCHAR},
+        #{stuMobile,
+        jdbcType=VARCHAR},
+        #{stuIdNumber, jdbcType=VARCHAR},
+        '2',
+        '1',
+        #{stuEnrolmentTime, jdbcType=VARCHAR},
+        DATE_FORMAT(NOW(),
+        '%Y%m%d%H%i%s'),
+        '1',
+        #{stuSpecialty, jdbcType=VARCHAR},
+        #{stuRemark,
+        jdbcType=VARCHAR}
+        );
+    </insert>
+    <!-- 1.批量导入试听 -->
+    <insert id="addAudImportExcel" parameterType="cn.baisee.oa.model.student.BaiseeStudent">
+        <selectKey resultType="java.lang.String" order="AFTER"
+                   keyProperty="stuId">
+            SELECT
+            SID
+            FROM
+            baisee_student
+            <where>
+                baisee_student.S_NAME = #{stuName, jdbcType=VARCHAR}
+                AND
+                baisee_student.S_SEX = #{stuSex, jdbcType=VARCHAR}
+                AND
+                baisee_student.MOBILE = #{stuMobile, jdbcType=VARCHAR}
+                AND
+                baisee_student.S_ID_NUMBER = #{stuIdNumber, jdbcType=VARCHAR}
+            </where>
+        </selectKey>
+        INSERT INTO baisee_student
+        (SID,AUDCID,CID,S_NAME,S_SEX,MOBILE,S_ID_NUMBER,S_STATUS,S_TYPE,S_BIRTH_DATE,S_SPECIALTY,S_AUDITION_START_TIME,UPDATE_TIME,RETURN_STATUS,S_REMARK)
+        VALUES
+        (
+        pkval('STID'),
+        #{audCid, jdbcType=VARCHAR},
+        #{audCid,
+        jdbcType=VARCHAR},
+        #{stuName, jdbcType=VARCHAR},
+        #{stuSex,
+        jdbcType=VARCHAR},
+        #{stuMobile, jdbcType=VARCHAR},
+        #{stuIdNumber,
+        jdbcType=VARCHAR},
+        '0',
+        '0',
+        #{stuBirthDate, jdbcType=VARCHAR},
+        #{stuSpecialty, jdbcType=VARCHAR},
+        #{stuAuditionStartTime,
+        jdbcType=VARCHAR},
+        DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'),
+        '0',
+        #{stuRemark,
+        jdbcType=VARCHAR}
+        );
+    </insert>
+    <!-- 修改学员的缴费状态（默认是0），（1/0）缴纳 清楚,修改学生学费主键(LiFQ) -->
+    <update id="updateStudentTuitionStatusById" parameterType="map">
+        UPDATE baisee_student
+        <set>
+            <if test="tuId != null and tuId != ''">
+                TU_ID = #{tuId, jdbcType=VARCHAR},
+            </if>
+            <if test="tuitionStatus != null and tuitionStatus != ''">
+                TUITIOIN_STATUS = #{tuitionStatus, jdbcType=VARCHAR},
+            </if>
+            <if test="tuitioinPeriodsNow != null and tuitioinPeriodsNow != '' ">
+                TUITIOIN_PERIODS_NOW = #{tuitioinPeriodsNow,
+				jdbcType=VARCHAR},
+            </if>
+            <if test="tuStId != null and tuStId != '' ">
+                TU_ST_ID = #{tuStId , jdbcType=VARCHAR}
+            </if>
+        </set>
+        <where>
+            <if test="stuId != null and stuId != '' ">
+                SID = #{stuId, jdbcType=VARCHAR}
+            </if>
+        </where>
+    </update>
+
+
+    <!--根据学费id去退费规则表中查询退费公式和失效时间,查询退费规则主键，失效时间标识 -->
+    <select id="selectFormulaInfoByTrid" parameterType="java.lang.String"
+            resultType="cn.baisee.oa.model.tuition.RefundRule">
+        SELECT R_ID as reId,REFUND_FORMULA as refundFormula,INVALID_TIME as
+        invalidTime from baisee_student_refund
+        <where>
+            <if test="tuId != null and tuId != ''">
+                R_ID = (select R_ID from baisee_tuition_refund where
+                TU_ID =#{tuId,
+				jdbcType=VARCHAR})
+            </if>
+        </where>
+    </select>
+
+
+    <update id="updateThtStudentStatus" parameterType="Map">
+		update
+		baisee_student set RETURN_STATUS = #{status} where SID = #{stuId}
+	</update>
+
+    <!-- 根据班级ID查询出学生ID -->
+    <select id="getStudentId" parameterType="map" resultType="String">
+        SELECT SID as stuId FROM baisee_student
+        <where>
+            <if test="cId != null">
+                CID=#{cId, jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+    <!-- 修改班级内所有学生状态为已毕业 -->
+    <update id="updateStudentStatus" parameterType="list">
+        UPDATE baisee_student
+        <set>
+            S_STATUS="3"
+        </set>
+        <where>
+                SID in
+                <foreach collection ="list" open="(" close=")" item="stuId"
+                         separator = ",">
+                    #{stuId, jdbcType=VARCHAR}
+                </foreach>
+        </where>
+    </update>
+
+    <!-- 查询缴费list页面 ,返回学生信息，以及学生的 -->
+    <select id="selectForTuitionList" resultMap="BaseResultStuMap"
+            parameterType="map">
+        SELECT
+        baisee_student.SID,
+        baisee_student.S_NAME,
+        case
+        when baisee_class.C_STATUS = '1' then concat(baisee_class.C_NAME, '(高中)')
+        when baisee_class.C_STATUS = '2' then concat(baisee_class.C_NAME, '(高中开发)')
+        when baisee_class.C_STATUS = '3' then concat(baisee_class.C_NAME, '(高中测试)')
+        when baisee_class.C_STATUS = '0' then concat(baisee_class.C_NAME, '(初中)')
+        end as claName,
+        baisee_areas.area_name AS stuAreaName,
+        baisee_student.S_ENROLMENT_TIME,
+        baisee_student.MOBILE,
+        baisee_student.TUITIOIN_PERIODS_NOW,
+        baisee_student.TU_ST_ID,
+        baisee_student.TU_ID,
+        ( SELECT
+        SUM(a.Transaction_amount+if(isnull(c.discount_amount),0,c.discount_amount)+if(isnull(take.take_out_money),0,take.take_out_money))
+        FROM baisee_flow_total a join baisee_flow_business b on
+        a.transaction_serial_number = b.transaction_serial_number left join
+        baisee_flow_discounts c on c.transaction_serial_number =
+        a.transaction_serial_number
+        LEFT JOIN baisee_flow_takeout take ON a.transaction_serial_number = take
+        .transaction_serial_number
+        where 1=1
+        and
+        b.userID=baisee_student.SID and
+        b.Transaction_Type in ('学费','试听费')) as
+        totalMoney,
+        (select TU_MONET from baisee_tuition_rule where TU_ID =
+        baisee_student.TU_ID) as xftotal
+        FROM
+        baisee_student
+        LEFT JOIN baisee_student_supplement ON baisee_student.sid =
+        baisee_student_supplement.SID
+        LEFT JOIN baisee_areas ON baisee_student_supplement.S_Area =
+        baisee_areas.area_code
+        LEFT JOIN baisee_class ON baisee_student.CID = baisee_class.CID
+        <where>
+            baisee_student.TUITIOIN_STATUS = '0'
+            AND baisee_student.TUITIOIN_PERIODS_NOW != '0'
+            and
+            baisee_student.S_STATUS = '2'
+            and baisee_student.S_TYPE = '1'
+            <!-- 根据当前登录人的userType 进行查询 -->
+            <!-- <if test="userType != null and userType != ''">
+                and baisee_class.C_STATUS = #{userType,jdbcType=VARCHAR}
+            </if> -->
+            <if test="userType == 1">
+                and baisee_class.C_STATUS in ('1','2','3')
+            </if>
+            <if test="userType = 0">
+                and baisee_class.C_STATUS = #{userType,jdbcType=VARCHAR}
+            </if>
+            <if test="itemlableSearch != null and itemlableSearch != '' ">
+                and (
+                baisee_student.S_NAME LIKE
+                "%"#{itemlableSearch,jdbcType=VARCHAR}"%"
+                OR
+                baisee_class.C_NAME
+                LIKE
+                "%"#{itemlableSearch,jdbcType=VARCHAR}"%")
+            </if>
+            <!-- 每个班主任进去只能查看自己所管理的班级催费情况 -->
+            <if test="bsClass != null and bsClass.length>0">
+                and baisee_class.CID in
+                <foreach collection="bsClass" open="(" close=")" item="bsClass"
+                         separator=",">
+                    #{bsClass,jdbcType=VARCHAR}
+                </foreach>
+            </if>
+
+            <if test="areas != null and areas !=''">
+                and baisee_student_supplement.S_Area = #{areas,jdbcType=VARCHAR}
+            </if>
+            <if test="startTime != null and startTime != '' ">
+                and left(S_ENROLMENT_TIME, 8) &gt;=
+                #{startTime,jdbcType=VARCHAR}
+            </if>
+            <if test="endTime != null and endTime != '' ">
+                and left(S_ENROLMENT_TIME, 8) &lt;=
+                #{endTime,jdbcType=VARCHAR}
+            </if>
+            <!-- 在增加一个条件是：按照学籍查询，初中还是高中 -->
+            <!-- <if test="claStatus != null and claStatus != ''">
+                and baisee_class.C_STATUS = #{claStatus,jdbcType=VARCHAR}
+            </if> -->
+            <if test="claStatus == 1">
+                and baisee_class.C_STATUS in ('1','2','3')
+            </if>
+            <if test="claStatus = 0">
+                and baisee_class.C_STATUS = #{userType,jdbcType=VARCHAR}
+            </if>
+            <choose>
+                <!-- 搜索第三期的时候，搜索的是初中生 ，因为高中生没有三期 -->
+                <when
+                        test="stagesNumber != null and stagesNumber != '' and stagesNumber == '3'">
+                    and baisee_class.C_STATUS = '0'
+                    and
+                    baisee_student.TUITIOIN_PERIODS_NOW &lt;= '3'
+                </when>
+                <!-- 搜索不是第三期的时候，搜索的是全部 -->
+                <when
+                        test="stagesNumber != null and stagesNumber != '' and stagesNumber &lt; '3'">
+                    and baisee_student.TUITIOIN_PERIODS_NOW &lt;=
+                    #{stagesNumber,jdbcType=VARCHAR}
+                </when>
+            </choose>
+        </where>
+        ORDER BY
+        baisee_student.S_ENROLMENT_TIME DESC
+    </select>
+    <select id="selectStuByCidAndName" parameterType="map"
+            resultMap="BaseResultStuMap">
+		select SID, AUDCID, CID, S_NAME, S_SEX, MOBILE, S_ID_NUMBER, S_STATUS,
+		S_TYPE
+		,S_FORMAL_NO, S_SPECIALTY, S_BIRTH_DATE
+		from baisee_student where CID = #{cId} and S_NAME = #{sname}
+	</select>
+    <!-- 查询学生（学生状态是正式，学生类型是正式） -->
+    <select id="selectStuAndClass" resultMap="BaseResultStuMap"
+            parameterType="map">
+        SELECT
+        a.SID,
+        S_NAME,
+        a.CID,
+        S_ID_NUMBER,
+        case
+        when c.C_STATUS = '1' then concat(c.C_NAME, '(高中)')
+        when c.C_STATUS = '2' then concat(c.C_NAME, '(高中开发)')
+        when c.C_STATUS = '3' then concat(c.C_NAME, '(高中测试)')
+        when c.C_STATUS = '0' then concat(c.C_NAME, '(初中)')
+        end as claName
+        from baisee_student a
+        LEFT JOIN baisee_class c ON a.CID = c.CID
+        where 1=1
+        <if test="itemlableSearch != null">
+            and S_NAME LIKE "%"#{itemlableSearch}"%"
+            or sid = #{itemlableSearch}
+        </if>
+        <choose>
+            <when test="cid != null">
+                and a.CID = #{cid}
+            </when>
+            <otherwise>
+                and a.s_type='1' and a.s_status in ('2','4')
+            </otherwise>
+        </choose>
+
+    </select>
+    <select id="selectStuRecord" resultType="cn.baisee.oa.model.student.BaiseeStudentRecord"
+            parameterType="map">
+		SELECT
+		a.s_name AS sname,
+		a.sid,
+		a.s_id_number AS stuno,
+		CASE
+		WHEN a.s_sex = 1 THEN
+		'女'
+		ELSE
+		'男'
+		END AS sex,
+		date_format(now(), '%Y年%m月%d日') AS ndate,
+		b.c_name AS cname,
+		YEAR (NOW()) - substring(a.S_ID_NUMBER, 7, 4) AS age,
+		CAST(
+		substring(a.S_ID_NUMBER, 7, 8) AS date
+		) AS birth,
+		e.s_degree AS degree,
+		a.mobile,
+		s.S_QQ_NUMBER AS qq,
+		s.S_WECHAT_NUMBER AS wechat,
+		s.S_HOME_ADDRESS AS address,
+		date_format(
+		S_AUDITION_START_TIME,
+		'%Y-%m-%d'
+		) AS tdate,
+		date_format(
+		S_ENROLMENT_TIME,
+		'%Y-%m-%d'
+		) AS sdate,
+		CONCAT(
+		(
+		SELECT
+		province_name
+		FROM
+		baisee_provinces
+		WHERE
+		province_code = s.S_Province
+		),
+		(
+		SELECT
+		city_name
+		FROM
+		baisee_cities
+		WHERE
+		city_code = s.s_city
+		),
+		(
+		SELECT
+		area_name
+		FROM
+		baisee_areas
+		WHERE
+		area_code = s.s_area
+		)
+		) AS city,
+		f.futel,
+		f.mutel,
+		f.qitel,
+		a.s_id_number AS idnumber,
+		f.funame,
+		f.funum,
+		f.munum,
+		f.qinum,
+		f.muname,
+		f.qirel,
+		f.qiname,
+		s.head_photo_dir as photo,
+		CASE
+		WHEN e.s_degree = '大专及以上' THEN
+		e.S_GRADUATED_SCHOOL
+		ELSE
+		''
+		END AS dschool,
+		CASE
+		WHEN e.s_degree = '大专及以上' THEN
+		e.START_TIME
+		ELSE
+		''
+		END AS dsdate,
+		CASE
+		WHEN e.s_degree = '大专及以上' THEN
+		e.END_TIME
+		ELSE
+		''
+		END AS dedate,
+		CASE
+		WHEN e.s_degree = '高中' THEN
+		e.S_GRADUATED_SCHOOL
+		ELSE
+		''
+		END AS gschool,
+		CASE
+		WHEN e.s_degree = '高中' THEN
+		e.START_TIME
+		ELSE
+		''
+		END AS gsdate,
+		CASE
+		WHEN e.s_degree = '高中' THEN
+		e.END_TIME
+		ELSE
+		''
+		END AS gedate,
+		CASE
+		WHEN e.s_degree = '初中及以下' THEN
+		e.S_GRADUATED_SCHOOL
+		ELSE
+		''
+		END AS cschool,
+		CASE
+		WHEN e.s_degree = '初中及以下' THEN
+		e.START_TIME
+		ELSE
+		''
+		END AS csdate,
+		CASE
+		WHEN e.s_degree = '初中及以下' THEN
+		e.END_TIME
+		ELSE
+		''
+		END AS cedate,
+		u.user_name AS teacher
+		FROM
+		baisee_student a
+		LEFT JOIN baisee_class b ON a.CID = b.CID
+		LEFT JOIN
+		baisee_student_supplement s ON a.sid = s.sid
+		LEFT JOIN (
+		SELECT
+		Max(
+		CASE
+		WHEN S_FAM_RELATION = '父亲' THEN
+		S_FAM_TEL
+		ELSE
+		''
+		END
+		) AS futel,
+		Max(
+		CASE
+		WHEN S_FAM_RELATION = '父亲' THEN
+		S_FAM_NAME
+		ELSE
+		''
+		END
+		) AS funame,
+		Max(
+		CASE
+		WHEN S_FAM_RELATION = '父亲' THEN
+		S_FAM_ID_NUMBER
+		ELSE
+		''
+		END
+		) AS funum,
+		Max(
+		CASE
+		WHEN S_FAM_RELATION = '母亲' THEN
+		S_FAM_TEL
+		ELSE
+		''
+		END
+		) AS mutel,
+		Max(
+		CASE
+		WHEN S_FAM_RELATION = '母亲' THEN
+		S_FAM_NAME
+		ELSE
+		''
+		END
+		) AS muname,
+		Max(
+		CASE
+		WHEN S_FAM_RELATION = '母亲' THEN
+		S_FAM_ID_NUMBER
+		ELSE
+		''
+		END
+		) AS munum,
+		Max(
+		CASE
+		WHEN S_FAM_RELATION = '其他' THEN
+		S_FAM_TEL
+		ELSE
+		''
+		END
+		) AS qitel,
+		Max(
+		CASE
+		WHEN S_FAM_RELATION = '其他' THEN
+		S_FAM_NAME
+		ELSE
+		''
+		END
+		) AS qiname,
+		Max(
+		CASE
+		WHEN S_FAM_RELATION = '其他' THEN
+		S_FAM_OTHER_RELATION
+		ELSE
+		''
+		END
+		) AS qirel,
+		Max(
+		CASE
+		WHEN S_FAM_RELATION = '其他' THEN
+		S_FAM_ID_NUMBER
+		ELSE
+		''
+		END
+		) AS qinum,
+		sid
+		FROM
+		baisee_student_family
+		GROUP BY
+		sid
+		) f ON a.sid = f.sid
+		LEFT JOIN baisee_student_education e ON a.sid =
+		e.sid
+		LEFT JOIN baisee_user u ON b.C_TEACHER_NUMBER = u.user_id
+		WHERE
+		a.sid = #{stuId}
+	</select>
+
+    <!-- 查询学生评定时所需要的列 -->
+    <select id="selectStuAssess" resultType="cn.baisee.oa.model.student.BaiseeStudentRecord"
+            parameterType="map">
+		select a.s_name as sname,case when a.s_sex=1 then '女' else '男' end as sex,
+		b.c_name as cname,YEAR(NOW()) - substring(a.S_ID_NUMBER,7,4) as age,
+		a.mobile,s.S_HOME_ADDRESS as address,
+		a.s_id_number as idnumber
+		,case when f.s_fam_relation ='其他'
+		then s_fam_other_relation else f.s_fam_relation end as
+		relation,f.s_fam_name as funame,f.s_fam_tel as futel
+		FROM baisee_student a left join baisee_class b on a.CID = b.CID
+		left join baisee_student_supplement s on a.sid=s.sid
+		left join (select *
+		from baisee_student_family group by sid) f on a.sid=f.sid
+		left join baisee_user u on b.C_TEACHER_NUMBER=u.user_id
+		where a.sid=#{stuId}
+	</select>
+
+    <!-- 查询所有正式学生信息，显示到页面 -->
+    <select id="selectStuForSel" resultMap="BaseResultStuMap"
+            parameterType="map">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from baisee_student a
+        LEFT JOIN baisee_student_supplement b on
+        a.SID=b.SID
+        LEFT JOIN baisee_class
+        c ON a.CID = c.CID
+        LEFT JOIN (select
+        SID, max(S_FAM_TEL) as S_FAM_TEL,max(S_FAM_RELATION) as S_FAM_RELATION
+        from baisee_student_family where
+        S_FAM_TEL !='' group by SID) f ON
+        f.SID=a.SID
+        <where>
+            <if test="itemlableSearch != null and itemlableSearch != '' and itemlableSearch.length()  &lt;= 3 ">
+                and (
+                a.S_NAME LIKE "%"#{itemlableSearch,jdbcType=VARCHAR}"%"
+                OR
+                c.C_NAME = #{itemlableSearch,jdbcType=VARCHAR})
+            </if>
+            and a.S_STATUS in (0,1,2)
+            and not exists (select sid from baisee_leave d where a.sid = d.sid and d.endDate > now() )
+        </where>
+        ORDER BY
+        c.CID DESC,a.S_ENROLMENT_TIME DESC
+    </select>
+
+    <!-- 学生开户 -->
+    <update id="updateStuState" parameterType="map">
+   		UPDATE baisee.baisee_student
+		SET OPENHOUSEHOLDSTATE = #{state} 
+		WHERE SID=#{sId};
+   </update>
+
+    <!-- 查询学生姓名和id -->
+    <select id="selectAll" resultMap="BaseResultStuMap" parameterType="map">
+        SELECT SID,S_NAME,CID FROM baisee_student
+        <where>
+            <if test="sid!=null">
+                SID = #{sid}
+            </if>
+        </where>
+    </select>
+    <!-- 根据id查询一条数据 -->
+    <select id="selectById" resultMap="BaseResultStuMap" parameterType="java.lang.String">
+  		SELECT * FROM baisee_student WHERE SID = #{sid}
+  	</select>
+  	
+  	<select id="selectByName" resultMap="BaseResultStuMap" parameterType="java.lang.String">
+  		SELECT * FROM baisee_student WHERE S_NAME = #{sname}
+  	</select>
+    <!-- 根据姓名和cid查询数据 -->
+    <select id="selectNameById" resultMap="BaseResultStuMap" parameterType="map">
+        SELECT SID FROM baisee_student
+        <where>
+            <if test="itemlableSearch != null and itemlableSearch != ''">
+                and S_NAME LIKE "%"#{itemlableSearch}"%"
+            </if>
+            <if test="cid != null and cid != ''">
+                and CID =#{cid}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectBycId" resultMap="BaseResultStuMap" parameterType="map">
+        SELECT SID,S_NAME,CID FROM baisee_student
+        <where>
+            <if test="cid != null">
+                CID = #{cid}
+            </if>
+        </where>
+    </select>
+    <!--修改班级-->
+    <update id="updataMerger" parameterType="map">
+		update baisee.baisee_student set CID=#{claId},OLD_CID=#{oldCid}  where SID=#{str}
+	</update>
+    <update id="updateMerger1" parameterType="map">
+		update baisee.baisee_student set CID=#{claId} where SID=#{str}
+	</update>
+    <!--添加合班纪录-->
+    <insert id="addMerger" parameterType="cn.baisee.oa.model.BaiseeClassMerger">
+		insert into baisee.baisee_merger_record (SID,S_ID_NUMBER,OLD_CID,NEW_CID,NEW_TIME,U_NAME,STU_NAME)
+		value (#{SID},#{S_ID_NUMBER},#{OLD_CID},#{NEW_CID},#{NEW_TIME},#{U_NAME},#{STU_NAME})
+	</insert>
+    <!--查询合班纪录-->
+    <select id="selectMerger" resultType="cn.baisee.oa.model.BaiseeClassMerger">
+        select SID,ID,S_ID_NUMBER,NEW_TIME,U_NAME,STU_NAME,
+        case
+        when c.C_STATUS = '1' then concat(c.C_NAME, '(高中)')
+        when c.C_STATUS = '2' then concat(c.C_NAME, '(高中开发)')
+        when c.C_STATUS = '3' then concat(c.C_NAME, '(高中测试)')
+        when c.C_STATUS = '0' then concat(c.C_NAME, '(初中)')
+        END as NEW_CNAME,
+        case
+        when b.C_STATUS = '1' then concat(b.C_NAME, '(高中)')
+        when b.C_STATUS = '2' then concat(b.C_NAME, '(高中开发)')
+        when b.C_STATUS = '3' then concat(b.C_NAME, '(高中测试)')
+        when b.C_STATUS = '0' then concat(b.C_NAME, '(初中)')
+        END as OLD_CNAME
+        FROM baisee_merger_record a
+        join baisee_class c on a.NEW_CID=c.CID
+        join baisee_class b on a.OLD_CID=b.CID
+        <where>
+            <if test="stu_name != null">
+                STU_NAME LIKE "%"#{stu_name}"%"
+            </if>
+            <if test="old_cname!='' and old_cname != null">
+                and b.C_NAME=#{old_cname}
+            </if>
+            <if test="new_cname!='' and new_cname != null">
+                and c.C_NAME=#{new_cname}
+            </if>
+            <if test="stuStartTime!='' and stuStartTime != null">
+                and NEW_TIME &gt;= #{stuStartTime}
+            </if>
+            <if test="stuEndTime!='' and stuEndTime != null">
+                and NEW_TIME &lt;= #{stuEndTime}
+            </if>
+            <if test="u_name!='' and u_name != null">
+                and U_NAME LIKE "%"#{u_name}"%"
+            </if>
+        </where>
+        order by NEW_TIME desc
+    </select>
+</mapper>	

@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+	<head th:include="commonTemplate :: header">
+	</head>
+	<body class="bgcolor-body">
+		<div id="page">
+			<div th:include="commonTemplate :: headerDiv"></div>
+			<div id="content" class="layout">
+				<div class="grid-s5m0">
+					<!-- ============================= 页面内容 开始============================= -->
+					<div class="col-main">
+						<div class="main-wrap">
+							<div class="skin-box">
+								<div class="skin-box-bd">
+									<div class="cur-position">
+										<span><a href="javascript:void(0);">课程管理</a> </span>
+										<span>&gt;</span>
+										<span><a th:href="@{course/toCourseList.ht}">课程信息</a> </span>
+									</div>
+									<form th:action="@{course/toCourseList.ht}"  id="frm" name="frm" method="post">
+										<div class="cont-box">
+											<div class="search-box">
+												<div class="left">
+												    <span class="add JsW"  baisee:ctrl="KCGL_KCXZ"><a th:href="@{course/toAddOrUpdateCourse.ht}" class="ks-pop-nav" title="添加用户信息" style="cursor:pointer;color: #ffffff" 
+													onmouseover="javascript:this.style.color='#dbdbdb'" 
+													onmouseout="javascript:this.style.color='#ffffff'">新增</a> </span>
+													<span class="del" baisee:ctrl="KCGL_KCSC"><a href="javascript:void(0);" th:onclick="'del(\'frm\', \''+ @{/course/deleteCourse.ht} + '\')'" title="删除课程" style="cursor:pointer;color: #ffffff" 
+													onmouseover="javascript:this.style.color='#dbdbdb'" 
+													onmouseout="javascript:this.style.color='#ffffff'">删除</a> </span>
+												</div>
+												<div class="right">
+													<div class="search-box-cont">
+														<span> <input class="button" type="submit" value="搜索" /> </span>
+														<span> <input class="input radius3" onkeyup="check();" id="itemlableSearch" name="courseTtitle" th:value="${course.courseTtitle}" type="text" placeholder="输入课程名字" style="width: 226px"/> </span>
+													</div>
+												</div>
+											</div>
+											<div class="list-table">
+												<div class="list-table-cont">
+													<div class="table2">
+														<table class="ks-inputall">
+															<tr class="th">
+																<td class="col1">
+																	<div class="JsW control-checkbox" data-control-type="checkboxall">
+																		<input type="checkbox" onclick="selectAllCheckBoxStatus(document.frm.courseStatus,document.frm.ids,document.frm.checkbox,this);" />
+																		<input type="hidden" name="operationSuccess" id="operationSuccess" th:value="${operationSuccess}"/>
+																		
+																	</div>
+																</td>
+																<td class="col3">课程名称</td>
+																<td class="col4">课程类型</td>
+																<td class="col5">课程状态</td>
+																<td class="col6">最近更新时间</td>
+															</tr>
+															<tr th:each="info:${pageResult.list}" th:if="${pageResult.list != null &amp;&amp; pageResult.list.size() > 0}" onmouseover="this.style.backgroundColor='#e3f1ff'" onmouseout="this.style.backgroundColor='#ffffff'">
+																<td class="col1">
+																	<div class="JsW control-checkbox" data-control-type="checkbox">
+																		<input type="checkbox" name="ids" th:value="${info.ciId}" th:onclick="'checkbox(\'' + ${info.courseStatus} + '\',this)'"/>
+																		<input type="hidden" th:value="${info.courseStatus}" name="courseStatus" />			
+																	</div>
+																</td>
+																<td class="col2">
+																<span style="cursor:pointer" title="点击可编辑" th:onclick="'edit(\'' + ${info.ciId} + '\')'" th:text="${info.courseTtitle}"></span>
+																</td>
+																<td class="col3"  >
+																<span th:each="dict:${dicts}">
+																	<span th:text="${info.courseType == dict.dictId ?dict.dictValue:'' } " style="cursor:pointer" title="点击可编辑" th:onclick="'edit(\'' + ${info.ciId} + '\')'" ></span>
+																</span>
+																</td>
+																<td class="col4">
+																<span th:text="${info.courseStatus == '0'?'未使用':'使用'}" style="cursor:pointer" title="点击可编辑" th:onclick="'edit(\'' + ${info.ciId} + '\')'" ></span>
+																</td>
+																<td class="col5">
+																<span style="cursor:pointer" title="点击可编辑" th:onclick="'edit(\'' + ${info.ciId} + '\')'" baisee:fmt="yyyy-MM-dd HH:mm:ss,${info.updateTs}" ></span>
+																</td>
+															</tr> 
+														</table>
+													</div>
+												</div>
+											</div>
+											<div th:include="commonTemplate :: pageBox"></div>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- ============================= 页面内容 结束============================= -->
+					<div th:include="commonTemplate :: leftMenus"></div>
+				</div>
+			</div>
+			<div th:include="commonTemplate :: footer"></div>
+		</div>
+		<div th:include="commonTemplate :: processBar" />
+		
+	<script th:inline="javascript">
+	
+		function edit(id){
+			locationHref([[@{/course/toAddOrUpdateCourse.ht}]] + "?ciId=" + id);
+		}
+		
+		function check(){ 
+			var itemlableSearch=$("#itemlableSearch").val();
+			var Correct = /^[A-Za-z0-9\u4e00-\u9fa5]+$/;
+			if(itemlableSearch != ""){
+				if (!Correct.test(itemlableSearch)){
+					_alert("含有非法字符，请正确输入！");
+					$("#itemlableSearch").val("");
+				} 
+			}
+		} 
+		
+		function checkbox(status,check){
+			if(check.checked){
+				if(status == '1'){
+					_alert("该页面有课程正在使用，不能删除 ");
+					check.checked=false;
+				}
+			}
+		}
+		
+		function selectAllCheckBoxStatus(status,obj, obj2, o) {
+			
+			//obj 是该页面的ids的值，obj2 是所有的复选框？ o是全选框
+			var flag = '';
+			if (obj == null) { // 无记录
+
+				_alert("此页面没有可选择记录!");
+				return false;
+			} else if (obj.length == undefined) { // 只有一条记录
+
+				if (obj.disabled == true) {
+					_alert("此页面没有可选择记录!");
+					return false;
+				}
+				obj.checked = obj2.checked;
+			} else {// 存在多条记录
+				/*<![CDATA[*/
+				for (var i = 0; i < obj.length; i++) {
+					/*]]>*/
+					if (obj[i].disabled == false) {
+						if (o.checked) {
+								if(status[i].value == '1'){
+									_alert("该课程正在使用，不能删除 ");
+									o.checked=false;
+									return false;
+								}
+							$(obj[i]).parent().addClass("ks-checked");
+						} else {
+							$(obj[i]).parent().removeClass("ks-checked");
+							
+						}
+						$(obj[i]).prop("checked", o.checked);
+						flag = '1';
+					}
+				}
+				if (flag == '') {
+					_alert("此页面没有可选择记录!");
+					return false;
+				}
+			}
+		}
+		$(function(){
+			var operationSuccess = $("#operationSuccess").val();
+			
+			if(operationSuccess != ""){
+				debugger;
+				_alert(operationSuccess);
+			}
+		});
+	</script>
+	</body>
+</html>  

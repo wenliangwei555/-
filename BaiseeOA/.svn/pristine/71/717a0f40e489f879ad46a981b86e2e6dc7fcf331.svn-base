@@ -1,0 +1,19 @@
+package cn.baisee.oa.activity;
+
+import org.activiti.engine.delegate.DelegateTask;
+import org.activiti.engine.delegate.TaskListener;
+
+public class TaskManger implements TaskListener {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public void notify(DelegateTask delegateTask) {
+		String approUserId = (String) delegateTask.getVariable("approUserId");
+		delegateTask.setAssignee(approUserId);
+	}
+
+}

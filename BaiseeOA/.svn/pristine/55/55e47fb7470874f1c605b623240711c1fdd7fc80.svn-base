@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="commonTemplate :: header">
+</head>
+<body>
+<div class="lyear-layout-web">
+	<div class="lyear-layout-container">
+		 <!--左侧导航-->
+	    	<div th:replace="commonTemplate :: leftMenus"></div>
+	     <!--End 左侧导航-->
+	    
+	    <!--头部信息-->
+	    	<div th:replace="commonTemplate :: headerDiv"></div>
+	    <!--End 头部信息-->
+	    
+	    <!--页面主要内容-->
+	    <main class="lyear-layout-content">
+	    	<div class="container-fluid">
+	    		<form th:action="@{repair/dictionaries/typeList.ht}" autocomplete="off" id="frm" name="frm" method="post">
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="card">
+								<div class="card-toolbar clearfix">
+									<div class="pull-right search-bar">
+										<div class="input-group">
+											<div class="input-group-btn">
+						                      <button class="btn btn-default" type="button" aria-haspopup="true" aria-expanded="false">
+						                      		标题
+						                      </button>
+						                    </div>
+						                    <input type="text" class="form-control" th:value="${itemlableSearch}" name="itemlableSearch" placeholder="请输入故障点名称"/>
+						                    <div class="input-group-btn">
+						                      <button class="btn btn-success" type="submit" aria-haspopup="true" aria-expanded="false">
+						                     		 查询 
+						                      </button>
+						                      <input type="hidden" name="operationSuccess" id="operationSuccess" th:value="${#httpServletRequest.getAttribute('operationSuccess')}"/>
+						                      <input type="hidden" id="cid" th:value="${userId}" />
+						                    </div>
+										</div>
+									</div>
+									<div class="toolbar-btn-action">
+										<a class="btn btn-success m-r-5" th:href="@{repair/dictionaries/toAddType.ht}" baisee:ctrl="DDGL_XZDD" title="添加报修">
+											<i class="mdi mdi-plus-box"></i>
+													新增
+										</a>
+						            	<a class="btn btn-danger" bms:ctrl="busDict.delDict" href="javascript:void(0);" baisee:ctrl="DDGL_SCDD"  th:onclick="'delRepairType(\'frm\', \''+ @{/repair/dictionaries/deleteType.ht} + '\')'" title="删除报修">
+						            		<i class="mdi mdi-delete-empty"></i>
+													删除
+										</a>
+									</div>
+								</div>
+								<div class="card-body">
+									<div class="table-responsive">
+										<table class="table table-bordered">
+											<tr class="th">
+															<td class="col1" baisee:ctrl="DDGL_SCDD">
+																<div class="JsW control-checkbox" data-control-type="checkboxall">
+																	<input type="checkbox" onclick="selectAllCheckBox(document.frm.ids,document.frm.checkbox,this);" />
+																</div>
+															</td>
+															<td class="col4">所属校区</td>
+															<td class="col3">故障点id</td>
+															<td class="col4">故障点名称</td>
+															<td class="col5">创建人</td>
+															<td class="col6">创建时间</td>
+															<td class="col8">操作</td>
+														</tr>
+														<tr th:each="list,info:${pageResult.list}" th:id="${list.id}" 
+														th:if="${pageResult.list != null &amp;&amp; pageResult.list.size() > 0}"
+														onmouseout="this.style.backgroundColor='#ffffff'"  >
+															<td class="col1" baisee:ctrl="DDGL_SCDD">
+																<div class="JsW control-checkbox" data-control-type="checkbox">
+																	<input type="checkbox" name="ids" class="states" th:value="${list.id}" />
+																</div>
+															</td>
+															<!-- 所属校区 -->
+															<td class="col4"><span style="cursor:pointer" title="点击可编辑" th:onclick="'edit(\'' + ${list.id} + '\')'" 
+																th:text="${list.pName}" ></span></td>
+															<!-- 地理位置id -->
+															<td class="col3"><span style="cursor:pointer" title="点击可编辑" th:onclick="'edit(\'' + ${list.id} + '\')'"
+																th:text="${list.id}"></span></td>
+															
+															<!-- 地理位置名称 -->
+															<td class="col4"><span style="cursor:pointer" title="点击可编辑" th:onclick="'edit(\'' + ${list.id} + '\')'"
+																th:text="${list.tName}"></span></td>
+															
+															<!-- 创建人 -->
+															<td class="col5"><span style="cursor:pointer" title="点击可编辑" th:onclick="'edit(\'' + ${list.id} + '\')'"
+																th:text="${list.cName}"></span>
+															</td>
+															
+															<!-- 创建时间 -->
+															<td class="col8">
+																<span th:text="${#dates.format(list.cTime,'yyyy-MM-dd HH:mm:dd')}"></span>
+															</td>
+															<!-- 操作 -->
+															<td class="col8">
+																<span
+																style="cursor: pointer;color: red;" title="点击可展开"
+																class="see"
+																th:onclick="'showDetails(\'' + ${list.id} + '\',\'' + ${info.index} + '\')'" th:text="展开" th:id="${info.index}"></span>
+															</td>
+														</tr>
+										</table>
+									</div>
+									<ul class="pagination" th:if="${pageResult != null}" th:object="${pageResult}">
+					                  <li><a href="javascript:void(0);" th:onclick="*{hasPreviousPage} ? 'go(1)' : 'return false;'">首页</a></li>
+					                  <li><a href="javascript:void(0);" th:onclick="*{hasPreviousPage} ? 'go(' + *{prePage} + ')' : 'return false;'">上一页</a></li>
+					                  <li><a href="javascript:void(0);" th:onclick="*{hasNextPage} ? 'go(' + *{nextPage} + ')' : 'return false;'">下一页</a></li>
+					                  <li><a href="javascript:void(0);" th:onclick="*{hasNextPage} ? 'go(' + *{pages} + ')' : 'return false;'">末页</a></li>
+					                  <li><a href="javascript:void(0);" onclick="go($('#pagenumber').val());">跳转至</a></li>
+					                  <li><a href="javascript:void(0);"><input name="pageNum" id="pagenumber" th:value="*{pageNum}" />/<span id="_pages" th:text="*{pages == 0} ? 1 : *{pages}"></span></a></li>
+					                  <li><a href="javascript:void(0);">页</a></li>
+					                </ul>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+	    	</div>
+	    </main>
+	    <!-- END 页面主要内容  -->
+	</div>
+</div>
+
+<script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap.min.js" th:src="@{static/js/bootstrap.min.js}"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+<script type="text/javascript" src="js/bootstrap-datepicker.min.js" th:src="@{js/bootstrap-datepicker.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap-datepicker.zh-CN.min.js" th:src="@{js/bootstrap-datepicker.zh-CN.min.js}"></script>
+<script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/layer/layer.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/bmsAjax.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/form/jquery.form.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/validate/jquery.validate.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/My97DatePicker/WdatePicker.js}"></script>
+<script type="text/javascript">
+/* 展开   收起 */
+function showDetails(iId,i) {
+	var iId=iId;
+	var url = basePath + "/repair/dictionaries/getRepairItemByTid.ht";
+	if ($("#" + i).text() == "展开") {
+		$("#" + i).text("收起");
+		$.ajax({
+             type: "post",
+             url: url,
+             data: {"tId":iId},
+             dataType: "json",
+             success: function(data){
+            	console.log(data)
+            	if (data.repairItems.length == 0) {
+            		var d = '<tr id="a1" class="bb"><th colspan= "3">故障类型列表</th></tr><tr class="bb" id="b1" style="background-color:gray;"><td  class="lefttd">所属故障地点</td><td  class="lefttd">故障类型名称</td><td  class="lefttd">创建人</td><td  class="lefttd">创建时间</td></tr>';
+            		d += '<tr class="bb" style="background-color:#ccc;">'
+						+ '<td class="flowtd" colspan="4" style="">暂无数据'
+						+ '</td></tr>';
+            		$("#"+iId).after(d);	
+            	}else {
+            		var d = '<tr id="a1" class="bb"><th colspan= "3">故障类型列表</th></tr><tr class="bb" id="b1" style="background-color:gray;"><td  class="lefttd">所属故障地点</td><td  class="lefttd">故障类型名称</td><td  class="lefttd">创建人</td><td  class="lefttd">创建时间</td></tr>';
+					$.each(		data.repairItems,
+								function(i, item) {
+								var tName = item.tName;
+								var iName = item.iName;
+								var cName = item.cName;
+								var cTime = formatDate(item.cTime);
+								d += '<tr class="bb" style="background-color:#ccc;">'
+										+ '<td class="flowtd">'
+										+ tName
+										+ '</td>'
+										+ '<td class="flowtd">'
+										+ iName
+										+ '</td>'
+										+ '<td class="flowtd">'
+										+ cName
+										+ '</td>'
+										+ '<td class="flowtd3">'
+										+ cTime
+										+ '</td></tr>';
+								})
+					$("#"+iId).after(d);	
+            	}
+				
+            }
+         });
+	}else if ($("#" + i).text() == "收起") {
+		$(".see").text("展开");
+		$(".bb").remove();
+	}
+}
+
+
+$(function(){
+	var operationSuccess = $("#operationSuccess").val();
+	if(operationSuccess != ""){
+		_alert(operationSuccess);
+	}
+});
+
+function delRepairType(formId, _url, msg) {
+	var ids = [];
+	$.each($('input[name=ids]:checked'),function(){
+         ids.push($(this).val())
+    });
+	if (ids.length > 0) {
+		 var url = basePath + "/repair/dictionaries/checkItemSonNode.ht";
+		 $.ajax({
+             type: "GET",
+             url: url,
+             data: {"ids":ids.toString()},
+             dataType: "json",
+             success: function(data){
+				if (data.codes == "111") {
+					_alert("故障节点下有故障类型，请先删除故障类型！");
+					return;
+				}else {
+					del(formId, _url);	
+				}            	 
+            }
+        });
+	}
+}
+function returnBack(){
+	var url = basePath + '/repair/dictionaries/typeList.ht';
+	locationHref(url);
+}
+
+function edit(id){
+	locationHref(basePath+ '/repair/dictionaries/selectTypeId.ht?id=' + id);
+}
+</script>
+</body>
+</html>
