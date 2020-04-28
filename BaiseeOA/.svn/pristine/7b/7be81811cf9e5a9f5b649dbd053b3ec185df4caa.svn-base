@@ -1,9 +1,0 @@
-var checkPhoneReg = /(13\d|14[57]|15[^4,\D]|17[678]|18\d)\d{8}|170[059]\d{7}/;
-var checkIDCard=/^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$|^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X|Y)$/;
-var checkMail = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
-var checkNum =  /^(([1-9]+)|([0-9]+\.[0-9]{1,2}))$/;
-var message_success_code = '0';
-var message_false_code = '1';
-var message_false = '操作失败';
-var state_is = '1';
-var state_not = '0';
