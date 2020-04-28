@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+	<head th:include="commonTemplate :: header">
+	</head>
+	<body class="bgcolor-body">
+		<div id="page">
+			<div th:include="commonTemplate :: headerDiv"></div>
+			<div id="content" class="layout">
+				<div class="grid-s5m0">
+					<div class="col-main">
+						<div class="main-wrap">
+							<div class="skin-box">
+								<div class="skin-box-bd">
+									<div class="cur-position">
+										<!-- <span><a href="javascript:void(0)">信息管理</a> </span>
+										<span>&gt;</span> -->
+										<span><a th:href="@{emp/toEmpList.ht}">图片信息</a> </span>
+										<span>&gt;</span>
+										<span><a href="javascript:void(0)">编辑信息</a> </span>
+									</div>
+									<!-- ==================================== 页面内容开始 ============================= -->
+									<div class="cont-box">
+										<div class="JsW skin-box-bd" data-widget-type="tab" data-widget-config="{'activeIndex':0}">
+											<div class="skin-bd-box">
+												<div class="content-box-menu">
+												</div>
+												<div class="list-table">
+													<div class="list-table-cont">
+														<div class="table6">
+														
+															<form id="basefrm" name="basefrm"  th:action="@{uploadTest.ht}" method="post" enctype="multipart/form-data" >
+																<table>
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span>上传图片：</span>
+																				</div>
+																				<div class="td2">
+																					<div data-bind="{'evt':'mouseover','fun':'layer.tips(\'点击上传图片\', \'#uploadifyButton2-button\')'}">
+																						<div>
+																							<input type="hidden" name="cPictureDir" id="cPictureDir"  />
+																						</div>
+																						<div id="fileQueue2" class="fileUpload">
+																							<input type="file" name="upFile" id="uploadifyButton2" style="height: 84px; width: 111px;"/>
+																						</div>
+																						<input type="hidden" value="" id="tempFileName" name="tempFileName" />
+																					</div>
+																				</div>
+																			</div>
+																		</td>
+																	</tr>
+																</table>
+																<div class="redbutton control-button JsW"  >
+																<span class="grey"> <input value="返回上级" type="button" onclick="returnBack();" class="radius5 button ks-pop-close1" /> </span>
+																	<span> <input value="确定保存" type="submit"  class="radius5 button ks-pop-close1" /> </span>
+																	
+																</div>
+															</form>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!-- ============================= 页面内容 结束============================= -->
+								</div>
+							</div>
+						</div>
+					</div>
+					<div th:include="commonTemplate :: leftMenus"></div>
+				</div>
+			</div>
+			<div th:include="commonTemplate :: footer"></div>
+		</div>
+		<div th:include="commonTemplate :: processBar" />
+		<script th:inline="javascript"> 
+		
+		$(function(){
+			$("#uploadifyButton2").uploadify({  
+				'id' : 'uploadifyButton2',
+			  'swf': [[@{/js/plugins/file/uploadify/uploadify.swf}]],
+			  'uploader': [[@{/fileUpload.ht;JSESSIONID=} + ${#httpSession.getId()}]],
+			  'buttonText': '',
+			  'fileTypeDesc': 'Image Files',
+			  'fileTypeExts': '*.gif; *.jpg; *.png',
+			  'queueID': 'fileQueue2',
+			  'auto': true,
+			  'multi': false,
+			  'width':270,
+			  'height':200,
+			  'method' : 'post',
+			  'fileSizeLimit' : '10MB',
+			  'onUploadSuccess' : function(fileData, jsonData) {
+			  	 var obj;
+					  if(jsonData) {
+						  obj = eval('(' + jsonData + ')');
+						  if(obj.code == 1) {
+							  alert(obj.message);
+						  } else {
+						  	if(obj.result) {
+							  	/*<![CDATA[*/
+							  	$("#uploadifyButton2-button img").remove();
+						  		$("#uploadifyButton2-button").append("<img src='"  + obj.result[0] + "'/>");
+						  		/*]]>*/
+						  		$("#tempFileName").val(obj.result[0]);
+						  	}
+						  }
+					 }
+			  }
+			});
+		});
+		</script>
+	</body>
+</html>

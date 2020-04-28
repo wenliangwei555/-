@@ -1,0 +1,325 @@
+package cn.baisee.oa.service.impl;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import cn.baisee.oa.dao.baisee.BaiseeEmployeeMapper;
+import cn.baisee.oa.dao.baisee.BaiseeTransactionMapper;
+import cn.baisee.oa.model.DetailAccount;
+import cn.baisee.oa.page.pagehelper.PageHelper;
+import cn.baisee.oa.page.pagehelper.PageInfo;
+import cn.baisee.oa.service.BaiseeTransactionService;
+import cn.baisee.oa.utils.StringUtil;
+@Service
+public class BaiseeTransactionServiceImpl implements BaiseeTransactionService{
+	@Autowired
+	private BaiseeTransactionMapper baiseeTransactionMapper;
+	@Autowired
+	private BaiseeEmployeeMapper employeeMapper;
+	
+	@Autowired
+	private BaiseeEmployeeMapper baiseeEmployeeMapper;
+	public void addFullPayment(Map<String, Object> map) {
+		String sn = baiseeTransactionMapper.selectSN();//生成交易流水号
+		String no = baiseeTransactionMapper.selectNO();//生成业务流水号
+		map.put("SNID", sn);
+		map.put("NOID", no);
+		if(("0").equals(map.get("takeOut").toString())) {//判断有没有产生抵充金额 没有则不往抵充表插入数据
+			baiseeTransactionMapper.insertPayment(map);
+			baiseeTransactionMapper.insertPaymentService(map);
+			baiseeTransactionMapper.insertPaymentDiscounts(map);
+		}else{
+			baiseeTransactionMapper.insertPayment(map);
+			baiseeTransactionMapper.insertPaymentService(map);
+			baiseeTransactionMapper.insertPaymentDiscounts(map);
+			baiseeTransactionMapper.insertFillFlowMeter(map);
+		}
+	}
+	public void addPrepay(Map<String, Object> map) {
+		String sn = baiseeTransactionMapper.selectSN();//生成交易流水号
+		String no = baiseeTransactionMapper.selectNO();//生成业务流水号
+		map.put("SNID", sn);
+		map.put("NOID", no);
+		map.put("status", "1");
+		String userID = (String) map.get("userID");//获得用户编号
+		int omt = Integer.parseInt(map.get("amount").toString());//获得用户的预交金额
+		String byID = baiseeTransactionMapper.selectPrepayByID(userID);//查询用户是否存在
+		if(byID!=null){//用户存在则把预交费用相加然后修改金额
+			String prepay = baiseeTransactionMapper.selectPrepay(userID);
+			int d = Integer.parseInt(prepay)+omt;
+			String amount=""+d;
+			baiseeTransactionMapper.updatePrepay(userID, amount);
+			baiseeTransactionMapper.insePayment(map);
+			baiseeTransactionMapper.insertPaymentService(map);
+		}else{//不存在则直接插入数据
+			baiseeTransactionMapper.insertAdvancePaymentTable(map);
+			baiseeTransactionMapper.insePayment(map);
+			baiseeTransactionMapper.insertPaymentService(map);
+		}
+	}
+	@Override
+	public String readPrepay(String userID) {
+		return baiseeTransactionMapper.selectPrepay(userID);
+	}
+	public void installment(Map<String, Object> map) {
+		String sn = baiseeTransactionMapper.selectSN();
+		String no = baiseeTransactionMapper.selectNO();
+		map.put("SNID", sn);
+		map.put("NOID", no);
+		if(("首次分期").equals(map.get("remarks").toString())) {//判断是否是首次分期
+			if(("0").equals(map.get("takeOut").toString())) {//判断是否产生抵充金额
+				baiseeTransactionMapper.insertPayment(map);
+				baiseeTransactionMapper.insertPaymentService(map);
+			}else{
+				baiseeTransactionMapper.insertPayment(map);//产生抵充金额则往抵充表添加信息
+				baiseeTransactionMapper.insertPaymentService(map);
+				baiseeTransactionMapper.insertFillFlowMeter(map);
+			}
+		}else {
+			baiseeTransactionMapper.insePayment(map);
+			baiseeTransactionMapper.insertPaymentService(map);
+		}
+	}
+
+	@Override
+	public List<DetailAccount> getDetailAccount(String userID, String type) {
+		List<DetailAccount> list = baiseeTransactionMapper.selectDetailAccount(userID, type);
+		//对时间格式进行格式化
+		for (DetailAccount detailAccount : list) {
+			String str = detailAccount.getTime().substring(0, 8);
+			StringBuilder sbd=new StringBuilder(str);
+			StringBuilder insert = sbd.insert(4, "-").insert(7,"-");
+			String sss = insert.toString();
+			detailAccount.setTime(sss);
+			detailAccount.setUserID( employeeMapper.getEmpName(detailAccount.getUserID()));
+		}
+		return list;
+	}
+                             
+
+	@Override
+	public String getPaymentAmount(String userID ,String type) {
+	
+		return baiseeTransactionMapper.selectPaymentAmount(userID, type);
+	}
+	@Override
+	public String getTotalMoney(String userID, String type) {
+
+		return baiseeTransactionMapper.selectTotalMoney(userID, type);
+	}
+
+
+	@Override
+	public List<DetailAccount> readReturnFee(String userID, String type) {
+
+		List<DetailAccount> list = baiseeTransactionMapper.selectReturnFee(userID, type);
+		//对时间格式进行格式化
+		for (DetailAccount detailAccount : list) {
+			detailAccount.setUserID(baiseeEmployeeMapper.getEmpName(detailAccount.getUserID()));
+			String str = detailAccount.getTime().substring(0, 8);
+			StringBuilder sbd=new StringBuilder(str);
+			StringBuilder insert = sbd.insert(4, "-").insert(7,"-");
+			String success = insert.toString();
+			detailAccount.setTime(success);
+			
+			
+		}
+		return list;
+	}
+
+
+	@Override
+	public void addReturnFee(Map<String, Object> map) {
+		String sn = baiseeTransactionMapper.selectSN();
+		String no = baiseeTransactionMapper.selectNO();
+		map.put("SNID", sn);
+		map.put("NOID", no);
+		if("0".equals(map.get("amount").toString())){//判断是否有抵充
+			baiseeTransactionMapper.insePayment(map);
+			baiseeTransactionMapper.insertPaymentService(map);
+			baiseeTransactionMapper.insertFillFlowMeter(map);
+		}else{
+			baiseeTransactionMapper.insePayment(map);
+			baiseeTransactionMapper.insertPaymentService(map);
+		}
+	}
+
+
+	@Override
+	public List<DetailAccount> selectTotalMoney(String userID, String type) {
+		List<DetailAccount> list = baiseeTransactionMapper.readTotalMoney(userID, type);
+		//对时间格式进行格式化
+		for (DetailAccount detailAccount : list) {
+			String str = detailAccount.getTime().substring(0, 8);
+			StringBuilder sbd=new StringBuilder(str);
+			StringBuilder insert = sbd.insert(4, "-").insert(7,"-");
+			String sss = insert.toString();
+			detailAccount.setTime(sss);
+		}
+		return list;
+	}
+
+
+	@Override
+	public List<DetailAccount> readPaymentDiscounts(String transactionID) {
+		List<DetailAccount> list = baiseeTransactionMapper.selectPaymentDiscounts(transactionID);
+		//对时间格式进行格式化
+		for (DetailAccount detailAccount : list) {
+			String str = detailAccount.getTime().substring(0, 8);
+			StringBuilder sbd=new StringBuilder(str);
+			StringBuilder insert = sbd.insert(4, "-").insert(7,"-");
+			String sss = insert.toString();
+			detailAccount.setTime(sss);
+		}
+		return list;
+	}
+
+
+	@Override
+	public List<DetailAccount> readFillFlowMeter(String transactionID) {
+		List<DetailAccount> list = baiseeTransactionMapper.selectFillFlowMeter(transactionID);
+		//对时间格式进行格式化
+		for (DetailAccount detailAccount : list) {
+			String str = detailAccount.getTime().substring(0, 8);
+			StringBuilder sbd=new StringBuilder(str);
+			StringBuilder insert = sbd.insert(4, "-").insert(7,"-");
+			String sss = insert.toString();
+			detailAccount.setTime(sss);
+		}
+		return list;
+	}
+
+	@Override
+	public void removePrepay(String userID,Integer balance) {
+         //如果预交抵充完余额大于0 则修改预交表得金额为抵充余额
+		if(balance>0){
+
+			String amount=""+balance;
+			baiseeTransactionMapper.updatePrepay(userID, amount);
+		}else{//预交抵充完余额为0则删除用户得预交表信息
+			baiseeTransactionMapper.deletePrepayByID(userID);
+		}
+	}
+
+
+
+
+
+	@Override
+	public List<DetailAccount> getDetail(String transactionID) {
+
+		List<DetailAccount> list = baiseeTransactionMapper.selectDetail(transactionID);
+//		//对时间格式进行格式化
+		for (DetailAccount detailAccount : list) {
+			String str = detailAccount.getTime().substring(0, 8);
+			StringBuilder sbd=new StringBuilder(str);
+			StringBuilder insert = sbd.insert(4, "-").insert(7,"-");
+			String sss = insert.toString();
+			detailAccount.setTime(sss);
+		}
+		return list;
+	}
+
+	/**
+	 * 根据时间、学生id查询总账单
+	 * 现在的需求是，在sql语句上面增加功能：查询条件多了，并且在页面上面展示本页信息   总支出，总收入
+	 */
+	@Override
+	public PageInfo<DetailAccount> getDateQueryTotalBill(int pageNum,
+			int pageSize, String startTime, String endTime,String userid,String type){
+		//将时间转换为：20181010101202
+		if (startTime != null) {
+			startTime = startTime.replace("-", "");
+		}
+		if (endTime != null) {
+			endTime = endTime.replace("-", "");
+		}
+		//开始分页
+		PageHelper.startPage(pageNum, pageSize);
+		//去数据库中查询数据
+		List<DetailAccount> list = baiseeTransactionMapper.selectDateQueryTotalBill(type, startTime, endTime, userid);
+		
+		for (DetailAccount detailAccount : list) {
+			detailAccount.setUserID(baiseeEmployeeMapper.getEmpName(detailAccount.getUserID()));
+			if(detailAccount.getTransactionType() != null) {
+				if(detailAccount.getTransactionType().equals("学费") || detailAccount.getTransactionType().equals("试听费") || detailAccount.getTransactionType().equals("预缴费")) {
+					//学费、试听费情况下，是总收入
+					
+					detailAccount.setAmount("+"+detailAccount.getAmount());
+				}else if(detailAccount.getTransactionType().equals("返费") || detailAccount.getTransactionType().equals("退费")|| detailAccount.getTransactionType().equals("退预缴费")) {
+					//返费、退费情况下是总支出
+					detailAccount.setAmount("-"+detailAccount.getAmount());
+				}
+			}
+		}
+		PageInfo<DetailAccount> page=new PageInfo<DetailAccount>(list);
+		return page;
+	}
+
+
+	@Override
+	public Map<String, Object> sumTotalBill(String startTime, String endTime,
+			String userid, String type) {
+		if (startTime != null) {
+			startTime = startTime.replace("-", "");
+		}
+		if (endTime != null) {
+			endTime = endTime.replace("-", "");
+		}
+		List<DetailAccount> list = baiseeTransactionMapper.selectDateQueryTotalBill(type, startTime, endTime, userid);
+		double totalIncome = 0d;
+		double totalExpenditure=0d;
+		for (DetailAccount detailAccount : list) {
+			if(detailAccount.getTransactionType() != null) {
+				if(detailAccount.getTransactionType().equals("学费") || detailAccount.getTransactionType().equals("试听费") || detailAccount.getTransactionType().equals("预缴费")) {
+					//学费、试听费情况下，是总收入
+					totalIncome += Double.parseDouble(detailAccount.getAmount());
+					
+				}else if(detailAccount.getTransactionType().equals("返费") || detailAccount.getTransactionType().equals("退费")|| detailAccount.getTransactionType().equals("退预缴费")) {
+					//返费、退费情况下是总支出
+					totalExpenditure += Double.parseDouble(detailAccount.getAmount());
+					
+				}
+			}
+		}
+		//List<BaiseeClazz> selectClass = baiseeStuMapper.selectClass("");
+		Map<String, Object> map =new HashMap<String, Object>();
+		map.put("totalIncome",StringUtil.big(totalIncome));
+		map.put("totalExpenditure",StringUtil.big(totalExpenditure));
+		//map.put("class", selectClass);
+		
+		return map;
+	}
+	@Override
+	public String getTotalMoneyAndDiscounts(String userID, String tuition,
+			String audition) {
+		return baiseeTransactionMapper.selectTotalMoneyAndDiscounts(userID, tuition, audition);
+	}
+	@Override
+	public void backPrepay(Map<String, Object> map) {
+		String sn = baiseeTransactionMapper.selectSN();//生成交易流水号
+		String no = baiseeTransactionMapper.selectNO();//生成业务流水号
+		map.put("SNID", sn);
+		map.put("NOID", no);
+		map.put("status", "1");
+		String userID = (String) map.get("userID");//获得用户编号
+		int omt = Integer.parseInt(map.get("amount").toString());//获得用户的退费金额
+			String prepay = baiseeTransactionMapper.selectPrepay(userID);
+			int d = Integer.parseInt(prepay)-omt;
+			if(d!=0){
+				String amount=""+d;
+				baiseeTransactionMapper.updatePrepay(userID, amount);
+				baiseeTransactionMapper.insePayment(map);
+				baiseeTransactionMapper.insertPaymentService(map);
+			}else{
+				baiseeTransactionMapper.deletePrepayByID(userID);
+				baiseeTransactionMapper.insePayment(map);
+				baiseeTransactionMapper.insertPaymentService(map);
+				
+			}
+	}
+	
+}

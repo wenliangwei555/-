@@ -1,0 +1,280 @@
+	<!DOCTYPE html>
+	<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+	<head th:replace="commonTemplate :: header">
+	</head>
+	<body>
+
+	<script type="text/javascript" th:inline="javascript">
+		/*<![CDATA[*/
+		var basePath = /*[[@{/}]]*/;
+		/*]]>*/
+	</script>
+
+	<div class="lyear-layout-web">
+		<div class="lyear-layout-container">
+
+			<!--左侧导航-->
+			<div th:replace="commonTemplate :: leftMenus"></div>
+			<!--End 左侧导航-->
+
+			<!--头部信息-->
+			<div th:replace="commonTemplate :: headerDiv"></div>
+			<!--End 头部信息-->
+
+			<!--页面主要内容-->
+			<main class="lyear-layout-content">
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="card">
+
+							<div class="card-toolbar clearfix " >
+								<div class="toolbar-btn-action">
+									<a hre="javascript:void(0)" th:onclick="'returnComm(\'' + ${classId} + '\')'"
+									   title="返回上一级" class="btn btn-default m-r-5">
+										<span class="mdi mdi-undo-variant"></span>返回上一级</a>
+								</div>
+							</div>
+
+							<div class="card-body">
+									<span style="margin-left: 400px">
+										<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo">
+											<span class="mdi mdi-folder-download"></span>试听学生信息模板下载 
+										</button>
+										<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+											<div class="modal-dialog" role="document">
+												<div class="modal-content">
+													<div class="modal-header">
+														<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+													    <h4 class="modal-title" id="exampleModalLabel">试听学生信息批量导入</h4>
+													</div>
+													<div class="modal-body">
+														<div class="form-group">
+														  <label class="control-label">
+														  	注意：<br />
+														    1、数据格式必须为文本。<br />
+														    2、性别填写 "0"代表男，"1"代表女。<br />
+														    3、班级必须为"CLID*****************"格式<br />
+														  </label>
+														</div>
+													</div>
+													<div class="modal-footer">
+													  	<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+													  	<button type="button" class="btn btn-primary" onclick="template();">点击下载模板</button>
+													</div>
+												</div>
+											</div>
+										</div>
+									</span>
+								<span style="margin-left: 400px">
+										<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal1" data-whatever="@mdo">
+											<span class="mdi mdi-folder-upload"></span>试听学生信息批量导入
+										</button>
+										<div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+											<div class="modal-dialog" role="document">
+												<div class="modal-content">
+													<div class="modal-header">
+														<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+													    <h4 class="modal-title" id="exampleModalLabel1">试听学生信息批量导入</h4>
+													</div>
+													<div class="modal-body">
+														<form th:action="@{stuScore/importStuScore.ht}" name="excelfrm" method="post" id="excelfrm">
+															<input type="hidden" id="classId" name="classId" th:value="${classId}"/>
+															<div class="form-group">
+																<p>注意：</p>
+																<p>   1、导入数据时请仔细填写表格中的每一项数据，并严格按照指定的格式录入。</p>
+																<p>导入步骤：</p>
+																<p>1、点击这里打开Excel表格，在Excel表格中录入数据。</p>
+																<p>2、请选择文件<input type="file" id="excelfile"  name="excelfile" /></p>
+																<p>3、马上导入:<input type="button" class="btn btn-success btn-round" value="导入" id="saveItems" onclick="importExcel();" /></p>
+															</div>
+														</form>
+													</div>
+												</div>
+											</div>
+										</div>
+									</span>
+								<span>
+								<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+									<div class="modal-dialog" role="document">
+										<div class="modal-content">
+											<div class="modal-header">
+												<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+												<h4 class="modal-title" id="exampleModalLabel2">学生成绩批量导入结果</h4>
+											</div>
+											<div class="modal-body">
+												<div class="form-group">
+													<div style="height: 60px; text-align: left; font-size: 16px; border-bottom: 1px solid #ccc; margin-bottom:5px;">
+														<span style="margin-left: 20px;">
+																本次共导入&nbsp;&nbsp;<font style="color: blue;"><b id="allImportCount">0</b></font>&nbsp;&nbsp;条数据，
+																成功&nbsp;&nbsp;<font style="color: green;"><b id="successImportCount">0</b></font>&nbsp;&nbsp;条，
+																失败&nbsp;&nbsp;<font style="color: red;"><b id="failedImportCount">0</b></font>&nbsp;&nbsp;条
+															</span>
+														</div>
+														<div style="#eee solid 1px; max-height: 290px; width: 600px; overflow-y: auto; padding-bottom: 10px">
+															<table id="importHistoricalPrepaidResultTab" style="border: #eee solid 1px; width: 536px; margin: 0 auto; border-collapse: collapse">
+																<tbody>
+																	<tr>
+																		<th>序号</th>
+																		<th>错误信息</th>
+																	</tr>
+																</tbody>
+															</table>
+														</div>
+													</div>
+												</div>
+												<div class="modal-footer">
+													<button type="button" class="btn btn-default" data-dismiss="modal" onclick="closeLayer1()">继续导入</button>
+													<button type="button" class="btn btn-default" data-dismiss="modal" onclick="closeLayer2()">返回页面</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+	</div>
+
+	<script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+	<script type="text/javascript" src="js/bootstrap.min.js" th:src="@{static/js/bootstrap.min.js}"></script>
+	<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+	<script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+	<script type="text/javascript" src="js/plugins/select2/select2.full.min.js" th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+	<script type="text/javascript" src="js/plugins/layer/layer.js" th:src="@{js/plugins/layer/layer.js}"></script>
+	<script type="text/javascript" src="js/plugins/My97DatePicker/WdatePicker.js" th:src="@{js/plugins/My97DatePicker/WdatePicker.js}"></script>
+	<script type="text/javascript" src="js/plugins/form/jquery.form.js" th:src="@{js/plugins/form/jquery.form.js}"></script>
+	<script type="text/javascript" src="js/plugins/validate/jquery.validate.min.js" th:src="@{js/plugins/validate/jquery.validate.min.js}"></script>
+	<script type="text/javascript" src="js/plugins/comm/bmsAjax.js" th:src="@{js/plugins/comm/bmsAjax.js}"></script>
+	<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+
+	<script th:inline="javascript">
+		function template(){
+			var url =[[@{'stuDownLoad.ht'}]];  
+		    url = encodeURI(url);
+		    location.href = url;  
+		}
+		 
+		function returnComm(classId){
+			locationHref([[@{'/stuScore/queryDetails.ht'}]]+ "?classId=" + classId);
+		}
+		
+		/*<![CDATA[*/
+		
+		var searchBatchInterval;
+		function importExcel(){
+			var excelFile = $("#excelfile").val();
+		    if(excelFile=='') {_alert("请选择需上传的文件!");return false;}
+		    if(excelFile.indexOf('.xls')==-1){_alert("文件格式不正确，请选择正确的Excel文件(后缀名.xls)！");return false;}
+
+		    bmsAjaxForm($('#excelfrm'), function(data) {
+		 		 var code = data.code;
+		 		 var message = data.message;
+				 if(code == 1){
+					 $("#batchNum").val(message);
+					 _alert('正在处理,请勿关闭页面');
+					 setValidatorResult(data);
+			 		 return;
+		 		 }else if(code == -1 || code == -2){
+		 			alert(message);
+		 		 }
+			});
+		}
+		function setValidatorResult(data){
+			console.log(data);
+
+			// debugger;
+			if (data.result != null) {
+				var rvrDtoList = data.result.rvrDtoList;
+				var isSuccess = data.result.isSuccess;
+				var message = data.message;
+				var errorRowSize = rvrDtoList.length;
+				$('#exampleModal1').modal('hide');
+				$("#exampleModal2").modal('show');
+				// $("#importHistoricalPrepaidResultDiv").show();
+				$("#importHistoricalPrepaidResultTab tr:not(:first)").empty();
+				for (var i = 0; i < errorRowSize; i++) {
+					var errorRow = rvrDtoList[i];
+					var newRow = "<tr><td align='center'>" + i+1 + "</td><td>" + errorRow + "</td></tr>";
+					$("#importHistoricalPrepaidResultTab tr:last").after(newRow);
+				}
+				$("#allImportCount").html(data.result.totalCount);
+				$("#successImportCount").html(data.result.successCount);
+				$("#failedImportCount").html(data.result.errorCount);
+			}
+		}
+		function closeLayer1(){
+			window.location.href=basePath + "stuScore/pathJump.ht"+"?classId="+[[${classId}]];
+		}
+		function closeLayer2(){
+			window.location.href=basePath + "stuScore/toAchievement.ht";
+		}
+		/*]]>*/
+		
+		/*<![CDATA[*/
+		function closeLayer(obj){
+			var cid = [[${communityId}]];
+			var pcid = [[${pcid}]];
+			var listurl = [[@{/stuScore/pathJump.ht}]]+"?classId="+[[${classId}]];
+			 locationHref(listurl);
+			$("#" + obj).css("display", "none");
+		}
+		/*]]>*/
+	 
+		//打开excel页面
+		function openExcelPage(openType){
+			if(openType == 'export'){
+				$("#ks-pop-box2").show();
+			}else if(openType == 'import'){
+				$("#ks-pop-box3").show();
+			}
+			
+		}
+		function exp(){
+			var url = [[@{'/owner/exportExcel.ht'}]];
+			url = url +"?cid=" + [[${communityId}]];
+			window.open(url);
+		}
+		
+		function modifyState(checkedId, custNo, hid){
+			var communityId = [[${communityId}]];
+			/*<![CDATA[*/
+			_confirm("<span style=\"color:#FE6600\">删除之后数据不可恢复！是否确认删除？</span>", function(){
+				
+				var url = [[@{'/owner/modifyState.ht'}]];
+				if(!checkedId){
+					return false;
+				}else{
+					 url = url+"?checkUserId="+checkedId+"&custNo="+custNo+"&hid="+hid;
+					 showProccessBar();
+					 $.ajax({
+							url:url,
+							async: true,
+							type:'post',
+							success:function(data){
+								hideProccessBar();
+								 var code = data.messageCode;
+								 if(code == message_success_code){
+									 _alert(data.message);
+									 var listurl = [[@{'/owner/showList.ht'}]]+"?communityId="+communityId+"&pcid="+[[${pcid}]];
+									 locationHref(listurl);
+								 }else{
+									 
+									 _alert(message_false);
+								 }
+							},
+							error: function(value, a, b) {
+								hideProccessBar();
+							     return;
+					        }
+						});
+				}
+			});	
+			/*]]>*/
+		}
+		 
+		</script>
+	</body>
+</html>

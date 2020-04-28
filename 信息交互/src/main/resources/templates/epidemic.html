@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>疫情</title>
+    <meta name="keywords" content="疫情">
+    <meta name="description" content="疫情">
+    <base th:href="${#request.getContextPath()}+'/'">
+    <link rel="shortcut icon" th:href="@{favicon.ico}" href="favicon.ico">
+
+    <link rel="stylesheet" th:href="@{/res/css/login.css}"
+          href="/res/css/login.css"/>
+    <link th:href="@{/css/bootstrap.min.css?v=3.3.5}"
+          href="css/bootstrap.min.css?v=3.3.5" rel="stylesheet">
+    <link th:href="@{/css/font-awesome.min.css?v=4.4.0}"
+          href="css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+    <link th:href="@{/css/plugins/bootstrap-table/bootstrap-table.min.css}"
+          href="css/plugins/bootstrap-table/bootstrap-table.min.css"
+          rel="stylesheet">
+    <link th:href="@{/css/animate.min.css}" href="css/animate.min.css"
+          rel="stylesheet">
+    <link th:href="@{/css/style.min.css?v=4.0.0}"
+          href="css/style.min.css?v=4.0.0" rel="stylesheet">
+    <link th:href="@{/css/plugins/sweetalert/sweetalert.css}"
+          href="/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+    <link th:href="@{/css/plugins/bootstrap-select/bootstrap-select.min.css}"
+          href="/css/plugins/bootstrap-select/bootstrap-select.min.css" rel="stylesheet">
+
+</head>
+<!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+<div id="main" style="width: 600px;height:400px;"></div>
+<body class="gray-bg">
+
+<input type="hidden" class="form-control1" id="propertyId" th:value="${propertyId}">
+<!--<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox float-e-margins">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                &lt;!&ndash; 搜索列表框 &ndash;&gt;
+                <div class="col-sm-12">
+                    &lt;!&ndash; Example Pagination &ndash;&gt;
+                    <div class="example-wrap">
+                        <h4 class="example-title">奖品列表
+                            &lt;!&ndash; 返回上级 &ndash;&gt;
+
+                            <a style="float:   right" href='javascript:doutmport()'>
+                                <button id="btn_reset" onclick="" type="button"
+                                        class="btn btn-default btn-space">
+                                    <span>&lt;!&ndash; 导出 &ndash;&gt;下载选中的奖品</span>
+                                </button>
+                            </a>
+                            <a href='javascript:returnp()'> 返回上级</a>
+                        </h4>
+
+
+                        <div class="example">
+                            <div class="btn-group hidden-xs" id="toolbar" role="group">
+                                <div class="pull-left" id="query-form">
+
+                                    <div class="btn-group">
+                                        <button id="btn_search" onclick="customSearch()"
+                                                type="button" class="btn btn-primary btn-space">
+                                            <span class="fa fa-search" aria-hidden="true"></span>
+                                        </button>
+                                        <button id="btn_reset" onclick="resetSearch()" type="button"
+                                                class="btn btn-default btn-space">
+                                            <span class="fa fa-eraser" aria-hidden="true"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="pull-right">
+                                    <button type="button" class="btn btn-outline btn-default"
+                                            onclick="showAdd()">
+                                        <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline btn-default"
+                                            onclick="deleteEmp()">
+                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <table id="table_server"></table>
+                        </div>
+                    </div>
+                </div>
+                &lt;!&ndash; 新增框新建框修改框 &ndash;&gt;
+                <div class="modal inmodal" id="add" tabindex="-1" role="dialog"
+                     aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content animated bounceInRight">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">
+                                    <span aria-hidden="true">&times;</span><span class="sr-only">关闭</span>
+                                </button>
+                                <h4 class="modal-title">新增/修改该活动的奖品</h4>
+                                <small class="font-bold">
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <form id="mainfrm">
+                                        <input id="pname" name="pname" type="hidden" value="" data-live-search="true"
+                                               class="form-control">
+                                        <input type="text" name="id" id="id" value="" style="display: none;">
+                                        <label>请选择奖品</label>
+                                        <select id="pId" name="pId" onchange="gename(this)"
+                                                class="form-control"
+                                                data-live-search="true">
+                                            <option value="">请选择</option>
+                                        </select>
+                                        <label>请选择奖品类型</label>
+                                        <select id="prizetype" name="prizetype" class="form-control"
+                                                data-live-search="true">
+                                            <option value="0">虚拟</option>
+                                            <option value="1">实物</option>
+                                        </select>
+                                        <label>请选择奖品等级</label>
+                                        <select id="grade" name="grade" class="form-control"
+                                                data-live-search="true">
+                                            <option value="6">谢谢参与</option>
+                                            <option value="5">五等奖</option>
+                                            <option value="4">四等奖</option>
+                                            <option value="3">三等奖</option>
+                                            <option value="2">二等奖</option>
+                                            <option value="1">一等奖</option>
+                                        </select>
+                                        <label>奖品数量</label> <input type="text" name="prizeNumber"
+                                                                   id="prizeNumber" placeholder="请输入奖品数量"
+                                                                   class="form-control">
+                                        <label>输入概率</label> <input type="text" name="probability"
+                                                                   id="probability" placeholder="请输入概率"
+                                                                   class="form-control">
+
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-white"
+                                        data-dismiss="modal">关闭
+                                </button>
+                                <button type="button" class="btn btn-primary"
+                                        data-dismiss="modal" onclick="javascript:add()">保存
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    &lt;!&ndash; End Panel Other &ndash;&gt;
+    &lt;!&ndash; 选择状态框 &ndash;&gt;
+    <div class="modal inmodal" id="chooseState" tabindex="-1" role="dialog"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated bounceInRight" style="width: 300px; height: 350px;" id="da">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span><span class="sr-only">关闭</span>
+                    </button>
+                    <h4 class="modal-title">客户状态</h4>
+                    <small class="font-bold">
+                </div>
+                <div class="modal-body">
+                    <div class="form-group" id="chooseStateForm">
+                        <input type='checkbox' class='check' value='1'/> <span>在职1</span></br>
+                        <input type='checkbox' class='check' value='2'/> <span>离职2</span></br>
+                        <input type='checkbox' class='check' value='3'/> <span>试用3</span></br>
+                        <button type='button' class='btn btn-white' data-dismiss='modal'>关闭</button>
+                        <button type='button' class='btn btn-primary' data-dismiss='modal'
+                                onclick='javascript:customSearch()'>保存
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>-->
+<script src="/js/jquery.min.js?v=2.1.4" th:src="@{/js/jquery.min.js?v=2.1.4}"></script>
+<script src="/js/echarts.min.js" th:src="@{/js/echarts.min.js}"></script>
+<script src="/js/bootstrap.min.js?v=3.3.5"
+        th:src="@{/js/bootstrap.min.js?v=3.3.5}"></script>
+<script src="/js/content.min.js?v=1.0.0"
+        th:src="@{/js/content.min.js?v=1.0.0}"></script>
+<script src="/js/plugins/bootstrap-table/bootstrap-table.min.js"
+        th:src="@{/js/plugins/bootstrap-table/bootstrap-table.min.js}"></script>
+<script src="/js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"
+        th:src="@{/js/plugins/bootstrap-table/bootstrap-table-mobile.min.js}"></script>
+<script
+        src="/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"
+        th:src="@{/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js}"></script>
+<script src="/js/app.js" th:src="@{/js/app.js}"></script>
+<script src="/js/plugins/sweetalert/sweetalert.min.js"
+        th:src="@{/js/plugins/sweetalert/sweetalert.min.js}"></script>
+<script src="/js/baisee/data.delete.js" th:src="@{/js/baisee/data.delete.js}"></script>
+<script src="/js/plugins/bootstrap-select/bootstrap-select.min.js"
+        th:src="@{/js/plugins/bootstrap-select/bootstrap-select.min.js}"></script>
+
+<script th:inline="javascript">
+
+    $(function () {
+        getall();
+    });
+
+
+    function getall() {
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+        $.post("nationwide",function (obj) {
+
+            myChart.setOption(obj);
+        })
+
+        // 指定图表的配置项和数据
+        var option = {
+            xAxis: {
+                data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
+            },
+            series: [{
+                name: '销量',
+                type: 'bar',
+                data: [5, 20, 36, 10, 10, 20]
+            }]
+        };
+
+        // 使用刚指定的配置项和数据显示图表。
+
+
+    }
+
+
+    /*    /!***  初始化 所有奖品 清单
+           *****!//*/
+    function initial(el) {
+        $.post("activity_prize/selectPri", {}, function (obj) {
+            $(obj).each(function (i, n) {
+                $(el).append("<option  value='" + n.pId + "'> " + n.pname + "</option>");
+            });
+        })
+
+    }
+
+    function gename(o) {
+        //获取 文本
+        var text = $(o).find("option:selected").text();
+        $("#pname").val(text);
+    }
+
+
+    $("#aproductType").change(function () {
+        value = $("#aproductType").val();
+        // alert(value)
+    });
+
+
+    /*初始花 结构 */
+    function init(code) {
+        var timestamp = Date.parse(new Date());
+        $("#propertyKeyId").val("EMID" + timestamp);
+        var t = $("#table_server").bootstrapTable({
+            url: 'activity_prize/findAll',
+            dataField: 'list',
+            method: 'POST',
+            contentType: "application/x-www-form-urlencoded",
+            dataType: "json",
+            striped: true,//设置为 true 会有隔行变色效果
+            undefinedText: "空",//当数据为 undefined 时显示的字符
+            pagination: true, //分页
+            // paginationLoop:true,//设置为 true 启用分页条无限循环的功能。
+            showToggle: "true",//是否显示 切换试图（table/card）按钮
+            showColumns: "true",//是否显示 内容列下拉框
+            pageNumber: 1,//如果设置了分页，首页页码
+            // showPaginationSwitch:true,//是否显示 数据条数选择框
+            pageSize: 20,//如果设置了分页，页面数据条数
+            pageList: [1, 2, 3, 20], //如果设置了分页，设置可供选择的页面数据条数。设置为All 则显示所有记录。
+            paginationPreText: '‹',//指定分页条中上一页按钮的图标或文字,这里是<
+            paginationNextText: '›',//指定分页条中下一页按钮的图标或文字,这里是>
+            // singleSelect: false,//设置True 将禁止多选
+            search: false, //显示搜索框
+            toolbar: "#toolbar",//工具栏
+            data_local: "zh-US",//表格汉化
+            sidePagination: "server", //服务端处理分页
+            showUpload: true,
+            queryParams: function (params) {//自定义参数，这里的参数是传给后台的，我这是是分页用的
+                var param = {};
+                $('#query-form').find('[name]').each(function () {
+                    var value = $(this).val();
+                    if (value != '') {
+                        param[$(this).attr('name')] = value;
+                    }
+                });
+                param['pageSize'] = this.pageSize;   //页面大小
+                param['pageNumber'] = this.pageNumber;
+                param['limit'] = this.limit;
+                param['offset'] = this.offset;
+                param['userName'] = $("input[name='userName']").val();
+                state = "";
+                $("#chooseState input:checked").each(function () {
+                    var value = $(this).val();
+                    state = state + value + ",";
+                })
+                param['state'] = state;
+
+                //页码
+                return param;
+            },
+
+            idField: "id",//指定主键列
+            columns: [{
+                checkbox: "true",
+                field: "box"
+            }, {
+
+                title: '奖品编号',//表的列名
+                field: 'id',//json数据中rows数组中的属性名
+                align: 'center'//水平居中
+
+            }, {
+                title: '奖品名称',
+                field: 'pname',
+                align: 'center'
+            }, {
+                title: '奖品等级',
+                field: 'grade',
+                align: 'center'
+
+            }, {
+                title: '剩余数量',
+                field: 'prizeNumber',
+                align: 'center',
+                class: 'property'
+            }, {
+                title: '中奖概率',
+                field: 'probability',
+                align: 'center'
+            }, {//状态显示
+                title: '<a onclick="openChooseState()">奖品等级▼</a>',
+                field: 'grade',
+                align: 'center',
+                formatter: function (value, row, index) {
+                    if (value == 1) {
+                        return '一等奖'
+                    }
+                    if (value == 2) {
+                        return '二等奖'
+                    }
+                    if (value == 3) {
+                        return '三等奖'
+                    }
+                    if (value == 4) {
+                        return '四等奖'
+                    }
+                    if (value == 5) {
+                        return '五等奖'
+                    } else {
+                        return '谢谢参与'
+                    }
+                }
+            },
+                {//修改和操作
+                    field: 'oprate',
+                    title: '操作',
+                    width: 200,
+                    align: 'center',
+                    valign: 'middle',
+                    formatter: function (value, row, index) {
+                        startus = ""
+                        if (row.empStartus == 1) {
+                            startus = "<a href='javascript:changeStatus(" + row.empKeyId + "," + 2 + ");' >离职</a>        "
+                        } else if (row.empStartus == 2) {
+
+                            startus = "<a href='javascript:changeStatus(" + row.empKeyId + "," + 1 + ");' >上任</a>        "
+                        } else if (row.empStartus == 3) {
+
+                            startus = "<a href='javascript:changeStatus(" + row.empKeyId + "," + 1 + ");' >转正</a>        " +
+                                "<a href='javascript:updateState(" + row.empKeyId + "," + 2 + ");' >离职</a>        "
+                        } else {
+                            startus = ""
+                        }
+                        return ["<a href='javascript:void(0)' onclick='update(" + JSON.stringify(row)
+                        + ")'>修改</a>        " +
+                        startus
+                        ]
+                            .join("")
+                    }
+                }]
+        });
+    }
+
+    //修改状态
+    function changeStatus(id, sta) {
+        $.post("emp/changeStatus", {
+            id: id,
+            startus: sta
+        }, function (obj) {
+            $("#table_server").bootstrapTable('refresh');//刷新Table，Bootstrap Table 会自动执行重新查询
+            alert(obj);
+
+        }, "text");
+    }
+
+    /**打开新建框*/
+    function showAdd() {
+        $("#mainfrm")[0].reset();
+        var timestamp = new Date().getTime();
+        $("#propertyKeyId").val("EMID" + timestamp);
+        $("#add").modal('show');
+    }
+
+    /* 单击修改按钮跳转到修改框 */
+    function update(row) {
+        //Object { menuId: "1", menuName: "百思信息管理", pId: "0", menuUrl: null, menuCode: "XTGL", orderNum: 1, childs: null, isMenu: "1", menuPic: "glyphicon glyphicon-user" }
+        //console.log(row);
+        //alert("6")
+        //$("#add").modal('show');
+        $("#id").val(row.id);
+        $("#aId").val(row.aId);
+        $("#pId").val(row.pId);
+        $("#grade").val(row.grade);
+        $("#prizeNumber").val(row.probability);
+        $("#probability").val(row.pname);
+        $("#pname").val(row.empPosition);
+        $("#add").modal('show');
+    }
+
+
+    /**保存*/
+    function add() {
+        var data = App.form2json('#mainfrm');
+        App.post('activity_prize/add', data, function (resp) {
+            /*$("#pId").empty();*/
+            if (resp == 0) {
+                alert("添加失败")
+            } else if (resp == 1) {
+                alert("添加成功")
+            } else if (resp == 3) {
+                alert("数量不能大于库存数量")
+            } else if (resp == 4) {
+                alert("已经存在此奖品")
+            } else {
+                alert("添加错误")
+            }
+            $("#table_server").bootstrapTable("refresh");
+
+        })
+    }
+
+    function deleteEmp() {
+        var delt = deleter("id", "activity_prize/deleteAp");
+        delt.init();
+    }
+
+    function resetSearch() {
+        $('#query-form').find('[name]').each(function () {
+            $(this).val('');
+            /* hello($(this).val(),"sheng") */
+            hello2($(this).val(), "shi")
+            hello2($(this).val(), "qu")
+
+        });
+    }
+
+    function customSearch(text) {
+        $("#table_server").bootstrapTable('refresh');//刷新Table，Bootstrap Table 会自动执行重新查询
+    }
+
+    //增加时选择的公司下拉选
+    /* $(function () {
+         //alert(a);
+         $.post("activity_prize/selectPri", {}, function (property) {
+             //var a=$('#propertyId').val();
+             //alert(a);
+             var roleStr = "";
+             $(property).each(function (i, n) {
+                 roleStr += "<option  value='" + n.pname + "'> " + n.pname + "</option>";
+             });
+             $('#pId').append(roleStr);
+             $('#pId').selectpicker('refresh');
+         })
+         //$("#role").html("");
+
+         //
+     })*/
+
+    //返回上级
+    function returnp() {
+        window.history.go(-1);
+    }
+
+    //导出
+    function doutmport() {
+        var arr = $('input[name="btSelectItem"]:checked');
+        var ids = "";
+        $(arr).each(function (i, e) {
+            //alert(e.value)
+            ids += e.value + ",";
+        })
+        if (arr.length == 0 || arr == null) {
+            alert("请选中要导出的员工")
+        }
+        if (arr.length != 0 || arr != null) {
+            window.location.href = "emp/outemp?idarr=" + ids + "";
+
+        }
+
+
+        /* $.post("emp/outemp",{"ids":ids},function(data){
+            alert(data);
+        }) */
+    }
+
+    //选择状态
+    function openChooseState() {
+        $("#mainfrm")[0].reset();
+        var timestamp = new Date().getTime();
+        $("#propertyKeyId").val("EMID" + timestamp);
+        $("#chooseState").modal('show');
+    }
+
+    function chooseState() {
+        var data = App.form2json('#mainfrm');
+        App.post('emp/page', data, function (resp) {
+            $("#table_server").bootstrapTable("refresh");
+        })
+    }
+</script>
+
+<!-- 省市联动 -->
+<!-- <script type="text/javascript">
+    $(function(){
+
+        hello(0,"sheng");
+        $("#sheng").click(function(){
+            //$("#dqu").append("<select id='qu' style='float: left;'><option>请选择</option></select>");
+            hello($(this).val(),"shi")
+            hello2($(this).val(),"qu")
+
+        });
+        $("#shi").click(function(){
+
+            hello($(this).val(),"qu")
+
+        });
+    })
+    function hello2(id,sid){
+        $("#"+sid).empty();
+        $("#d"+sid).css("display","none");
+        }
+    function hello(id,sid){
+        $("#"+sid).empty();
+        //alert(id)
+        $.post("property/selectcity",{
+            pid:id
+            },function(obj){
+            if (obj.length==0) {
+                //alert("a")
+                $("#d"+sid).css("display","none");
+
+            }else{
+                $("#d"+sid).css("display","");
+                $("#"+sid).append("<option>请选择</option>");
+            $(obj).each(function(i,e){
+
+                $("#"+sid).append("<option value="+e.id+">"+e.name+"</option>");
+
+
+                })
+            }
+
+        },"json");
+    }
+</script> -->
+<!--  -->
+
+</body>
+
+</html>

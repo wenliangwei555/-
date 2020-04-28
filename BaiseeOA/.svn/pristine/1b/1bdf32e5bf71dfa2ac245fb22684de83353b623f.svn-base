@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.baisee.BaiseeReturnMapper">
+	<resultMap
+		type="cn.baisee.oa.model.student.BaiseeStudentReturn" id="return_Map">
+		<id column="RT_ID" jdbcType="VARCHAR" property="rtId" />
+		<result column="R_NAME" jdbcType="VARCHAR" property="rName" />
+		<result column="UPDATE_TIME" jdbcType="VARCHAR"
+			property="updateTime" />
+		<result column="CREATE_USER" jdbcType="VARCHAR"
+			property="createUser" />
+		<association resultMap="returnRule_map"
+			property="returnRule"></association>
+	</resultMap>
+	
+	<resultMap
+		type="cn.baisee.oa.model.student.BaiseeStudentReturnRule"
+		id="returnRule_map">
+		<id column="RR_ID" jdbcType="VARCHAR" property="rrid" />
+		<result column="TU_ID" jdbcType="VARCHAR" property="tuId" />
+		<result column="RETURN_TYPE" jdbcType="VARCHAR"
+			property="returnType" />
+		<result column="RETURN_VALUE" jdbcType="VARCHAR"
+			property="returnValue" />
+		<result column="UP_DATE" jdbcType="VARCHAR" property="upDate" />
+		<result column="RT_ID" jdbcType="VARCHAR" property="rtId" />
+		<result column="PAYMENT_AMOUNT" jdbcType="VARCHAR"
+			property="paymentAmount" />
+		<result column="RETURN_TIME" jdbcType="VARCHAR"
+			property="returnTime" />
+		<result column="RETURN_SUM" jdbcType="VARCHAR"
+			property="returnSum" />
+	</resultMap>
+
+	<!-- 分页查询所有的返费规则 -->
+	<select id="getReturnList" resultMap="return_Map">
+		select 
+		max(b.RR_ID) as RR_ID,
+		max(a.R_NAME) as R_NAME,
+		b.RT_ID as RT_ID,
+		max(c.E_NAME) AS CREATE_USER,
+		MAX(case b.RETURN_TYPE when '缴费金额' then b.RETURN_VALUE else 0 end) as
+		PAYMENT_AMOUNT,
+		MAX(case b.RETURN_TYPE when '时间' then b.RETURN_VALUE else 0 end) as
+		RETURN_TIME,
+		MAX(case b.RETURN_TYPE when '返费金额' then b.RETURN_VALUE else 0 end) as
+		RETURN_SUM,
+		max(UP_DATE) as UP_DATE from baisee_student_return a LEFT JOIN
+		baisee_student_return_rule b
+		on a.RT_ID = b.RT_ID LEFT JOIN baisee_employee c on c.EID=a.CREATE_USER group by b.RT_ID
+	</select>
+	<!-- 查询该返费是否关联学费 -->
+	<select id="getRid" parameterType="map"
+		resultType="java.lang.String">
+		SELECT R_ID as rtId FROM baisee_tuition_return
+		<where>
+			<if test="rtId != null and rtId != ''">
+				R_ID=#{rtId,jdbcType=VARCHAR}
+			</if>
+			<if test="tuId != null and tuId != ''">
+				AND TU_ID=#{tuId,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	<!-- 根据ID删除返费规则 -->
+	<delete id="delReturn" parameterType="map">
+		<if test="rtId != null and rtId != ''">
+			DELETE FROM baisee_student_return
+			<where>
+				and RT_ID = #{rtId,jdbcType=VARCHAR}
+			</where>
+		</if>
+	</delete>
+	<!-- 根据RT_ID删除子表规则 -->
+	<delete id="delRetuRule" parameterType="map">
+		<if test="rtId != null and rtId != ''">
+			DELETE FROM baisee_student_return_rule
+			<where>
+				and RT_ID = #{rtId,jdbcType=VARCHAR}
+			</where>
+		</if>
+	</delete>
+	<!-- 通过返费ID删除学费返费关联 -->
+	<delete id="delTuitionReturn" parameterType="String">
+		<if test="rtId != null and rtId != ''">
+			DELETE FROM baisee_tuition_return
+			<where>
+				and R_ID = #{rtId,jdbcType=VARCHAR}
+			</where>
+		</if>
+	</delete>
+	<!--通过学费ID 删除学费返费关联 -->
+	<delete id="delTuitionReturnByTuId" parameterType="map">
+		DELETE FROM baisee_tuition_return
+		<where>
+			<if test="tuId != '' and tuId != null">
+				TU_ID=#{tuId,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</delete>
+	<!-- 添加返费主表 -->
+	<insert id="saveReturn"
+		parameterType="cn.baisee.oa.model.student.BaiseeStudentReturn">
+		<selectKey resultType="java.lang.String" order="AFTER"
+			keyProperty="rtId">
+			SELECT RT_ID FROM baisee_student_return ORDER BY
+			UPDATE_TIME DESC LIMIT 1
+		</selectKey>
+		INSERT INTO baisee_student_return
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			RT_ID,
+			<if test="rName != null and rName != ''">
+				R_NAME,
+			</if>
+			<if test="createUser != null and createUser != ''">
+				CREATE_USER,
+			</if>
+			UPDATE_TIME
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			pkval('RTID'),
+			<if test="rName != null and rName != ''">
+				#{rName, jdbcType=VARCHAR},
+			</if>
+			<if test="createUser != null and createUser != ''">
+				#{createUser,jdbcType=VARCHAR},
+			</if>
+			DATE_FORMAT(now(),'%Y%m%d%H%i%m')
+		</trim>
+	</insert>
+	<!-- 添加返费规则 -->
+	<insert id="saveReturnRule"
+		parameterType="cn.baisee.oa.model.student.BaiseeStudentReturnRule">
+		<selectKey resultType="java.lang.String" order="AFTER"
+			keyProperty="rrid">
+			SELECT RR_ID FROM baisee_student_return_rule ORDER BY
+			RR_ID DESC LIMIT 1
+		</selectKey>
+		INSERT INTO baisee_student_return_rule
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			RR_ID,
+			<if test="returnType != null and returnType != ''">
+				RETURN_TYPE,
+			</if>
+			<if test="returnValue != null and returnValue != ''">
+				RETURN_VALUE,
+			</if>
+			<if test="rtId != null and rtId != ''">
+				RT_ID,
+			</if>
+			UP_DATE
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			pkval('RRID'),
+			<if test="returnType != null">
+				#{returnType, jdbcType=VARCHAR},
+			</if>
+			<if test="returnValue != null">
+				#{returnValue, jdbcType=VARCHAR},
+			</if>
+			<if test="rtId != null and rtId != ''">
+				#{rtId, jdbcType=VARCHAR},
+			</if>
+			DATE_FORMAT(now(),'%Y%m%d%H%i%m')
+		</trim>
+	</insert>
+	<!-- 根据返费ID查询返费主表 -->
+	<select id="getReturnById" resultMap="return_Map"
+		parameterType="map">
+		SELECT RT_ID,R_NAME,UPDATE_TIME,CREATE_USER FROM baisee_student_return
+		<where>
+			<if test="rtId != null and rtId != ''">
+				and RT_ID=#{rtId, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	<!-- 根据返费ID查询返费子表 -->
+	<select id="getReturnRuleById" resultMap="returnRule_map"
+		parameterType="map">
+		SELECT RR_ID,RETURN_TYPE,RETURN_VALUE,RT_ID,UP_DATE FROM
+		baisee_student_return_rule
+		<where>
+			<if test="rtId != null and rtId != ''">
+				and RT_ID=#{rtId, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	<!-- 修改返费主表 -->
+	<update id="updateReturn"
+		parameterType="cn.baisee.oa.model.student.BaiseeStudentReturn">
+		UPDATE baisee_student_return
+		<set>
+			<if test="rName != null and rName != ''">
+				R_NAME=#{rName,jdbcType=VARCHAR},
+			</if>
+			UPDATE_TIME=DATE_FORMAT(now(),'%Y%m%d%H%i%s')
+		</set>
+		<where>
+			<if test="rtId != null and rtId != ''">
+				RT_ID=#{rtId, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</update>
+	<!-- 修改返费子表 -->
+	<update id="updateReturnRule"
+		parameterType="cn.baisee.oa.model.student.BaiseeStudentReturnRule">
+		UPDATE baisee_student_return_rule
+		<set>
+			<if test="returnType != null">
+				RETURN_TYPE=#{returnType, jdbcType=VARCHAR},
+			</if>
+			<if test="returnValue != null">
+				RETURN_VALUE=#{returnValue, jdbcType=VARCHAR},
+			</if>
+			UP_DATE=DATE_FORMAT(now(),'%Y%m%d%H%i%s')
+		</set>
+		<where>
+			<if test="rrid != null and rrid != ''">
+				RR_ID=#{rrid, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</update>
+	<!-- 添加学费返费关联 -->
+	<insert id="insertTuitionReturn" parameterType="map">
+		INSERT INTO baisee_tuition_return
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="rtId != null and rtId != ''">
+				R_ID,
+			</if>
+			<if test="tuId != null and tuId != ''">
+				TU_ID,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="rtId != null and rtId != ''">
+				#{rtId, jdbcType=VARCHAR},
+			</if>
+			<if test="tuId != null and tuId != ''">
+				#{tuId, jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<!-- 根据学费查询要修改的返费规则 -->
+	<select id="getRetuByTuId" parameterType="map"
+		resultType="java.lang.String">
+		select RT_ID FROM baisee_student_return
+		WHERE RT_ID = (select R_ID
+		FROM baisee_tuition_return
+		<where>
+			<if test="tuId != null and tuId != ''">
+				TU_ID=#{tuId,jdbcType=VARCHAR}
+			</if>
+		</where>
+		)
+	</select>
+
+	<!-- 根据返费rtid和规则类型查询是否已存在 -->
+	<select id="getRetuRuleByRtId" parameterType="map"
+		resultMap="returnRule_map">
+		SELECT RR_ID,RETURN_TYPE,RETURN_VALUE FROM baisee_student_return_rule
+		<where>
+			<if test="rtId != null and rtId != ''">
+				and RT_ID=#{rtId,jdbcType=VARCHAR}
+			</if>
+			<if test="returnType != null and returnType != ''">
+				and RETURN_TYPE=#{returnType,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	<!-- 修改学费返费关联表 -->
+	<update id="updateTuitionReturn" parameterType="map">
+		UPDATE baisee_tuition_return 
+		<set>
+			<if test="rtId != null and rtId != ''">
+				R_ID=#{rtId,jdbcType=VARCHAR}
+			</if>
+		</set>
+		<where>
+			<if test="tuId != null and tuId != ''">
+				TU_ID=#{tuId,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</update>
+	<!-- 根据返费ID查询详细规则 -->
+	<select id="getRetuRule" resultMap="returnRule_map" parameterType="map">
+		select 
+		MAX(case b.RETURN_TYPE when '缴费金额' then b.RETURN_VALUE else 0 end) as
+		PAYMENT_AMOUNT,
+		MAX(case b.RETURN_TYPE when '时间' then b.RETURN_VALUE else 0 end) as
+		RETURN_TIME,
+		MAX(case b.RETURN_TYPE when '返费金额' then b.RETURN_VALUE else 0 end) as
+		RETURN_SUM from baisee_student_return_rule b
+		<where>
+			and RT_ID=#{rtId, jdbcType=VARCHAR}
+		</where>
+	</select>
+	
+	<select id="getAllReturn" resultMap="return_Map">
+		SELECT RT_ID,R_NAME,UPDATE_TIME,CREATE_USER FROM baisee_student_return
+	</select>
+</mapper>

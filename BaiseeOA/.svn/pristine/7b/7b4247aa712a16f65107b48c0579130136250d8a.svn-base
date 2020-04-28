@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="commonTemplate :: header">
+
+</head>
+
+<body>
+<div class="lyear-layout-web">
+    <div class="lyear-layout-container">
+
+        <!--左侧导航-->
+        <div th:replace="commonTemplate :: leftMenus"></div>
+        <!--End 左侧导航-->
+
+        <!--头部信息-->
+        <div th:replace="commonTemplate :: headerDiv"></div>
+        <!--End 头部信息-->
+
+        <!--页面主要内容-->
+        <main class="lyear-layout-content">
+
+            <div class="container-fluid">
+                <form  th:action="@{file/toStuInfoList.ht}"  id="frm" name="frm" method="post" onsubmit="return check();">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+
+                                <div class="card-toolbar clearfix " >
+
+
+                                    <div class="pull-right search-bar" >
+
+
+                                        <div class="input-group">
+                                            <input type="text"  name="itemlableSearch" class="form-control" value="" placeholder="请输入姓名/手机号/班级"/>
+                                            <div class="input-group-btn">
+                                                <button class="btn btn-success" th:onclick="'stuAuditionStartTime()'" id="search-btn1" type="button" aria-haspopup="true" aria-expanded="false">
+                                                    查询
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="pull-right search-bar">
+                                        <span><select name="areas" id="areas"  class="form-control">
+															<option value="" selected="selected">全部区县</option>
+															<option value="130402" th:if="${areas} eq 130402"
+                                                                    selected="selected">邯山区</option>
+															<option value="130402" th:if="${areas} ne 130402">邯山区</option>
+															<option value="130403" th:if="${areas} eq 130403"
+                                                                    selected="selected">丛台区</option>
+															<option value="130404" th:if="${areas} eq 130404"
+                                                                    selected="selected">复兴区</option>
+															<option value="130406" th:if="${areas} eq 130406"
+                                                                    selected="selected">峰峰矿区</option>
+															<option value="130421" th:if="${areas} eq 130421"
+                                                                    selected="selected">邯郸县</option>
+															<option value="130423" th:if="${areas} eq 130423"
+                                                                    selected="selected">临漳县</option>
+															<option value="130424" th:if="${areas} eq 130424"
+                                                                    selected="selected">成安县</option>
+															<option value="130425" th:if="${areas} eq 130425"
+                                                                    selected="selected">大名县</option>
+															<option value="130426" th:if="${areas} eq 130426"
+                                                                    selected="selected">涉 县</option>
+															<option value="130427" th:if="${areas} eq 130427"
+                                                                    selected="selected">磁 县</option>
+															<option value="130428" th:if="${areas} eq 130428"
+                                                                    selected="selected">肥乡县</option>
+															<option value="130429" th:if="${areas} eq 130429"
+                                                                    selected="selected">永年县</option>
+															<option value="130430" th:if="${areas} eq 130430"
+                                                                    selected="selected">邱 县</option>
+															<option value="130431" th:if="${areas} eq 130431"
+                                                                    selected="selected">鸡泽县</option>
+															<option value="130432" th:if="${areas} eq 130432"
+                                                                    selected="selected">广平县</option>
+															<option value="130433" th:if="${areas} eq 130433"
+                                                                    selected="selected">馆陶县</option>
+															<option value="130434" th:if="${areas} eq 130434"
+                                                                    selected="selected">魏 县</option>
+															<option value="130435" th:if="${areas} eq 130435"
+                                                                    selected="selected">曲周县</option>
+															<option value="130481" th:if="${areas} eq 130481"
+                                                                    selected="selected">武安市</option>
+															<option value="130527" th:if="${areas} eq 130527"
+                                                                    selected="selected">南和县</option>
+															<option value="130535" th:if="${areas} eq 130535"
+                                                                    selected="selected">临西县</option>
+															<option value="410581" th:if="${areas} eq 410581"
+                                                                    selected="selected">林州市</option>
+															<option value="130403" th:if="${areas} ne 130403">丛台区</option>
+															<option value="130404" th:if="${areas} ne 130404">复兴区</option>
+															<option value="130406" th:if="${areas} ne 130406">峰峰矿区</option>
+															<option value="130421" th:if="${areas} ne 130421">邯郸县</option>
+															<option value="130423" th:if="${areas} ne 130423">临漳县</option>
+															<option value="130424" th:if="${areas} ne 130424">成安县</option>
+															<option value="130425" th:if="${areas} ne 130425">大名县</option>
+															<option value="130426" th:if="${areas} ne 130426">涉
+																县</option>
+															<option value="130427" th:if="${areas} ne 130427">磁
+																县</option>
+															<option value="130428" th:if="${areas} ne 130428">肥乡县</option>
+															<option value="130429" th:if="${areas} ne 130429">永年县</option>
+															<option value="130430" th:if="${areas} ne 130430">邱
+																县</option>
+															<option value="130431" th:if="${areas} ne 130431">鸡泽县</option>
+															<option value="130432" th:if="${areas} ne 130432">广平县</option>
+															<option value="130433" th:if="${areas} ne 130433">馆陶县</option>
+															<option value="130434" th:if="${areas} ne 130434">魏
+																县</option>
+															<option value="130435" th:if="${areas} ne 130435">曲周县</option>
+															<option value="130481" th:if="${areas} ne 130481">武安市</option>
+															<option value="130527" th:if="${areas} ne 130527">南和县</option>
+															<option value="130535" th:if="${areas} ne 130535">临西县</option>
+															<option value="410581" th:if="${areas} ne 410581">林州市</option>
+													</select></span>
+                                    </div>
+                                    <div class="pull-right search-bar">
+                                        <span th:if="${#strings.isEmpty(userType)}"
+                                              > <select
+                                                name="claStatus" class="form-control"
+                                             >
+															<option value="">--选择学籍--</option>
+															<option value="0" th:if="${claStatus} eq 0"
+                                                                    selected="selected">初中</option>
+															<option value="0" th:if="${claStatus} ne 0">初中</option>
+															<option value="1" th:if="${claStatus} eq 1"
+                                                                    selected="selected">高中</option>
+															<option value="1" th:if="${claStatus} ne 1">高中</option>
+													</select>
+													</span>
+                                    </div>
+                                    <div class="pull-right search-bar" >
+                                        <span style="">
+														<input style="width: 90px;height: 40px;"
+                                                               type="text" placeholder="结束时间" class="form-control"
+                                                               id="stuEndTime" name="stuEndTime" th:value="${stuEndTime}"
+                                                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',readOnly:true})" />
+                                                    </span>
+                                    </div>
+                                    <div class="pull-right search-bar" >
+                                        <span style=""> <input
+                                                style="width: 90px;height: 40px;" type="text"
+                                                placeholder="开始时间" class="form-control" id="stuStartTime"
+                                                name="stuStartTime" th:value="${stuStartTime}"
+                                                onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',readOnly:true})" />
+                                                    </span>
+                                    </div>
+
+                                    <div class="pull-right search-bar" >
+                                        <div class="input-group">
+                                           <span style=""> <select style="height: 40px;width: 150px"
+                                                   name="choiceStuState" class="form-control">
+															<option value="">--选择状态--</option>
+															<option value="0" th:selected="${choiceStuState == '0' }">试听</option>
+															<option value="1" th:selected="${choiceStuState == '1'}">正式</option>
+													</select>
+													</span>
+                                        </div>
+                                    </div>
+                                    <div class="toolbar-btn-action">
+                                    </div>
+                                </div>
+                                <div class="card-body">
+
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                            <tr>
+                                                <th>索引</th>
+                                                <th>学生姓名</th>
+                                                <th>班级</th>
+                                                <th>性别</th>
+                                                <th>手机号</th>
+                                                <th>家长手机号</th>
+                                                <th>入学时间</th>
+                                                <th>地区时间</th>
+                                                <th>状态</th>
+                                                <th>操作</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr th:each="info,iterStat:${pageResult.list}" th:if="${pageResult.list != null &amp;&amp; pageResult.list.size() > 0}"
+                                                onmouseover="this.style.backgroundColor='#e3f1ff'"
+                                                onmouseout="this.style.backgroundColor='#ffffff'">
+                                                <td th:text="${iterStat.count}">索引</td>
+                                                <td ><input type="hidden"
+                                                            name="operationSuccess" id="operationSuccess"
+                                                            th:value="${operationSuccess}" /> <input type="hidden"
+                                                                                                     th:value="${info.stuId}" name="studentId" id="studentId" />
+                                                    <span style="cursor: pointer"
+                                                          th:title="${info.stuFormalNo}"
+                                                          th:text="${info.stuName}"></span></td>
+                                                <td >
+                                                    <span style="cursor: pointer"
+                                                          title=""
+                                                          th:text="${info.claName}"></span>
+                                                </td>
+                                                <td>
+                                                    <span style="cursor: pointer"
+                                                          title=""
+                                                          th:if="${info.stuSex == '1'}" th:text="女"></span> <span
+                                                        style="cursor: pointer" title="点击可编辑"
+                                                        th:if="${info.stuSex == '0'}" th:text="男"></span>
+                                                </td>
+                                                <td>
+                                                    <span style="cursor: pointer"
+                                                          title=""
+                                                          th:text="${info.stuMobile}"></span>
+                                                </td>
+                                                <td>
+                                                    <span
+                                                            th:each="famTel:${info.stuFamTel}"
+                                                            style="cursor: pointer; white-space: nowrap;"
+                                                            title=""
+                                                            th:text="${famTel.stuFamTel}"></span>
+                                                </td>
+                                                <td >
+                                                    <span style="cursor: pointer"
+                                                          title=""
+                                                          baisee:fmt="yyyy-MM-dd,${info.stuEnrolmentTime}"></span>
+                                                </td>
+                                                <td >
+                                                    <span style="cursor: pointer"
+                                                          title=""
+                                                          th:text="${info.stuHomeAddress}"></span>
+                                                </td>
+                                                <th>
+                                                    <span
+                                                            th:if="${info.stuStatus} == 0"> <span
+                                                            style="cursor: pointer;font-weight: 500" title="" th:text="试听"></span>
+                                                            </span><span
+                                                        th:if="${info.stuStatus} == 1"> <span
+                                                        style="cursor: pointer;font-weight: 500" title="" th:text="试听结束"></span>
+															</span><span
+                                                        th:if="${info.stuStatus} == 2"> <span
+                                                        style="cursor: pointer;font-weight: 500" title="" th:text="正式"></span>
+															</span> <span th:if="${info.stuStatus} == 3"> <span
+                                                        style="cursor: pointer;font-weight: 500" title="" th:text="毕业"></span>
+															</span> <span th:if="${info.stuStatus} == 4"> <span
+                                                        style="cursor: pointer;font-weight: 500" title="" th:text="休学"></span>
+															</span> <span th:if="${info.stuStatus} == 5"> <span
+                                                        style="cursor: pointer;font-weight: 500" title="" th:text="退学"></span>
+															</span> <span th:if="${info.stuStatus} == 6"> <span
+                                                        style="cursor: pointer;font-weight: 500" title="" th:text="开除"></span>
+															</span> <span th:if="${info.stuStatus} == 7" style=""> <span
+                                                        style="cursor: pointer;font-weight: 500" title="" th:text="已退费"></span>
+															</span>
+                                                </th>
+                                                <td>
+ <span baisee:ctrl="XSDAGL_DL"  data-toggle="modal" data-target="#gridSystemModal" style="cursor: pointer; color: red;" title="档案管理" th:onclick="'showFile(\'' + ${info.stuId} + '\',\''+${info.stuStatus}+'\')'"
+       th:text="档案管理">
+
+
+
+
+ </span>
+                                                </td>
+                                            </tr>
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <ul class="pagination" th:if="${pageResult != null}" th:object="${pageResult}">
+                                        <li><a href="javascript:void(0);" th:onclick="*{hasPreviousPage} ? 'go(1)' : 'return false;'">首页</a></li>
+                                        <li><a href="javascript:void(0);" th:onclick="*{hasPreviousPage} ? 'go(' + *{prePage} + ')' : 'return false;'">上一页</a></li>
+                                        <li><a href="javascript:void(0);" th:onclick="*{hasNextPage} ? 'go(' + *{nextPage} + ')' : 'return false;'">下一页</a></li>
+                                        <li><a href="javascript:void(0);" th:onclick="*{hasNextPage} ? 'go(' + *{pages} + ')' : 'return false;'">末页</a></li>
+                                        <li><a href="javascript:void(0);" onclick="go($('#pagenumber').val());">跳转至</a></li>
+                                        <li><a href="javascript:void(0)"><input name="pageNum" id="pagenumber" th:value="*{pageNum}" />/<span id="_pages" th:text="*{pages == 0} ? 1 : *{pages}"></span></a></li>
+                                        <li><a href="javascript:void(0)">页</a></li>
+                                    </ul>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+
+        </main>
+        <!--End 页面主要内容-->
+    </div>
+</div>
+<script type="text/javascript" th:src="@{js/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/layer/layer.js}"></script>
+<script th:inline="javascript">
+
+    //点击搜索判断入学时间
+    function stuAuditionStartTime() {
+        var stuStartTime = $("#stuStartTime").val();
+        var stuEndTime = $("#stuEndTime").val();
+        if (stuStartTime > stuEndTime) {
+            _alert("入学结束时间不得早于开始时间");
+            return false;
+        }
+        document.getElementById("frm").submit();
+    }
+    function stuAuditionStartTime(){
+        var stuStartTime =$("#stuStartTime").val();
+        var stuEndTime =$("#stuEndTime").val();
+        if(stuStartTime > stuEndTime){
+            _alert("入学结束时间不得早于开始时间");
+            return false;hideProccessBar
+        }
+        document.getElementById("frm").submit();
+    }
+    function check(){
+        var cName=$("#cName").val();
+        if (isNaN(cName)){
+           // layer.msg("非法字符，只能输入数字！！!");
+            $("#cName").val('');
+        }
+    }
+    /*<![CDATA[*/
+            function showFile(stuId,stuStatus){
+
+                //$(window).attr('location',basePath +"file/view.ht?stuId="+stuId+"&stuStatus="+stuStatus);
+
+             // window.location.href= basePath +"file/view.ht?stuId="+stuId+"&stuStatus="+stuStatus;
+      layer.open({
+                    type : 2,
+                    title : "档案管理",
+                    shadeClose : true,
+                    shade : 0.8,
+                    area : [ '800px', '500px' ],
+                    content :"/BaiseeOA/file/view.ht?stuId="+stuId+"&stuStatus="+stuStatus,
+                    end: function () {
+                        $(window.top.document).find("#_proccesBar").css("visibility", "hidden");
+                    }
+                });
+            }
+
+
+    /*]]>*/
+
+</script>
+<script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"  th:src="@{static/js/bootstrap.min.js}"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap-datepicker.min.js" th:src="@{js/bootstrap-datepicker.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap-datepicker.zh-CN.min.js" th:src="@{js/bootstrap-datepicker.zh-CN.min.js}"></script>
+<script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/layer/layer.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/bmsAjax.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/form/jquery.form.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/validate/jquery.validate.min.js}"></script>
+<script type="text/javascript"
+        th:src="@{js/plugins/My97DatePicker/WdatePicker.js}"></script>
+</body>
+</html>

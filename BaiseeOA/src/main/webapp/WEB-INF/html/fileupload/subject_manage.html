@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head th:include="commonTemplate :: header">
+<link rel="stylesheet" type="text/css" th:href="@{css/cla_list_css.css}" />
+</head>
+<body class="bgcolor-body">
+<div class="lyear-layout-web">
+	<div class="lyear-layout-container">
+
+		<!--左侧导航-->
+		<div th:replace="commonTemplate :: leftMenus"></div>
+		<!--End 左侧导航-->
+
+		<!--头部信息-->
+		<div th:replace="commonTemplate :: headerDiv"></div>
+		<!--End 头部信息-->
+
+		<!--页面主要内容-->
+		<main class="lyear-layout-content">
+
+			<div class="container-fluid" style="margin-top: -90px;">
+
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="card">
+								<form th:action="@{videoSubject/subjects.ht}" autocomplete="off" id="frm" name="frm" method="post">
+								<div class="card-toolbar clearfix " >
+									<div class="pull-right search-bar">
+										<div class="search-box-cont">
+											<div style="width: 70%;float: left">
+												<span> <input class="input radius3 form-control" name="itemlableSearch" th:value="${itemlableSearch}" type="text" placeholder="老师名称" style="width: 226px"  /> </span>
+												<input type="hidden"  id="cid" th:value="${userId}" />
+
+
+											</div>
+											<div style="float: right">
+												<span> <input class="button btn btn-success"  type="submit" value="搜索" /> </span>
+											</div>
+
+
+										</div>
+
+
+									</div>
+									<input type="hidden" name="operationSuccess" id="operationSuccess" th:value="${#httpServletRequest.getAttribute('operationSuccess')}"/>
+									<div class="toolbar-btn-action">
+										<span class="add JsW btn btn-success m-r-5"><a th:href="@{videoSubject/toAddSubject.ht}" class="ks-pop-nav"  baisee:ctrl="SPKMGL" title="添加科目" style="cursor:pointer;color: #ffffff"
+																 onmouseover="javascript:this.style.color='#dbdbdb'"
+																 onmouseout="javascript:this.style.color='#ffffff'">新增</a> </span>
+
+									</div>
+								</div>
+								</form>
+								<div class="card-body">
+
+									<div class="table-responsive">
+										<table class="ks-inputall table table-bordered" id="tb">
+											<thead>
+											<tr class="th">
+												<th class="col3">老师名称</th>
+												<th class="col4">类别</th>
+												<th class="col5">科目</th>
+											</tr>
+											</thead>
+											<tbody>
+											<tr th:each="fileVo,info:${pageResult.list}"
+												onmouseover="this.style.backgroundColor='#e3f1ff'"
+												onmouseout="this.style.backgroundColor='#ffffff'"
+												th:id="${fileVo.id}">
+												<td class="col3"><span style="cursor: pointer"
+																	   th:text="${fileVo.teacherName}"
+																	   th:onclick="'findByName(\'' + ${fileVo.id} + '\')'"></span></td>
+												<td class="col4">
+													<div th:if="${fileVo.deptType} eq highDevelop">
+																<span style="cursor:pointer"
+																	  th:text="高中开发"></span>
+													</div>
+													<div th:if="${fileVo.deptType} eq highTest">
+																<span style="cursor:pointer"
+																	  th:text="高中测试"></span>
+													</div>
+													<div th:if="${fileVo.deptType} eq firstCulture">
+																<span style="cursor:pointer"
+																	  th:text="初中文化"></span>
+													</div>
+													<div th:if="${fileVo.deptType} eq firstTechnology">
+																<span style="cursor:pointer"
+																	  th:text="初中技术"></span>
+													</div>
+												</td>
+												<td class="col5" th:id="${fileVo.id}"><span style="cursor: pointer"
+																							th:text="${fileVo.subjectName}"></span></td>
+											</tr>
+											<tr style="display: none">
+												<td><input type="hidden" name="operationSuccess"
+														   id="operationSuccess" th:value="${operationSuccess}" /></td>
+											</tr>
+											</tbody>
+										</table>
+									</div>
+
+
+								</div>
+							</div>
+						</div>
+
+					</div>
+
+			</div>
+
+		</main>
+		<!--End 页面主要内容-->
+	</div>
+</div>
+
+
+
+<script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap.min.js" th:src="@{static/js/bootstrap.min.js}"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+
+	<script type="text/javascript" th:inline="javascript">
+/*<![CDATA[*/
+var basePath = /*[[@{/}]]*/;
+/*]]>*/
+</script>
+
+	<script th:inline="javascript">
+	
+		function submitForm() {
+			$.ajax({
+				url: basePath+"/videoSubject/subjects.ht",
+				type:'GET',
+			    dataType: "json",//预期服务器返回的数据类型
+			    data: {"itemlableSearch":$("#itemlableSearch").val()},
+				success:function(data){
+					
+				}
+			});
+			
+		}
+		
+		function test(sss){
+			console.log(sss)
+		}
+			
+		
+		
+	</script>
+
+</body>
+</html>

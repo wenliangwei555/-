@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+	<head th:include="commonTemplate :: header">
+	<link rel="stylesheet" type="text/css" th:href="@{css/cla_list_css.css}" />
+	</head>
+	<body class="bgcolor-body">
+		<div id="page">
+			<div th:include="commonTemplate :: headerDiv"></div>
+			<div id="content" class="layout">
+				<div class="grid-s5m0">
+					<!-- ============================= 页面内容 开始============================= -->
+					<div class="col-main">
+						<div class="main-wrap">
+							<div class="skin-box">
+								<div class="skin-box-bd">
+									<div class="cur-position">
+										<span><a href="javascript:void(0);">信息管理</a> </span>
+										<span>&gt;</span>
+										<span><a th:href="@{historyDone/toHaveDoneList}">流程管理</a> </span>
+									</div>
+									<form th:action="@{historyDone/toHaveDoneList}"  id="frm" name="frm" method="post">
+										<div class="cont-box">
+											<div class="search-box">
+												<div class="right">
+													<div class="search-box-cont" >
+														<span> <input class="button" type="submit" value="搜索" /> </span>
+													</div>
+												</div>
+											</div>
+											<div class="list-table">
+												<div class="list-table-cont">
+													<div class="table2">
+														<table class="ks-inputall">
+															<tr class="th">
+																<td class="col2">流程名称</td>
+																<td class="col2">节点名称</td>
+																<td class="col3">申请人</td>
+																<td class="col4">开始时间</td>
+																<td class="col5">结束时间</td>
+															</tr>
+															  
+															<tr th:each="info:${pageResult.list}" th:if="${pageResult.list != null}"  onmouseover="this.style.backgroundColor='#e3f1ff'" onmouseout="this.style.backgroundColor='#ffffff'">
+																<td class="col1">
+																    <span  th:text="${info[taskName]}"></span>
+																</td>
+																<td class="col2">
+																	<span  th:text="${info[processName]}"></span>
+																</td>
+																<td class="col3">
+																	<span  baisee:name="${info[userId]},person"  ></span>
+																</td>
+																<td class="col4">
+																	<span th:text="${info[startTime]}"></span>
+																</td>
+																<td class="col5">
+																	<span th:text="${info[endTime]}"></span>
+																</td>
+															</tr> 
+														</table>
+													</div>
+												</div>
+											</div>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- ============================= 页面内容 结束============================= -->
+					<div th:include="commonTemplate :: leftMenus"></div>
+				</div>
+			</div>
+			<div th:include="commonTemplate :: footer"></div>
+		</div>
+		<div th:include="commonTemplate :: processBar" />
+		
+	<script th:inline="javascript">
+		 
+	</script>
+	
+	</body>
+</html>

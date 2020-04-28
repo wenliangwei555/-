@@ -1,0 +1,155 @@
+package cn.baisee.oa.controller;
+
+import cn.baisee.oa.annotation.Role;
+import cn.baisee.oa.model.SessionUserInfo;
+import cn.baisee.oa.model.BaiseeDossierCategory;
+import cn.baisee.oa.page.pagehelper.PageInfo;
+import cn.baisee.oa.service.BaiseeDossierCategoryService;
+import cn.baisee.oa.utils.ParamUtils;
+import cn.baisee.oa.utils.SessionUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Controller
+@RequestMapping(value = "/dossier")
+public class DossierCategoryController {
+
+    @Autowired
+    private BaiseeDossierCategoryService dossierCategoryService;
+
+
+/** =============== 档案管理-档案类别管理===================*/
+    /**
+     * 档案类别列表
+     *
+     * @param itemlableSearch 查询条件	档案类别名称
+     */
+    @RequestMapping(value = "/categoryList")
+    @Role(value = "CATE")
+    public ModelAndView toCategoryList(HttpServletRequest request, String itemlableSearch) {
+        Integer pageNum = ParamUtils.getPageNumParameters(request);
+        Integer pageSize = ParamUtils.getPageSizeParameters(request);
+        Map<String, String> map = new HashMap<>();
+        map.put("itemlableSearch", itemlableSearch == null ? "" : itemlableSearch);
+        PageInfo<BaiseeDossierCategory> pageInfo = dossierCategoryService.getDossierCategory(pageNum, pageSize, map);
+        ModelAndView mv = new ModelAndView("dossier/category_list");
+        mv.addObject("pageResult", pageInfo);
+        mv.addObject("itemlableSearch", itemlableSearch);
+        return mv;
+    }
+
+    /**
+     * 根据任务id，批量删除任务
+     *
+     * @param request
+     * @param ids     数组中装的是页面列表选中的任务id
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/deleteCategory")
+    @Role(value = "CATE_SCLB")
+    public ModelAndView delCategory(HttpServletRequest request, String[] ids) {
+        dossierCategoryService.delDossierCategory(ids);
+        return toCategoryList(request, null);
+    }
+
+    /**
+     * 档案管理-档案类别表添加页面
+     *
+     * @return
+     */
+    @RequestMapping(value = "/toAddCategory")
+    @Role(value = "CATE_XZLB")
+    public ModelAndView toAddCategory(HttpServletRequest request) {
+        ModelAndView mav = new ModelAndView("dossier/category_add");
+        return mav;
+    }
+
+    /**
+     * 根据id查询档案管理-档案类别
+     *
+     * @param id 任务id
+     * @return
+     */
+    @RequestMapping(value = "/selectCategory")
+    @Role(value = "CATE_CXLB")
+    public ModelAndView selectByCategoryId(String id) {
+        BaiseeDossierCategory baiseeDossierCategory = dossierCategoryService.getById(id);
+        ModelAndView mv = new ModelAndView("dossier/category_update");
+        mv.addObject("baiseeDossierCategory", baiseeDossierCategory);
+        return mv;
+    }
+
+    /**
+     * 执行档案管理-档案类别表添加
+     *
+     * @param request
+     * @param baiseeDossierCategory 对象
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/addCategory")
+    @Role(value = "CATE_XZLB")
+    public ModelAndView addCategory(HttpServletRequest request, BaiseeDossierCategory baiseeDossierCategory) throws Exception {
+        //获取当前用户名称
+        SessionUserInfo user = SessionUtil.getUserInfo(request);
+        baiseeDossierCategory.setuTime(new Date());
+        baiseeDossierCategory.setuName(user.getUserName());
+        //执行添加
+        dossierCategoryService.saveOrUpdateAssigmentManage(baiseeDossierCategory);
+        return toCategoryList(request, null);
+    }
+
+    /**
+     * 检查校区表中是否已存在此校区名称
+     *
+     * @param cName 类别名称
+     * @return
+     */
+    @RequestMapping(value = "/checkPname")
+    @Role(value = "CATE_CXLB")
+    @ResponseBody
+    public Object checkPname(String cName) {
+
+        Map<String,String>map=new HashMap<>();
+        map=dossierCategoryService.checkAssignmentPerson(cName);
+
+
+//        List<BaiseeDossierCategory> repairPlaces = dossierCategoryService.checkAssignmentPerson(cName);
+//        Map<String, String> map = new HashMap<>();
+////        判读是否有数据
+//        if (repairPlaces != null && repairPlaces.size() > 0) {
+//            map.put("codes", "111");
+//        } else {
+//            map.put("codes", "000");
+//        }
+        return map;
+    }
+
+    /**
+     * 执行任务修改
+     *
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/updateCategory")
+    @Role("CATE_XGLB")
+    public ModelAndView updateCategory(HttpServletRequest request, BaiseeDossierCategory baiseeDossierCategory) throws Exception {
+        //获取当前用户名称
+        SessionUserInfo user = SessionUtil.getUserInfo(request);
+        baiseeDossierCategory.setuTime(new Date());//获取更新时间
+        baiseeDossierCategory.setuName(user.getUserName());//获取更新人名称
+        dossierCategoryService.saveOrUpdateAssigmentManage(baiseeDossierCategory);
+        return toCategoryList(request, null);
+    }
+}

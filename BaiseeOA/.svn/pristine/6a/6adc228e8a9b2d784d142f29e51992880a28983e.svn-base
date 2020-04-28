@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+	<head th:include="commonTemplate :: header">
+	</head>
+	<body class="bgcolor-body">
+		<div id="page">
+			<div th:include="commonTemplate :: headerDiv"></div>
+			<div id="content" class="layout">
+				<div class="grid-s5m0">
+					<div class="col-main">
+						<div class="main-wrap">
+							<div class="skin-box">
+								<div class="skin-box-bd">
+									<div class="cur-position">
+										<span><a href="javascript:void(0)">系统通知</a> </span>
+										<span>&gt;</span>
+										<span><a th:href="@{notice/list.ht}">通知列表</a> </span>
+										<span>&gt;</span>
+										<span><a href="javascript:void(0)">通知查看</a></span>
+									</div>
+									<!-- ==================================== 页面内容开始 ============================= -->
+									<div class="cont-box">
+										<div class="JsW skin-box-bd" data-widget-type="tab" data-widget-config="{'activeIndex':0}">
+											<div class="skin-bd-box">
+												<div class="list-table">
+													<div class="list-table-cont">
+														<div class="table6">
+															<form id="noticeViewForm" th:action="@{notice/handle.ht}"  method="post" th:object="${info}" >
+																<input type="hidden" id="notice_id" name="noticeId" th:value="*{id}" />
+																<table>
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span>标题：</span>
+																				</div>
+																				<div class="td2">
+																					<span th:text="*{title}"></span>
+																				</div>
+																			</div>
+																		</td>
+																	</tr>
+																	
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span>内容：</span>
+																				</div>
+																				<div class="td2">
+																					<span th:text="*{content}"></span>
+																				</div>
+																			</div>
+																		</td>
+																	</tr>
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span>发送人：</span>
+																				</div>
+																				<div class="td2">
+																					<span th:text="*{fromUserName}"></span>
+																				</div>
+																			</div>
+																		</td>
+																	</tr>
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span>通知状态：</span>
+																				</div>
+																				<div class="td2"  th:switch="*{status}">
+																					<span  th:case="'0'">未读</span>
+																					<span  th:case="'1'">已读</span>
+																					<span  th:case="'2'">已处理</span>
+																					<span  th:case="'3'">已关闭</span>
+																					<span  th:case="*">未知状态</span>
+																				</div>
+																			</div>
+																		</td>
+																	</tr>
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span>发送时间：</span>
+																				</div>
+																				<div class="td2">
+																					<span baisee:fmt="yyyy-MM-dd HH:mm:ss,*{createTime}"></span>
+																				</div>
+																			</div>
+																		</td>
+																	</tr>
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span>更新时间：</span>
+																				</div>
+																				<div class="td2">
+																					<span baisee:fmt="yyyy-MM-dd HH:mm:ss,*{updateTime}"></span>
+																				</div>
+																			</div>
+																		</td>
+																	</tr>
+																</table>
+																<div class="redbutton control-button JsW" data-control-type="button" data-control-config="{'buttonCls':'button'}">
+																	<span baisee:ctrl="XTTZ_TZCL" th:if="*{status}=='1'"><input value="已处理" th:if="*{toUserId} == ${currUser.userId}" type="button" onclick="handle()" class="radius5 button ks-pop-close1" /> </span>
+																	<span baisee:ctrl="XTTZ_FSTZ" th:if="*{fromUserId} == ${currUser.userId}"><input value="关闭通知"  type="button" onclick="closeNotice()" class="radius5 button ks-pop-close1" /> </span>
+																	<span class="grey"> <input value="返回" type="button" class="radius5 button ks-pop-close1" onclick="returnBack();"/> </span>
+																	<span id="del"></span>
+																</div>
+															</form>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!-- ============================= 页面内容 结束============================= -->
+								</div>
+							</div>
+						</div>
+					</div>
+					<div th:include="commonTemplate :: leftMenus"></div>
+				</div>
+			</div>
+			<div th:include="commonTemplate :: footer"></div>
+		</div>
+		<div th:include="commonTemplate :: processBar" />
+		<script type="text/javascript" th:inline="javascript">
+			/*<![CDATA[*/
+			var basePath = /*[[@{/}]]*/;
+			/*]]>*/
+		</script>
+		<script th:inline="javascript"> 
+		$(function(){
+				
+		});
+		
+		function returnBack(){
+			var url = [[@{'/notice/list.ht'}]];
+			locationHref(url);
+		}
+		</script>
+		<script baisee:ctrl="XTTZ_FSTZ">
+			function handle(){
+				var id = $("#notice_id").val();
+				$.ajax({
+					url:basePath + "notice/handle.ht",
+					data:{noticeId:id},
+					dataType:'json',
+					type:'post',
+					success:function(res){
+						alert(res.msg);
+						if(res.code == "SUCCESS"){
+							returnBack();
+						}
+					}
+				})
+			}
+			function closeNotice(){
+				var id = $("#notice_id").val();
+				$.ajax({
+					url:basePath + "notice/closeNotice.ht",
+					data:{noticeId:id},
+					dataType:'json',
+					type:'post',
+					success:function(res){
+						alert(res.msg);
+						if(res.code == "SUCCESS"){
+							returnBack();
+						}
+					}
+				})
+			}
+		</script>
+	</body>
+</html>

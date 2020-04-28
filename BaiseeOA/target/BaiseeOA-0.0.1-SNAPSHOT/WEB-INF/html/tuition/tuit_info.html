@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="commonTemplate :: header">
+</head>
+
+<body>
+
+<div class="lyear-layout-web">
+	<div class="lyear-layout-container">
+
+		<!--左侧导航-->
+		<div th:replace="commonTemplate :: leftMenus"></div>
+		<!--End 左侧导航-->
+
+		<!--头部信息-->
+		<div th:replace="commonTemplate :: headerDiv"></div>
+		<!--End 头部信息-->
+
+		<!--页面主要内容-->
+		<main class="lyear-layout-content">
+
+			<div class="container-fluid">
+
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="card">
+							<div class="card-body">
+
+								<form id="Tuitform" th:action="@{tuition/saveOrUpdate.ht}" method="post" class="row">
+
+									<input type="hidden" name="tuId" id="tuId" th:value="${tuition.tuId}" />
+									<input type="hidden" name="prompt" id="prompt" th:value="${prompt}" />
+
+									<div class="form-group col-md-12">
+										<label for="tuType">学历</label>
+										<div class="form-controls">
+											<select class="form-control" id="tuType" name="tuType">
+												<option value=""></option>
+												<option value="1">高中</option>
+												<option value="0">初中</option>
+											</select>
+										</div>
+									</div>
+									<div class="form-group col-md-12">
+										<label for="tuTypeMeaning">学费含义</label>
+										<input type="text" class="form-control" id="tuTypeMeaning"
+											   onkeyup="check();" name="tuTypeMeaning" th:value="${tuition.tuTypeMeaning}" />
+									</div>
+									<div class="form-group col-md-12">
+										<label for="tuRefund">是否退费</label>
+										<select class="form-control" id="tuRefund" name="tuRefund"
+												onchange="TuitionTuRefundChoice(this.value)">
+											<option></option>
+											<option value="1">是</option>
+											<option value="0">否</option>
+										</select>
+									</div>
+									<div class="form-group col-md-12" id="RefundTr1">
+										<label for="rId">选择退费</label>
+										<select class="form-control" id="rId" name="rId"
+												>
+											<option></option>
+											<option th:each="ref:${refundsList}"
+													th:value="${ref.rId}"
+													th:text="${ref.rName}"></option>
+										</select>
+									</div>
+									<div class="form-group col-md-12">
+										<label for="tuByStages">是否分期</label>
+										<select class="form-control" id="tuByStages"
+												name="tuByStages"
+												onchange="TuitionTuByStagesChoice(this.value)">
+											<option></option>
+											<option value="0">否</option>
+											<option value="1">是</option>
+										</select>
+									</div>
+									<div class="form-group col-md-12" id="StagesTr">
+										<label for="tuStId">选择分期期数</label>
+										<select id="tuStId" name="tuStId" class="form-control"
+												onchange='StagesTypeChice(this.value)'>
+											<option></option>
+											<option th:each="stages:${stagesList}"
+													id="tuStOption" th:value="${stages.tuStId}"
+													th:text="${stages.tuStName}"></option>
+										</select>
+									</div>
+									<div class="form-group col-md-12" id="stagesRule">
+										<label>分期详情</label>
+										<table class="table table-bordered text-center" id="StagesTypeDetailedTable">
+											<tr>
+												<td></td>
+												<td>最低费用</td>
+												<td>周期费用</td>
+												<td>周期时间</td>
+											</tr>
+											<tr>
+<!--												<td><span th:text="${rule.tuStRuleMinimumTuition}"></span></td>-->
+<!--												<td><span th:text="${rule.tuStRuleHighestTuition}"></span></td>-->
+<!--												<td><span th:text="${rule.tuStRuleTimeLimit}"></span></td>-->
+											</tr>
+										</table>
+									</div>
+
+									<div class="form-group col-md-12">
+										<label for="tuDiscount">是否优惠</label>
+										<select class="form-control" id="tuDiscount" name="tuDiscount"
+												onchange="TuitionTuDiscountChoice(this.value)">
+											<option></option>
+											<option value="1">是</option>
+											<option value="0">否</option>
+										</select>
+									</div>
+
+									<div class="form-group col-md-12" id="Discount1">
+
+										<button type="button" th:onclick="'TuitionTuDiTypeChoice(\'' + ${tuition.tuId} + '\')'"
+											class="btn btn-success btn-round btn-w-md">设置优惠</button>
+
+									</div>
+
+									<div class="form-group col-md-12">
+										<label for="rtId">返费规则</label>
+										<select class="form-control" id="rtId" name="rtId"
+												onchange="TuitionTuReturnChoice(this.value)">
+											<option></option>
+											<option th:each="retu:${returnList}"
+													th:value="${retu.rtId}" th:text="${retu.rName}"></option>
+										</select>
+									</div>
+
+									<div class="form-group col-md-12" id="retuRule">
+										<label>返费详情</label>
+										<table id="retuRuleDetailedTable" class="table table-bordered text-center">
+											<tr>
+												<td></td>
+												<td>缴费金额</td>
+												<td>时间</td>
+												<td>返费金额</td>
+											</tr>
+											<tr>
+												<!-- <td><span th:text="${rule.tuStRuleMinimumTuition}"></span></td>
+                                                    <td><span th:text="${rule.tuStRuleHighestTuition}"></span></td>
+                                                    <td><span th:text="${rule.tuStRuleTimeLimit}"></span></td> -->
+											</tr>
+										</table>
+									</div>
+
+									<div class="form-group col-md-12">
+										<label for="tuMonet">学费价格</label>
+										<input type="text"
+											   class="form-control" id="tuMonet" onkeyup="check();" name="tuMonet"
+											   th:value="${tuition.tuMonet}" />
+									</div>
+
+									<div class="form-group col-md-12">
+										<button type="button" class="btn btn-primary"
+												th:onclick="'submitTuition()'">保 存</button>
+										<button type="button" class="btn btn-default" th:onclick="'returnBack()'">返 回</button>
+									</div>
+								</form>
+
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+			</div>
+
+
+		</main>
+	</div>
+</div>
+
+	<link rel="stylesheet" type="text/css" th:href="@{css/select2/select2.css}"/>
+	<script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+	<script type="text/javascript" src="js/bootstrap.min.js" th:src="@{static/js/bootstrap.min.js}"></script>
+	<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+	<script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+	<script type="text/javascript" src="js/plugins/layer/layer.js" th:src="@{js/plugins/layer/layer.js}"></script>
+<script type="text/javascript" src="js/plugins/form/jquery.form.js" th:src="@{js/plugins/form/jquery.form.js}"></script>
+<script type="text/javascript" src="js/plugins/validate/jquery.validate.min.js" th:src="@{js/plugins/validate/jquery.validate.min.js}"></script>
+	<script type="text/javascript" src="js/plugins/comm/bmsAjax.js" th:src="@{js/plugins/comm/bmsAjax.js}"></script>
+	<script type="text/javascript" src="js/plugins/select2/select2.full.min.js" th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/My97DatePicker/WdatePicker.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+
+	<script th:inline="javascript">
+
+		function submitTuition(){
+			var tuType=$("#tuType").val();
+			var tuTypeMeaning=$("#tuTypeMeaning").val();
+			var tuRefund=$("#tuRefund").val();
+			var tuByStages=$("#tuByStages").val();
+			var tuDiscount=$("#tuDiscount").val();
+			var pay=$("#pay").val();
+			var time=$("#time").val();
+			var retu=$("#retu").val();
+			var tuMonet=$("#tuMonet").val();
+			if (tuType == '') {
+				_alert("学籍必选");
+			}else if(tuTypeMeaning == ''){
+				_alert("请输入学费含义");
+			}else if (tuRefund == '') {
+				_alert("请选择是否退费");
+			}else if (tuRefund == '1') {
+				var rId=$("#rId").val();
+				if (rId == '') {
+					_alert("请选择退费公式");
+				}else{//退费公式不为空
+					if (tuByStages == '') {
+						_alert("请选择是否分期");
+					}else if (tuByStages == '1') {//分期情况下
+						var tuStId=$("#tuStId").val();
+						if (tuStId == '') {
+							_alert("请选择分期期数");
+						}else if (tuStId != ''){
+							if (tuDiscount == '') {
+								_alert("请选择是否优惠");
+							}else if(tuDiscount == '1'){
+								var tuDiId=$("#tuDiId").val();
+								if (tuDiId == '') {
+									_alert("请选择优惠类型");
+								}else if (pay == '') {
+									_alert("请选择缴费金额");
+								}else if (time == '') {
+									_alert("请选择返费费时间");
+								}else if (retu == '') {
+									_alert("请选择返费金额");
+								}else if (tuMonet == '') {
+									_alert("请输入学费金额");
+								}else{
+									$("#Tuitform").submit();
+								}
+						}else {
+							if (pay == '') {
+								_alert("请选择缴费金额");
+							}else if (time == '') {
+								_alert("请选择返费费时间");
+							}else if (retu == '') {
+								_alert("请选择返费金额");
+							}else if (tuMonet == '') {
+								_alert("请输入学费金额");
+							}else{
+								$("#Tuitform").submit();
+							}	
+						}
+						}
+					}else {//不分期的情况下
+						if (tuDiscount == '') {
+							_alert("请选择是否优惠");
+						}else if (tuDiscount == '1') {
+							var tuDiId=$("#tuDiId").val();
+							if (tuDiId == '') {
+								_alert("请选择优惠类型");
+							}else if(tuDiId != ''){
+								if (pay == '') {
+									_alert("请选择缴费金额");
+								}else if (time == '') {
+									_alert("请选择返费费时间");
+								}else if (retu == '') {
+									_alert("请选择返费金额");
+								}else if (tuMonet == '') {
+									_alert("请输入学费");
+								}else{
+									$("#Tuitform").submit();
+								}
+							}
+						}else{//没有优惠
+							if (pay == '') {
+								_alert("请选择缴费金额");
+							}else if (time == '') {
+								_alert("请选择返费费时间");
+							}else if (retu == '') {
+								_alert("请选择返费金额");
+							}else if (tuMonet == '') {
+								_alert("请输入学费");
+							}else{
+								$("#Tuitform").submit();
+							}
+						}
+					}
+					
+				}
+			}else {//是否退费为0
+					if (tuByStages == '') {
+						_alert("请选择是否分期");
+					}else if (tuByStages == '1') {//分期情况下
+						var tuStId=$("#tuStId").val();
+						if (tuStId == '') {
+							_alert("请选择分期期数");
+						}else if (tuStId != ''){
+							if (tuDiscount == '') {
+								_alert("请选择是否优惠");
+							}else if(tuDiscount == '1'){
+								_alert("分期暂无优惠");
+							}else {//没有优惠的情况下
+								if (pay == '') {
+									_alert("请选择缴费金额");
+								}else if (time == '') {
+									_alert("请选择返费费时间");
+								}else if (retu == '') {
+									_alert("请选择返费金额");
+								}else if (tuMonet == '') {
+									_alert("请输入学费金额");
+								}else{
+									$("#Tuitform").submit();
+								}
+							}
+						}
+					}else {//不分期的情况下
+						if (tuDiscount == '') {
+							_alert("请选择是否优惠");
+						}else if (tuDiscount == '1') {
+							var tuDiId=$("#tuDiId").val();
+							if (tuDiId == '') {
+								_alert("请选择优惠类型");
+							}else if(tuDiId != ''){
+								if (pay == '') {
+									_alert("请选择缴费金额");
+								}else if (time == '') {
+									_alert("请选择返费费时间");
+								}else if (retu == '') {
+									_alert("请选择返费金额");
+								}else if (tuMonet == '') {
+									_alert("请输入学费");
+								}else{
+									$("#Tuitform").submit();
+								}
+							}
+						}else{//没有优惠
+							if (pay == '') {
+								_alert("请选择缴费金额");
+							}else if (time == '') {
+								_alert("请选择返费费时间");
+							}else if (retu == '') {
+								_alert("请选择返费金额");
+							}else if (tuMonet == '') {
+								_alert("请输入学费");
+							}else{
+								$("#Tuitform").submit();
+							}
+						}
+					}
+			}
+		}
+		
+		function check(){ 
+			var tuMonet=$("#tuMonet").val();
+			if (isNaN(tuMonet)){
+				_alert("非法字符，只能输入数字！！！");
+				$("#tuMonet").val('')
+			} 
+		} 
+		
+		$(function(){
+			var prompt=$("#prompt").val();
+			if(prompt != ""){
+				_alert(prompt);
+			}
+			
+		})
+		
+		function returnBack(){
+			var url = [[@{'/tuition/toTuitionList.ht'}]];
+			locationHref(url);
+		} 
+		
+		$(function () {
+			var tuType=[[${tuition.tuType}]];
+			$("#tuType").val(tuType);
+		});
+		/* 是否优惠选中 */
+		$(function () {
+			var tuDiscount=[[${tuition.tuDiscount}]];
+			$("#tuDiscount").val(tuDiscount);
+		});
+		/* 是否允许退费选中 */
+		$(function () {
+			var tuRefund=[[${tuition.tuRefund}]];
+			$("#tuRefund").val(tuRefund);
+		});
+		/* 是否分期默认选中 */
+		$(function () {
+			var tuByStages=[[${tuition.tuByStages}]];
+			$("#tuByStages").val(tuByStages);
+		});
+		/*优惠类型默认选中*/
+		$(function (){
+			var tuDiscount=$("#tuDiscount").val();
+			if (tuDiscount != '') {
+				var tuDiId=[[${discount.tuDiId}]];
+				$("#tuDiId").val(tuDiId);
+			}
+			
+		})
+		
+		$(function (){
+			var tuStId=[[${stages.tuStId}]];
+			$("#tuStId").val(tuStId);
+		})
+		/*退费公式默认选中*/
+		$(function (){
+			var rId=[[${refund.rId}]];
+			$("#rId").val(rId);
+		})
+		/* 返费规则默认选中 */
+		$(function (){
+			var rtId=[[${rtId}]]
+			$("#rtId").val(rtId);
+		})
+		$(function(){
+			$("#tuType").select2({
+				placeholder : "请选择学籍状态"
+			});
+			$("#tuRefund").select2({
+				placeholder : "请选择是否退费"
+			});
+			$("#tuByStages").select2({
+				placeholder : "请选择该是否分期"
+			});
+			$("#tuDiscount").select2({
+				placeholder : "请选择该是否优惠"
+			});
+			$("#tuStId").select2({
+				placeholder : "请选择分期期数"
+			});
+			$("#tuDiId").select2({
+				placeholder : "请选择优惠类型"
+			});
+			
+			$("#rId").select2({
+				placeholder : "请选择退费公式"
+			});
+			$("#rtId").select2({
+				placeholder : "请选择返费规则"
+			});
+		});
+		
+		
+		</script>
+	<script th:inline="javascript"> 
+		/* <![CDATA[ */
+			$(function (){
+				var tuByStages = $("#tuByStages").val();
+				if(tuByStages == '1'){
+					StagesTr.style.display = '';
+				 }else {
+					$("#tuStId").val("");
+					StagesTr.style.display = 'none';
+				 }
+			}) 
+			/* $("#tuDiscount").attr("disabled","disabled"); */
+			/* 页面加载回显分期详细 */
+			$(function (){
+				var tuStId=$("#tuStId").val();
+				if (tuStId != '' && tuStId != null) {
+					var logUrl = [[@{'/tuition/getStagesRule.ht?tuStId='}]] + tuStId;
+					$.ajax({
+						url: logUrl,
+						type:'post',
+						success:function(data){
+							$("#StagesTypeDetailedTable").empty();
+							var stagesRule=data.stagesRule;
+							jQuery("#StagesTypeDetailedTable").append("<tr><td width='60px'>"+ "周期" +"</td><td width='60px'>"+"周期最低费用"+"</td><td width='60px'>"+"周期费用"+"</td><td width='60px'>"+"时间限制"+"</td></tr>");
+							$.each(stagesRule,function(i,item){
+				            	jQuery("#StagesTypeDetailedTable").append("<tr><td>"+ (i+1) +"</td><td>"+item.tuStRuleMinimumTuition+"</td><td>"+item.tuStRuleHighestTuition+"</td><td>"+item.tuStRuleTimeLimit+"月</td></tr>");
+				            });
+						}
+					})
+					stagesRule.style.display = '';
+				}else if (tuStId == '') {
+					stagesRule.style.display = 'none';
+				} 
+			})
+			/* 分期期数隐藏与展示 */
+			function TuitionTuByStagesChoice(studentTuitionType){
+				if(studentTuitionType != '' ){
+					var tuByStages = $("#tuByStages").val();
+					if(tuByStages == '0'){//一次性缴纳费用
+						$("#tuStId").val("");
+						stagesRule.style.display = 'none';
+						StagesTr.style.display = 'none';
+					}else if(tuByStages == '1'){
+						StagesTr.style.display = '';
+					 }
+				} 
+			};
+			/*分期详细*/
+			function StagesTypeChice(StagesType){
+				if (StagesTypeChice != '') {
+					var tuStId=$("#tuStId").val();
+					if (tuStId != '') {
+						var logUrl = [[@{'/tuition/getStagesRule.ht?tuStId='}]] + tuStId;
+						$.ajax({
+							url: logUrl,
+							type:'post',
+							success:function(data){
+								$("#StagesTypeDetailedTable").empty();
+								var stagesRule=data.stagesRule;
+								jQuery("#StagesTypeDetailedTable").append("<tr><td width='60px'>"+ "周期" +"</td><td width='60px'>"+"周期最低费用"+"</td><td width='60px'>"+"周期费用"+"</td><td width='60px'>"+"时间限制"+"</td></tr>");
+								$.each(stagesRule,function(i,item){
+					            	jQuery("#StagesTypeDetailedTable").append("<tr><td>"+ (i+1) +"</td><td>"+item.tuStRuleMinimumTuition+"</td><td>"+item.tuStRuleHighestTuition+"</td><td>"+item.tuStRuleTimeLimit+"月</td></tr>");
+					            });
+							}
+						})
+						stagesRule.style.display = '';
+					}else if (StagesTypeChice == '') {
+						stagesRule.style.display = 'none';
+					}
+				}
+			}
+			/* ]]> */
+			/* 页面加载退费公式显示与隐藏*/
+			$(function (){
+				var tuRefund=$("#tuRefund").val();
+				if (tuRefund == '1') {
+					//显示退费输入框
+					RefundTr1.style.display = '';
+				}else{
+					RefundTr1.style.display = 'none';
+				}
+			})
+			/* 退费公式显示与隐藏*/
+			function TuitionTuRefundChoice(refund){
+				if (refund != '') {
+					var tuRefund=$("#tuRefund").val();
+					if (tuRefund == '1') {
+						//显示退费输入框
+						RefundTr1.style.display = '';
+					}else if (tuRefund == '0') {
+						//隐藏退费输入框
+						$("#rId").val("");
+						RefundTr1.style.display = 'none';
+					}
+				}
+			};
+			/* 页面加载 显示优惠类型*/
+			$(function (){
+				var tuDiscount=$("#tuDiscount").val();
+				if (tuDiscount == '1') {
+					Discount1.style.display = '';
+				}else{
+					Discount1.style.display = 'none';
+				}
+			})
+			/* 是否优惠 */
+			function TuitionTuDiscountChoice(discount){
+				var tuDiscount=$("#tuDiscount").val();
+				if (discount != '') {
+					if (tuDiscount == '1') {
+						Discount1.style.display = '';
+					}else if (tuDiscount == '0') {
+						Discount1.style.display = 'none';
+						//Discount2.style.display = 'none';
+					}
+				}
+			};
+			/* 页面加载优惠详情显示与隐藏 */
+			$(function (){
+				var type=$("#tuDiId").val();
+				var logUrl = [[@{'/tuition/getDiscountById.ht?tuDiId='}]] + type;
+				if (type != '') {
+					$.ajax({
+						url: logUrl,
+						type:'post',
+						success:function(data){
+							var tuDiId=data.discId;
+							if (tuDiId == type) {
+								$("#tuDiThing").val(data.tuDiThing)
+							} 
+						}
+					})
+					//Discount2.style.display = '';
+				}
+			})
+			
+			/* 优惠详情显示与隐藏 */
+			function TuitionTuDiTypeChoice(tuId){
+				locationHref([[@{/tuition/setDiscounts.ht}]]+"?tuId=" + tuId);
+				// location.href=basePath+"/tuition/setDiscounts.ht?tuId="tuId;
+			/* 	var type=$("#tuDiId").val();
+				if (type != '') {
+					var logUrl = [[@{'/tuition/getDiscountById.ht?tuDiId='}]] + type;
+					$.ajax({
+						url: logUrl,
+						type:'post',
+						success:function(data){
+							var tuDiId=data.discId;
+							if (tuDiId == type) {
+								$("#tuDiThing").val(data.tuDiThing)
+							} 
+						}
+					})
+					Discount2.style.display = '';
+				}else if (tuDiscount == '') {
+					Discount2.style.display = 'none';
+				} */
+			};
+			
+			/* <![CDATA[ */
+				
+			$(function (){
+				var rtId=$("#rtId").val();
+				if (rtId != '') {
+					var logUrl = [[@{'/retu/getRetuRule.ht?rtId='}]] + rtId;
+					$.ajax({
+						url: logUrl,
+						type:'post',
+						success:function(data){
+							$("#retuRuleDetailedTable").empty();
+							var retuRule=data.retuRule;
+							jQuery("#retuRuleDetailedTable").append("<tr><td width='60px'>缴费金额</td><td width='60px'>时间</td><td width='60px'>返费金额</td></tr>"); 
+				            jQuery("#retuRuleDetailedTable").append("<tr><td>"+retuRule.paymentAmount+"元</td><td>"+retuRule.returnTime+"个月</td><td>"+retuRule.returnSum+"元</td></tr>");
+						}
+					})
+					retuRule.style.display = '';
+				}else if (rtId == '') {
+					retuRule.style.display = 'none';
+				}
+			})	
+				
+			//返费规则详情
+			function TuitionTuReturnChoice(retuId){
+				debugger;
+				if (retuId != '') {
+					var rtId=$("#rtId").val();
+					if (rtId != '') {
+						var logUrl = [[@{'/retu/getRetuRule.ht?rtId='}]] + rtId;
+						$.ajax({
+							url: logUrl,
+							type:'post',
+							success:function(data){
+								$("#retuRuleDetailedTable").empty();
+								var retuRule=data.retuRule;
+								jQuery("#retuRuleDetailedTable").append("<tr><td width='60px'>缴费金额</td><td width='60px'>时间</td><td width='60px'>返费金额</td></tr>"); 
+					            jQuery("#retuRuleDetailedTable").append("<tr><td>"+retuRule.paymentAmount+"</td><td>"+retuRule.returnTime+"</td><td>"+retuRule.returnSum+"</td></tr>");
+							}
+						})
+						retuRule.style.display = '';
+					}else if (rtId == '') {
+						retuRule.style.display = 'none';
+					}
+				}
+			}
+			/* ]]> */
+		</script>
+</body>
+</html>

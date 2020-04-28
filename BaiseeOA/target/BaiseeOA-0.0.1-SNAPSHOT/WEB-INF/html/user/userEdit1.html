@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+	<head th:include="commonTemplate :: header">
+	</head>
+	<body class="bgcolor-body">
+		<div id="page">
+			<div th:include="commonTemplate :: headerDiv"></div>
+			<div id="content" class="layout">
+				<div class="grid-s5m0">
+					<div class="col-main">
+						<div class="main-wrap">
+							<div class="skin-box">
+								<div class="skin-box-bd">
+									<div class="cur-position">
+										<!-- <span><a href="javascript:void(0)">信息管理</a> </span>
+										<span>&gt;</span> -->
+										<span><a th:href="@{user/toUserList.ht}">用户信息</a> </span>
+										<span>&gt;</span>
+										<span><a href="javascript:void(0)">编辑信息</a> </span>
+									</div>
+									<!-- ==================================== 页面内容开始 ============================= -->
+									<div class="cont-box">
+										<div class="JsW skin-box-bd" data-widget-type="tab" data-widget-config="{'activeIndex':0}">
+											<div class="skin-bd-box">
+												<div class="content-box-menu">
+													<ul >
+														<li class="active">
+															<a href="javascript:void(0)"> <span >填写信息</span> <span class="separator"></span> </a>
+														</li>
+														<!-- <li>
+															<a href="javascript:void(0)" > <span onclick="notSupJump();">附加信息</span> <span class="separator"></span> </a>
+														</li>
+														<li>
+															<a href="javascript:void(0)"><span onclick="notEduJump();">教育信息</span> <span class="separator"></span> </a>
+														</li>
+														<li>
+															<a href="javascript:void(0)"> <span onclick="notWorkJump();">履历信息</span> <span class="separator"></span> </a>
+														</li>
+														<li>
+															<a href="javascript:void(0)"> <span onclick="notFamJump();">家庭信息</span> <span class="separator"></span> </a>
+														</li> -->
+														
+													</ul>
+												</div>
+												<div class="list-table">
+													<div class="list-table-cont">
+														<div class="table6">
+														
+															<form id="basefrm" name="basefrm"  th:action="@{user/toSaveOrAddUser.ht}" method="post"  >
+																<table>
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span class="red">*</span><span>选择用户：
+																						<input type="hidden" class="radius3 input" id="lastUpdateTime" name="lastUpdateTime" th:value="${baiseeUser.lastUpdateTime}"/>
+																					</span>
+																				</div>
+																				<div class="td2">
+																					<div class="control-css3select css3select-icon-hide">
+																						<!-- 这里将写所有的员工以及他的ID -->
+																						<select id="userId" name="userId"  class="radius3">
+																							<option></option>
+																							<option th:each="info:${listName}" th:value="${info.empId}" th:text="${info.empName}"></option>
+																						</select>
+																					</div>
+																				</div>
+																			</div>		
+																		</td>
+																	</tr>
+																	
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span class="red">*</span><span>输入登录名称：</span>
+																				</div>
+																				<div class="td2">
+																					<span>
+																						<span ><!-- 这里将写所有的员工以及他的ID -->
+																							<input type="text" class="radius3 input" id="loginName" name="loginName" th:value="${baiseeUser.loginName}" placeholder="请输入登录名称"  />
+																						</span>
+																					</span>
+																				</div>
+																			</div>		
+																		</td>
+																	</tr>
+																	<tr>
+																		<td>
+																			<div class="left">
+																				<div class="td1">
+																					<span class="red">*</span><span>角色名称：</span>
+																				</div>
+																				<div class="td2">
+				 																	 <div class="control-css3select css3select-icon-hide">
+																						<select class="radius3" id="roleName" name="roleName" >
+																							<option></option>
+																							<option th:each="t : ${roles}" th:value="${t.roleId}" th:text="${t.roleName}" ></option>
+																						</select>
+																					</div> 
+																				</div>
+																			</div>		
+																		</td>
+																	</tr>
+																</table>
+																<div class="redbutton control-button JsW"  >
+																<span class="grey"> 
+																	<input value="返回上级" type="button" onclick="returnBack();" class="radius5 button ks-pop-close1" /> 
+																</span>
+																<span> 
+																	<input value="确定保存" type="submit"  class="radius5 button ks-pop-close1" /> 
+																</span>
+																	
+																</div>
+															</form>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!-- ============================= 页面内容 结束============================= -->
+								</div>
+							</div>
+						</div>
+					</div>
+					<div th:include="commonTemplate :: leftMenus"></div>
+				</div>
+			</div>
+			<div th:include="commonTemplate :: footer"></div>
+		</div>
+		<div th:include="commonTemplate :: processBar" />
+		<script th:inline="javascript">
+		
+			$(function(){
+				setValidate($("#basefrm"),{
+					rules: {
+						userId:{required: true,
+							remote:{       
+					              type : "POST",
+					              url : [[@{/user/VerificationEmpID.ht}]],
+					              cache:false,
+					              async: false,
+					              data : {
+					            	 "userId" : function(){return $("#userId").val();}
+					              },
+					          }	
+						},
+						loginName:{required: true, maxlength: 21,minlength:2,loginNameEnglish:true,
+							remote:{       
+				              type : "POST",
+				              url : [[@{/user/VerificationLoginName.ht}]],
+				              cache:false,
+				              async:false,
+				              data : {
+				            	 "loginName" : function(){return $("#loginName").val();}
+				              },
+				           }
+						},
+						
+						loginPwd:{required: true ,maxlength: 21,minlength:6},
+						roleName:{required: true},
+						userType:{required: true}
+					},
+					messages:{
+						userId:{required: "*请选择用户",remote: "已有该用户！请重新选择"},
+						loginName:{required: "*请填写登录名称",maxlength: "*最多输入21位字符",minlength:"*最少2位字符",remote: "已有该登录名称！请重新填写"},
+						loginPwd:{required: "*请填写登录密码",maxlength: "*最多输入21位字符",minlength:"*密码最少输入6位字符"},
+						roleName:{required: "*请选择角色"},
+						userType:{required: "*请选择部门籍"}
+					}
+				});
+				
+				/* =========================================登录名称校验(只能输入英文字母)======================================================= */
+				$.validator.addMethod("loginNameEnglish", function(value, element) { 
+					var length = value.length; 
+					var loginNameEnglish = /^[a-zA-Z]{2,21}$/;
+					return this.optional(element) || (loginNameEnglish.test(value)); 
+				}, "*登录名称只能包含英文，长度2~21！"); 
+				
+			});
+			
+			$(function(){
+				$("#roleName").select2({
+					placeholder : "请选择角色"
+				});
+				
+				$("#userType").select2({
+					placeholder : "请选择部门籍"
+				});
+				
+				$("#userId").select2({
+					placeholder : "请选择用户"
+				});
+				
+			});
+			
+			function returnBack(){
+				var url = [[@{'/user/toUserList.ht'}]];
+				locationHref(url);
+			};
+		</script>
+	</body>
+</html>

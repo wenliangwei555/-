@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="commonTemplate :: header">
+</head>
+
+<body>
+<div class="lyear-layout-web">
+	<div class="lyear-layout-container">
+
+		<!--左侧导航-->
+		<div th:replace="commonTemplate :: leftMenus"></div>
+		<!--End 左侧导航-->
+
+		<!--头部信息-->
+		<div th:replace="commonTemplate :: headerDiv"></div>
+		<!--End 头部信息-->
+
+		<!--页面主要内容-->
+		<main class="lyear-layout-content">
+
+			<div class="container-fluid">
+				<form  th:action="@{emp/toEmpList.ht}"  id="frm" name="frm" method="post">
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="card">
+								<div class="card-toolbar clearfix " >
+									<div class="card-toolbar clearfix " >
+										<div class="pull-right search-bar" >
+											<div class="input-group">
+												<input class="form-control" id="itemlableSearch" name="itemlableSearch" th:value="*{itemlableSearch}" type="text" placeholder="输入用户名" />
+
+												<div class="input-group-btn">
+													<button class="btn btn-success" onclick="frmSubmit()" id="search-btn1" type="button" aria-haspopup="true" aria-expanded="false">
+														查询
+													</button>
+												</div>
+											</div>
+										</div>
+										<div class="pull-right search-bar">
+											<select name="status" class="form-control"
+													id="stuStatus">
+												<option value="" selected="selected">--选择状态--</option>
+												<option value="0" th:if="${status} eq 0"
+														selected="selected">离职</option>
+												<option value="0" th:if="${status} ne 0">离职</option>
+												<option value="1" th:if="${status} eq 1"
+														selected="selected">在职</option>
+												<option value="1" th:if="${status} ne 1">在职</option>
+											</select>
+										</div>
+										<div class="pull-right search-bar">
+											<select name="empJob" class="form-control"
+													id="empJob">
+												<option value="" selected="selected">--选择职位--</option>
+												<option th:selected="${empJob eq info.dictId}"
+														th:each="info:${dict}" th:value="${info.dictId}"
+														th:text="${info.dictDestination}"></option>
+											</select>
+										</div>
+										<div class="pull-right search-bar">
+											<select name="empDept" class="form-control"
+													id="empDept">
+												<option value="" selected="selected">--选择部门--</option>
+												<option th:selected="${empDept eq info.dictValue}"
+														th:each="info:${Dept}" th:value="${info.dictValue}"
+														th:text="${info.dictDestination}"></option>
+											</select>
+										</div>
+										<div class="pull-right search-bar">
+											<select name="gender" class="form-control"
+													id="gender">
+												<option value="" selected="selected">--选择性别--</option>
+												<option value="0" th:if="${gender == '0'}"
+														selected="selected" th:text="男">男</option>
+												<option value="0" th:if="${gender != '0'}" th:text="男">男</option>
+												<option value="1" th:if="${gender== '1'}"
+														selected="selected" th:text="女">女</option>
+												<option value="1" th:if="${gender != '1'}" th:text="女">女</option>
+											</select>
+										</div>
+										<button baisee:ctrl="YGGL_YGXZ" type="button" class="btn btn-primary" th:onclick="'add()'" data-toggle="modal" data-target="#gridSystemModal">
+											<i class="mdi mdi-plus-box"></i>新增
+										</button>
+										<button baisee:ctrl="YGGL_YGSC" type="button" class="btn btn-danger" th:onclick="'del(\'frm\', \''+ @{/emp/deleteCheckEmp.ht} + '\')'" data-toggle="modal" data-target="#gridSystemModal">
+											<i class="mdi  mdi-delete-empty"></i>删除
+										</button>
+										<!--<button baisee:ctrl="YGGL_PLDR" type="button" class="btn btn-warning" th:onclick="'dryg()'" data-toggle="modal" data-target="#gridSystemModal">-->
+											<!--<i class="mdi mdi-exit-to-app"></i>批量导入-->
+										<!--</button>-->
+										<!--<span class="add JsW" baisee:ctrl="YGGL_YGXZ"><a-->
+												<!--th:href="@{emp/toAddEmp.ht}" class="ks-pop-nav"-->
+												<!--title="添加员工信息" style="cursor: pointer; color: #ffffff"-->
+												<!--onmouseover="javascript:this.style.color='#dbdbdb'"-->
+												<!--onmouseout="javascript:this.style.color='#ffffff'"><i class="mdi mdi-check"></i>新增</a> </span>-->
+										<!--<span class="del" baisee:ctrl="YGGL_YGSC"><a-->
+												<!--bms:ctrl="busDict.delDict" href="javascript:void(0);"-->
+												<!--th:onclick="'del(\'frm\', \''+ basePath+'/emp/deleteCheckEmp.ht\')'"-->
+												<!--title="删除员工信息" style="cursor: pointer; color: #ffffff"-->
+												<!--onmouseover="javascript:this.style.color='#dbdbdb'"-->
+												<!--onmouseout="javascript:this.style.color='#ffffff'"><i class="mdi mdi-window-close"></i>删除</a> </span>-->
+										<!--<span class="del" baisee:ctrl="YGGL_PLDR"><a-->
+												<!--bms:ctrl="busDict.delDict" href="../doEmpLogin.ht"-->
+												<!--style="cursor: pointer; color: #ffffff"-->
+												<!--onmouseover="javascript:this.style.color='#dbdbdb'"-->
+												<!--onmouseout="javascript:this.style.color='#ffffff'"><i class="mdi mdi-exit-to-app"></i>批量导入</a>-->
+												<!--</span>-->
+									</div>
+								</div>
+								<div class="card-body">
+									<div class="table-responsive">
+										<table class="table table-bordered">
+											<thead>
+											<tr>
+												<td class="col1" baisee:ctrl="YGGL_YGSC">
+													<div class="JsW control-checkbox"
+														 data-control-type="checkboxall">
+														<input type="checkbox"
+															   onclick="selectAllCheckBox(document.frm.ids,document.frm.checkbox,this);" />
+													</div>
+												</td>
+												<th class="col3">姓名</th>
+												<th class="col4">性别</th>
+												<th class="col5">手机号</th>
+												<th class="col6">家庭住址</th>
+												<th class="col6">职位</th>
+												<th class="col6">入职时间</th>
+												<th class="col6">离职时间</th>
+												<th class="col6" baisee:ctrl="YGGL_YGLZ">操作</th>
+											</tr>
+											</thead>
+											<tbody>
+											<tr th:each="info,iterStat:${pageResult.list}" th:if="${pageResult.list != null &amp;&amp; pageResult.list.size() > 0}">
+												<td class="col1" baisee:ctrl="YGGL_YGSC">
+													<div class="JsW control-checkbox"
+														 data-control-type="checkbox">
+														<input type="checkbox" name="ids"
+															   th:value="${info.empId}" />
+													</div>
+												</td>
+												<td class="col3"><span style="cursor: pointer"
+																	   title="点击可编辑"
+																	   th:onclick="'edit(\'' + ${info.empId} + '\')'"
+																	   th:text="${info.empName}"></span></td>
+												<td class="col4"><span style="cursor: pointer"
+																	   title="点击可编辑"
+																	   th:onclick="'edit(\'' + ${info.empId} + '\')'"
+																	   th:if="${info.empSex == '1'}" th:text="女"></span> <span
+														style="cursor: pointer" title="点击可编辑"
+														th:onclick="'edit(\'' + ${info.empId} + '\')'"
+														th:if="${info.empSex == '0'}" th:text="男"></span></td>
+												<td class="col5"><span style="cursor: pointer"
+																	   title="点击可编辑"
+																	   th:onclick="'edit(\'' + ${info.empId} + '\')'"
+																	   th:text="${info.empMobile}"></span></td>
+												<td class="col5"><span style="cursor: pointer"
+																	   title="点击可编辑"
+																	   th:onclick="'edit(\'' + ${info.empId} + '\')'"
+																	   th:if="${info.empHomeAddress != null }"
+																	   th:text="${info.empHomeAddress }"></span> <span
+														style="cursor: pointer; color: gray;" title="点击可编辑"
+														th:onclick="'edit(\'' + ${info.empId} + '\')'"
+														th:if="${info.empHomeAddress == null }" th:text="暂未填写"></span>
+												</td>
+												<td class="col5"><span style="cursor: pointer"
+																	   title="点击可编辑"
+																	   th:onclick="'edit(\'' + ${info.empId} + '\')'"
+																	   th:text="${info.empJob}"></span></td>
+												<td class="col5"><span style="cursor: pointer"
+																	   title="点击可编辑"
+																	   th:onclick="'edit(\'' + ${info.empId} + '\')'"
+																	   baisee:fmt="yyyy-MM-dd HH:mm:ss,${info.empRegTime }"></span></td>
+												<td class="col5"><span style="cursor: pointer"
+																	   title="点击可编辑"
+																	   th:onclick="'edit(\'' + ${info.empId} + '\')'"
+																	   baisee:fmt="yyyy-MM-dd HH:mm:ss,${info.empLeaveTime }"></span></td>
+												<td class="col5" baisee:ctrl="YGGL_YGLZ"><span
+														th:if="${info.empStatus} == '1'" baisee:ctrl="YGGL_YGLZ">
+																	<a href="javascript:void(0)"
+																	   th:onclick="'leave(\'' + ${info.empId} + '\','+0+')'"
+																	   style="color: red"><span
+																			style="cursor: pointer; color: red" th:text="离职"></span></a>
+															</span> <span th:if="${info.empStatus} == '0'"> <span
+														style="cursor: pointer" title="点击可编辑"
+														th:onclick="'edit(\'' + ${info.empId} + '\')'"
+														th:text="该员工已离职"></span>
+															</span> <span th:if="${info.empStatus} == ''"> <span
+														style="cursor: pointer" title="点击可编辑"
+														th:onclick="'edit(\'' + ${info.empId} + '\')'"
+														th:text="还未选择该员工状态"></span>
+															</span></td>
+											</tr>
+
+											</tbody>
+										</table>
+									</div>
+									<ul class="pagination" th:if="${pageResult != null}" th:object="${pageResult}">
+										<li><a href="javascript:void(0);" th:onclick="*{hasPreviousPage} ? 'go(1)' : 'return false;'">首页</a></li>
+										<li><a href="javascript:void(0);" th:onclick="*{hasPreviousPage} ? 'go(' + *{prePage} + ')' : 'return false;'">上一页</a></li>
+										<li><a href="javascript:void(0);" th:onclick="*{hasNextPage} ? 'go(' + *{nextPage} + ')' : 'return false;'">下一页</a></li>
+										<li><a href="javascript:void(0);" th:onclick="*{hasNextPage} ? 'go(' + *{pages} + ')' : 'return false;'">末页</a></li>
+										<li><a href="javascript:void(0);" onclick="go($('#pagenumber').val());">跳转至</a></li>
+										<li><a href="javascript:void(0);"><input name="pageNum" id="pagenumber" th:value="*{pageNum}" />/<span id="_pages" th:text="*{pages == 0} ? 1 : *{pages}"></span></a></li>
+										<li><a href="javascript:void(0);">页</a></li>
+									</ul>
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</form>
+			</div>
+
+		</main>
+		<!--End 页面主要内容-->
+	</div>
+</div>
+
+<script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"  th:src="@{static/js/bootstrap.min.js}"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap-datepicker.min.js" th:src="@{js/bootstrap-datepicker.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap-datepicker.zh-CN.min.js" th:src="@{js/bootstrap-datepicker.zh-CN.min.js}"></script>
+<script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/layer/layer.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/bmsAjax.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/form/jquery.form.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/validate/jquery.validate.min.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/My97DatePicker/WdatePicker.js}"></script>
+
+<script type="text/javascript" th:inline="javascript">
+    var basePath = /*[[@{/}]]*/;
+</script>
+<script type="text/javascript">
+	/*<![CDATA[*/
+	function add() {
+		locationHref(basePath+"emp/toAddEmp.ht")
+	}
+	function dryg() {
+		locationHref(basePath+"doEmpLogin.ht")
+	}
+			function leave(empId,empStatus) {
+				layer.confirm('确定改为离职吗？', {
+					btn : [ '确定', '取消' ]//按钮
+				}, function(index) {
+					layer.close(index);
+					//此处请求后台程序，下方是成功后的前台处理……
+					//var index = layer.load(0,{shade: [0.7, '#393D49']}, {shadeClose: true}); //0代表加载的风格，支持0-2
+					$.ajax({
+						url:basePath+"emp/toUpdateEmpStatus.ht",
+					    type:'post',
+							data:{EID:empId,E_STATUS:empStatus},
+					success:function(data){
+						if(data.flag == "updateSuccess"){
+							//修改状态成功
+							var url = basePath+"emp/toEmpList.ht";
+							locationHref(url);
+						}else{
+							_alert("修改失败！");
+						}
+					}
+				})
+				});
+			};
+
+	function edit(id){
+		locationHref(basePath+"emp/EmployeeUpdate.ht?empId=" + id);
+	}
+
+	var bool = true;
+	function frmSubmit(){
+		if(bool == true){
+			document.getElementById("frm").submit();
+		}
+	}
+
+	function check(){
+		bool = true;
+		var itemlableSearch=$("#itemlableSearch").val();
+		var Correct = /^[A-Za-z0-9\u4e00-\u9fa5]+$/;
+		if(itemlableSearch != ""){
+			if (!Correct.test(itemlableSearch)){
+				bool = false;
+				_alert("含有非法字符，请正确输入！");
+				$("#itemlableSearch").val("");
+			} else{
+				bool = true;
+			}
+		}
+	}
+	/*]]>*/
+</script>
+</body>
+</html>

@@ -1,0 +1,331 @@
+package cn.baisee.oa.controller;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.servlet.ModelAndView;
+
+import cn.baisee.oa.annotation.Login;
+import cn.baisee.oa.annotation.Role;
+import cn.baisee.oa.constants.AppConstants;
+import cn.baisee.oa.core.OaSessionListener;
+import cn.baisee.oa.core.file.FileDir;
+import cn.baisee.oa.core.file.FileUploadUtil;
+import cn.baisee.oa.model.BaiseeSysParam;
+import cn.baisee.oa.model.BaiseeUser;
+import cn.baisee.oa.model.ReturnInfo;
+import cn.baisee.oa.model.emp.BdEmployeeInfo;
+import cn.baisee.oa.service.EmployeeService;
+import cn.baisee.oa.service.LoginService;
+import cn.baisee.oa.service.StudentService;
+import cn.baisee.oa.utils.ParamUtils;
+import cn.baisee.oa.utils.RedisUtils;
+import cn.baisee.oa.utils.SessionUtil;
+
+/**
+ * 登陆controller
+ */
+@Controller
+@RequestMapping
+public class LoginController {
+
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	@Autowired
+	private EmployeeService employeeService;
+	@Autowired
+	private StudentService studentService;
+	@Autowired
+	private LoginService loginService;
+	
+	@Resource(name = "redisUtils")
+	private RedisUtils redisUtils;
+	@ResponseBody
+	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	@Login(ignore=true)
+	@Role(ignore=true)
+	public Object login(HttpServletRequest request) throws Exception {
+		ReturnInfo rtInfo = loginService.login(request);
+		return rtInfo;
+	}
+	
+	@RequestMapping("/welcome")
+	@Login(ignore=true)
+	@Role(ignore=true)
+	public ModelAndView welcome(HttpServletRequest request, HttpServletResponse response){
+		 ModelAndView mav = new ModelAndView("login");
+		 logger.debug("调用到欢迎页面");
+		 return mav;
+	}
+	
+	
+	@ResponseBody
+	@RequestMapping(value = "/checkUserName", method = RequestMethod.POST)
+	@Login(ignore=true)
+	@Role(ignore=true)
+	public Object checkUserName(HttpServletRequest request) throws Exception {
+		boolean flag = false;
+		if(flag){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+//	@RequestMapping("/indexpage")
+//	@Login(ignore=true)
+//	@Role(ignore=true)
+//	public String showIndex(HttpServletRequest req) {
+//		req.getSession().setAttribute(AppConstants.CUR_MENU_PCODE, AppConstants.HOME_MENU_CODE);
+//	
+//		   return "forward:notice/list.ht";
+//	}
+	
+	@RequestMapping("/indexpage")
+	@Login(ignore=true)
+	@Role(ignore=true)
+	public String showIndex(HttpServletRequest req) {
+		req.getSession().setAttribute(AppConstants.CUR_MENU_PCODE, AppConstants.HOME_MENU_CODE);
+	
+		   return "index";
+	}
+	@RequestMapping("/fileip")
+	@Role(ignore=true)
+	@ResponseBody
+	public String getIp(HttpServletRequest req) {
+		BaiseeSysParam param = (BaiseeSysParam)redisUtils.mget("ftp.server.item", "1");
+		return param.getSysParamValue();
+	}
+	
+	@RequestMapping("/doEmpLogin")
+	@Role(value="YGGL")
+	public ModelAndView doEmpLogin(HttpServletRequest request, HttpServletResponse response){
+		ModelAndView model = new ModelAndView("test/importEmpExcel");
+		String date = "20180918090810";
+		model.addObject("result", new BdEmployeeInfo());
+		model.addObject("dateInfo", date);
+		return model;
+	}
+	@RequestMapping("/doLogin")
+	@Role(ignore=true)
+	public ModelAndView doLogin(HttpServletRequest request, HttpServletResponse response){
+		ModelAndView model = new ModelAndView("test/importExcel");
+		String date = "20180918090810";
+		model.addObject("result", new BdEmployeeInfo());
+		model.addObject("dateInfo", date);
+		return model;
+	}
+	@RequestMapping("/doAuditionStudent")
+	@Role(ignore=true)
+	public ModelAndView doAuditionStudent(HttpServletRequest request, HttpServletResponse response){
+		ModelAndView model = new ModelAndView("test/importAuditionStudentExcel");
+		String date = "20180918090810";
+		model.addObject("result", new BdEmployeeInfo());
+		model.addObject("dateInfo", date);
+		return model;
+	}
+	
+	@RequestMapping("/doUploadPic")
+	@Role(value="XTGL_YHGL")
+	public ModelAndView doUploadPic(HttpServletRequest request, HttpServletResponse response){
+		ModelAndView model = new ModelAndView("test/doUploadPic");
+		return model;
+	}
+	
+	@RequestMapping("/showFamilyList")
+	public ModelAndView showFamilyList(HttpServletRequest request, HttpServletResponse response){
+		Integer pageNum = ParamUtils.getPageNumParameters(request);
+		Integer pageSize = ParamUtils.getPageSizeParameters(request);
+		ModelAndView model = new ModelAndView("emp/familyOwnerInfo");
+		model.addObject("result", new BdEmployeeInfo());
+		return model;
+	}
+
+	@RequestMapping(value = "/uploadTest")
+	@Login(ignore=true)
+	@Role(ignore=true)
+	public ModelAndView saveBaseInfo(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+		File file = FileUploadUtil.getSingleFile(req);
+		FileUploadUtil.uploadFile(file, null, FileDir.C_PICTURE_DIR, "pcid1029384");
+		return new ModelAndView("test/doUploadPic");
+	}
+	
+	@RequestMapping("/doImport")
+	@Role(value="ZSXYGL_PLDR")
+	@Login(ignore=true)
+	@ResponseBody
+	public Object doImport(HttpServletRequest request) throws Exception {
+		ReturnInfo rInfo = new ReturnInfo();
+		MultipartHttpServletRequest multipartRequest = null;
+		multipartRequest = (MultipartHttpServletRequest) request;
+		MultipartFile file = multipartRequest.getFile("excelfile");
+		//请注意  该方法只是测试方法  诸位写的时候 请严格按照 controller 调用service 来进行
+		Map<String, Object> map = studentService.doService(file.getInputStream());
+		rInfo.setResult(map);
+		return rInfo;
+	}
+	@RequestMapping("/importAuditionStudent")
+	@Role(value="STXYGL_PLDR")
+	@Login(ignore=true)
+	@ResponseBody
+	public Object importAuditionStudent(HttpServletRequest request) throws Exception {
+		ReturnInfo rInfo = new ReturnInfo();
+		MultipartHttpServletRequest multipartRequest = null;
+		multipartRequest = (MultipartHttpServletRequest) request;
+		MultipartFile file = multipartRequest.getFile("excelfile");
+		//请注意  该方法只是测试方法  诸位写的时候 请严格按照 controller 调用service 来进行
+		Map<String, Object> map = studentService.importStudentResult(file.getInputStream(),request);
+		rInfo.setResult(map);
+		return rInfo;
+	}
+	@RequestMapping("/doEmpImport")
+	@Role(ignore = true)
+	@Login(ignore=true)
+	@ResponseBody
+	public Object doEmpImport(HttpServletRequest request) throws Exception {
+		ReturnInfo rInfo = new ReturnInfo();
+		MultipartHttpServletRequest multipartRequest = null;
+		multipartRequest = (MultipartHttpServletRequest) request;
+		MultipartFile file = multipartRequest.getFile("excelfile");
+		//请注意  该方法只是测试方法  诸位写的时候 请严格按照 controller 调用service 来进行
+		Map<String, Object> map = employeeService.doService1(file.getInputStream());
+		rInfo.setResult(map);
+		return rInfo;
+	}
+	
+	
+	
+	
+	
+	
+	@RequestMapping("/errorPage")
+	@Role(ignore=true)
+	public ModelAndView httpError(HttpServletRequest request, HttpServletResponse response, Exception e) {
+		int code = ParamUtils.getIntParameter(request, "code", 0);
+		ModelAndView mv = null;
+		switch(code) {
+		case 404 : 
+			mv = new ModelAndView("404");
+			break;
+		default : 
+			mv = new ModelAndView("error");
+			break;
+		}
+		BaiseeUser userInfo = SessionUtil.getUserInfo(request);
+		String homePage = null;
+		if(userInfo != null)
+			homePage = SessionUtil.getString(request, AppConstants.HOME_PAGE_URL);
+		else 
+			homePage = "welcome.ht";
+		String msg = "系统异常";
+		mv.addObject("errorCode", code);
+		mv.addObject("errorMsg", msg);
+		mv.addObject(AppConstants.HOME_PAGE_URL, homePage);
+		return mv;
+	}
+	
+	@RequestMapping("/logout")
+	@Login(ignore = true)
+	@Role(ignore = true, value = "logout")
+	public ModelAndView logout(HttpServletRequest req, HttpSession session) throws Exception { // 登出
+		OaSessionListener.sessionContext.delSession(session);
+		String userId = SessionUtil.getString(req, AppConstants.SESSION_USER_ID);
+		logger.debug("================ 用户退出 ：" + userId + " ===============");
+		StringBuffer sb = new StringBuffer("forward:").append("/welcome.ht");
+		ModelAndView mav = new ModelAndView(sb.toString());
+		return mav;
+	}
+	@RequestMapping("/downLoad")
+	@Role(value="ZSXYGL_MBXZ")
+	public void downLoad(HttpServletRequest req,HttpServletResponse res ){
+		//获取要下载的模板名称
+		String fileName = "student.xlsx";
+		//设置要下载的文件的名称
+		res.setHeader("Content-disposition","attachment;fileName="+fileName);
+		//通知客服文件的MIME类型
+		res.setContentType("application/vnd.ms-excel;charset=UTF-8");
+		//获取文件的路径
+		String filePath = req.getSession().getServletContext().getRealPath("/WEB-INF/Excel")+"/"+fileName;
+		filePath = filePath.replace("\\", "/");
+		InputStream input = null;
+		OutputStream out =null;
+		try {
+			input = new FileInputStream(filePath);
+			out =res.getOutputStream();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		byte[] b = new byte[2048];
+		int len;
+		try {
+			while((len=input.read(b))!=-1){
+				out.write(b,0,len);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try {
+			input.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	} 
+	@RequestMapping("/stuDownLoad")
+	@Role(value="STXYGL_MBXZ")
+	public void stuDownLoad(HttpServletRequest req,HttpServletResponse res ){
+		//获取要下载的模板名称
+		String fileName = "auditionStudent.xlsx";
+		//设置要下载的文件的名称
+		res.setHeader("Content-disposition","attachment;fileName="+fileName);
+		//通知客服文件的MIME类型
+		res.setContentType("application/vnd.ms-excel;charset=UTF-8");
+		//获取文件的路径
+		String filePath = req.getSession().getServletContext().getRealPath("/WEB-INF/Excel")+"/"+fileName;
+		filePath = filePath.replace("\\", "/");
+		InputStream input = null;
+		OutputStream out =null;
+		try {
+			input = new FileInputStream(filePath);
+			out =res.getOutputStream();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		byte[] b = new byte[2048];
+		int len;
+		try {
+			while((len=input.read(b))!=-1){
+				out.write(b,0,len);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try {
+			input.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	} 
+
+}

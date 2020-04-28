@@ -1,0 +1,306 @@
+package cn.baisee.oa.controller;
+
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import cn.baisee.oa.annotation.Role;
+import cn.baisee.oa.model.BaiseeClazz;
+import cn.baisee.oa.model.BaiseeUser;
+import cn.baisee.oa.model.ResponseResult;
+import cn.baisee.oa.model.student.BaiseeStudent;
+import cn.baisee.oa.model.student.BaiseeStudentApplicants;
+import cn.baisee.oa.page.pagehelper.PageInfo;
+import cn.baisee.oa.service.BaiseeStudentApplicantsService;
+import cn.baisee.oa.service.BaiseeTransactionService;
+import cn.baisee.oa.service.StudentService;
+import cn.baisee.oa.utils.ParamUtils;
+import cn.baisee.oa.utils.SessionUtil;
+import cn.baisee.oa.utils.StringUtil;
+
+@Controller
+@RequestMapping("apply")
+public class BaiseeStudentApplicantsController {
+	@Autowired
+	private BaiseeStudentApplicantsService studentApplicantsService;
+	@Autowired
+	private BaiseeTransactionService baiseeTransactionService;
+	@Autowired
+	private StudentService studentService;
+	/**
+	 * 去预报名添加页面
+	 * @return
+	 */
+	@RequestMapping("toAddApplicants")
+	@Role("YBMXSGL_XZ")
+	public ModelAndView toAddApplicants(){
+		ModelAndView model = new ModelAndView("apply/applicants_stuEdit");
+		return  model;
+		
+	}
+	/**
+	 * 去预报名修改页面
+	 * @return
+	 */
+	@RequestMapping("toModifyApplicants")
+	@Role("YBMXSGL_XG")
+	public ModelAndView toModifyApplicants(String id){
+		ModelAndView model = new ModelAndView("apply/applicants_stuShowAndModify");
+		BaiseeStudentApplicants stuApplicants = studentApplicantsService.getStudentApplicantsByid(id);
+		model.addObject("stu", stuApplicants);
+		return  model;
+		
+	}
+	/**
+	 * 添加预报名学生
+	 * @param request
+	 * @param studentApplicants
+	 * @return
+	 */
+	@RequestMapping("addApplicants")
+	@Role("YBMXSGL_XZ")
+	public ModelAndView addApplicants(HttpServletRequest request,BaiseeStudentApplicants studentApplicants){
+		BaiseeUser user = (BaiseeUser)SessionUtil.getUserInfo(request);
+		String operator=user.getUserId();
+		studentApplicants.setCreatedUser(operator);
+		ModelAndView model = new ModelAndView("apply/applicants_stuEdit");
+		int applicants = studentApplicantsService.addStudentApplicants(studentApplicants);
+		if(applicants>0){
+			model.addObject("operationSuccess","添加成功");
+		}else{
+			model.addObject("operationSuccess", "添加失败");
+		}
+		return  model;
+		
+	}
+	/**
+	 * 修改预报名学生
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("modifyApplicants")
+	@Role("YBMXSGL_XG")
+	public ModelAndView modifyApplicants(BaiseeStudentApplicants studentApplicants){
+		ModelAndView mv=new ModelAndView("apply/applicants_stuShowAndModify");
+		int i = studentApplicantsService.alterApplicants(studentApplicants);
+		if(i>0){
+			mv.addObject("operationSuccess","修改成功");
+			BaiseeStudentApplicants stuApplicants = studentApplicantsService.getStudentApplicantsByid(studentApplicants.getId());
+			mv.addObject("stu", stuApplicants);
+		}else{
+			mv.addObject("operationSuccess", "修改失败");
+			BaiseeStudentApplicants stuApplicants = studentApplicantsService.getStudentApplicantsByid(studentApplicants.getId());
+			mv.addObject("stu", stuApplicants);
+		}
+	
+		return mv;
+		
+	}
+	/**
+	 * 查看所有预报名学生
+	 * @param request
+	 * @param startTime
+	 * @param endTime
+	 * @param stuName
+	 * @return
+	 */
+	@RequestMapping("showApplicants")
+	@Role("YBMXSGL_CK")
+	public ModelAndView showApplicants(HttpServletRequest request,String startTime, String endTime, String itemlableSearch,String areas,String status){
+		int pageNum=ParamUtils.getPageNumParameters(request);
+		int pageSize=ParamUtils.getPageSizeParameters(request);
+		PageInfo<BaiseeStudentApplicants> pageInfo = studentApplicantsService.getAllStudentApplicants(pageNum, pageSize, startTime, endTime, itemlableSearch,areas,status);
+		ModelAndView model = new ModelAndView("apply/applicants_StuList");
+		if (pageInfo.getTotal() == 0) {
+			model.addObject("operationSuccess", "暂无数据");
+		}
+		model.addObject("pageResult", pageInfo);
+		model.addObject("startTime", startTime);
+		model.addObject("endTime", endTime);
+		model.addObject("itemlableSearch", itemlableSearch);
+		model.addObject("areas", areas);
+		model.addObject("status", status);
+		
+		return  model;
+		
+	}
+	/**
+	 * 区县查看
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("showAddress")
+	@ResponseBody
+	@Role("YBMXSGL_CK")
+	public ResponseResult<BaiseeStudentApplicants> showAddress(String id){
+		ResponseResult<BaiseeStudentApplicants> rr=new ResponseResult<BaiseeStudentApplicants>(1, "成功");
+		BaiseeStudentApplicants studentApplicants = studentApplicantsService.getStudentApplicantsByid(id);
+		rr.setData(studentApplicants);
+		return rr;
+		
+	}
+	/**
+	 * 前往预缴页面
+	 * 
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/PayPrepaymentHTML")
+	@Role("YBMXSGL_YJ")
+	public ModelAndView PayPrepaymentHTML(HttpServletRequest request){
+		ModelAndView model = new ModelAndView("apply/applicants_stuPayPrepayment");
+		String stuId = ParamUtils.getParameter(request, "id");
+		BaiseeStudentApplicants stu = studentApplicantsService.getStudentApplicantsByid(stuId);
+		String Prepayment = baiseeTransactionService.readPrepay(stuId);// 查询预缴费用
+		model.addObject("stu", stu);
+		if (Prepayment == "" || Prepayment == null) {
+			model.addObject("Prepayment", "0");
+		} else {
+			model.addObject("Prepayment", Prepayment);
+		}
+		return model;
+	}
+	 /* 预缴费缴纳
+	 * 
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/PayPrepayment")
+	@Role("YBMXSGL_YJ")
+	public ModelAndView PayPrepayment(HttpServletRequest request, HttpServletResponse response, String remarks){
+		BaiseeUser user = (BaiseeUser) SessionUtil.getUserInfo(request); // 获取当前登录的用户
+		String operator = user.getUserId();
+		String stuId = ParamUtils.getParameter(request, "id");
+		String PayPrepaymentMoney = ParamUtils.getParameter(request, "PayPrepaymentMoney");
+		Map<String, Object> map = new HashMap<>();
+		map.put("userID", stuId);
+		map.put("type", "预缴费");
+		map.put("amount", PayPrepaymentMoney);
+		map.put("operator", operator);
+		if (StringUtil.isEmpty(remarks)) {
+			remarks = "无";
+		}
+		map.put("remarks", remarks);// 流水备注
+		baiseeTransactionService.addPrepay(map);
+		request.setAttribute("PayPrepaymentSuccess", "缴纳预缴成功");
+		return PayPrepaymentHTML(request);
+	}
+	/**
+	 * 前往退预缴费页面
+	 * 
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/backPayPrepaymentHTML")
+	@Role("YBMXSGL_YJ")
+	public ModelAndView backPayPrepaymentHTML(HttpServletRequest request){
+		ModelAndView model = new ModelAndView("apply/applicants_stuBackPrepay");
+		String stuId = ParamUtils.getParameter(request, "id");
+		BaiseeStudentApplicants applicants = studentApplicantsService.getStudentApplicantsByid(stuId);
+		String Prepayment = baiseeTransactionService.readPrepay(stuId);// 查询预缴费用
+		model.addObject("student", applicants);
+		if (Prepayment == "" || Prepayment == null) {
+			model.addObject("Prepayment", "0");
+		} else {
+			model.addObject("Prepayment", Prepayment);
+		}
+		return model;
+	}
+
+	/**
+	 * 预缴费退费
+	 * 
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/backPrepayment")
+	@Role("YBMXSGL_YJ")
+	public ModelAndView backPrepayment(HttpServletRequest request, HttpServletResponse response, String remarks){
+		BaiseeUser user = (BaiseeUser) SessionUtil.getUserInfo(request); // 获取当前登录的用户
+		String operator = user.getUserId();
+		String stuId = ParamUtils.getParameter(request, "id");
+		String PayPrepaymentMoney = ParamUtils.getParameter(request, "PayPrepaymentMoney");
+		Map<String, Object> map = new HashMap<>();
+		map.put("userID", stuId);
+		map.put("type", "退预缴费");
+		map.put("amount", PayPrepaymentMoney);
+		map.put("operator", operator);
+		if (StringUtil.isEmpty(remarks)) {
+			remarks = "无";
+		}
+		map.put("remarks", remarks);// 流水备注
+		baiseeTransactionService.backPrepay(map);
+		request.setAttribute("PayPrepaymentSuccess", "退预交费成功");
+		return backPayPrepaymentHTML(request);
+	}
+	/**
+	 * 前往预报名学生转试听学生页面
+	 * 
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/toChangeApplicants")
+	@Role("YBMXSGL_ZST")
+	public ModelAndView toChangeApplicants(HttpServletRequest request, HttpServletResponse response,String id) throws Exception{
+		BaiseeStudentApplicants stuApplicants = studentApplicantsService.getStudentApplicantsByid(id);
+		String Prepayment = baiseeTransactionService.readPrepay(id);
+		if (Prepayment == null || Prepayment == "") {
+			Prepayment = "0";
+		}
+		List<BaiseeClazz> list = studentService.selectClass("0");
+		ModelAndView model = new ModelAndView("apply/applicants_changeAudStu");
+		model.addObject("Prepayment", Prepayment);
+		model.addObject("list", list);
+		model.addObject("stu", stuApplicants);
+		return model;
+		
+	}
+	/**
+	 * 预报名学生转试听学生
+	 * 
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/changeApplicants")
+	@Role("YBMXSGL_ZST")
+	public ModelAndView changeApplicants(HttpServletRequest request, HttpServletResponse response, BaiseeStudent baiseeStudent,String audition,String prepay ){
+		BaiseeUser user = (BaiseeUser)SessionUtil.getUserInfo(request);
+		String operator=user.getUserId();
+       studentService.applicantsToAudition(baiseeStudent, audition, operator,prepay);
+		return showApplicants(request, "", "", "", "","");
+		
+	}
+	/**
+	 * 修改预报名学生退费状态
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("updateStatus")
+	@ResponseBody
+	@Role("YBMXSGL_CK")
+	public ModelAndView updateStatus(HttpServletRequest request,String id){
+		studentApplicantsService.updateApplicantsStuStatus(id,"0");
+		return showApplicants(request, "", "", "", "","");
+		
+	}
+	
+
+}

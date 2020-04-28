@@ -1,0 +1,29 @@
+package cn.baisee.oa.dao.baisee;
+
+import java.util.List;
+import java.util.Map;
+
+import cn.baisee.oa.core.datasource.Datasource;
+import cn.baisee.oa.core.datasource.DatasourceTypes;
+import cn.baisee.oa.model.BaiseeMenu;
+import org.springframework.ui.Model;
+
+import javax.servlet.http.HttpServletRequest;
+
+@Datasource(DatasourceTypes.OA)
+public interface BaiseeMenuMapper {
+
+	public List<BaiseeMenu> selectMenuByCondition(Map<String, Object> map);
+	
+	public List<BaiseeMenu> selectMenuByPid(String parentId);
+	
+	public List<BaiseeMenu> selectAll(String name,String menuid);
+
+	public BaiseeMenu selectMenusByMenuId(String menuId);
+
+    public Integer Save(BaiseeMenu menu);
+
+    public Integer Modify(BaiseeMenu menu);
+
+    public Integer delete(String menu_id);
+}

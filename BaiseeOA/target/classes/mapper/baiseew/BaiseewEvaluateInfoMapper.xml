@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.baiseew.BaiseeEvaluateInfoMapper">
+	<!-- 实体类映射字段 -->
+	<resultMap type="cn.baisee.oa.model.BaiseeEvaluateInfo" id="infoAll">
+		<id column="EV_ID" property="evid"/>
+		<result column="SID" property="sid"/>
+		<result column="EMP_ID" property="emp_id"/>
+		<result column="C_NAME" property="cName"/>
+		<result column="EV_TYPE" property="evType"/>
+		<result column="EV_INFO" property="evInfo"/>
+		<result column="EV_DATE" property="evDate"/>
+		
+	</resultMap>
+	<!-- 查询列表 -->
+	<select id="selectAll" resultMap="infoAll" parameterType="java.lang.String">
+		SELECT * FROM baisee_evaluateinfo 
+		<where>
+			<if test="_parameter != null and _parameter !=''">
+			    SID IN
+	            <foreach collection="_parameter.split(',')" item="sid"
+	                     index="index" open="(" close=")" separator=",">
+	                #{sid}
+	            </foreach>
+      	   </if>
+      	   <if test="_parameter == null or  _parameter ==''">
+			    SID = #{sid}
+      	   </if>
+		</where>
+		order by (C_NAME+0) DESC
+	</select>
+	<!-- 添加一条数据 -->
+	<insert id="insertDate" parameterType="cn.baisee.oa.model.BaiseeEvaluateInfo">
+		INSERT INTO baisee_evaluateinfo (SID,EMP_ID,EV_TYPE,EV_INFO,EV_DATE,C_NAME) VALUES (#{sId},#{emp_id},1,#{evInfo},#{evDate},#{cName})
+	</insert>
+	<!-- 根据id查询一条数据 -->
+	<select id="selectById" parameterType="int" resultMap="infoAll">
+		SELECT * FROM baisee_evaluateinfo WHERE EV_ID = #{id}
+	</select>
+	<!-- 修改数据 -->
+	 <update id="updateEVinfo" parameterType="cn.baisee.oa.model.BaiseeEvaluateInfo">	
+		UPDATE baisee_evaluateinfo SET EV_INFO = #{evInfo},C_NAME = #{cName},SID = #{sid} WHERE EV_ID = #{evid};
+	</update>
+	<!-- 批量删除数据 -->
+	<delete id="deleteEva" parameterType="Integer">
+		<if test="array.length > 0">
+			DELETE FROM baisee_evaluateinfo
+			<where>
+				EV_ID IN
+				<foreach collection="array" open="(" close=")" item="evid" separator="," >
+					#{evid}
+				</foreach>
+			</where>
+		</if>
+	</delete>
+	
+	<select id="selectAllId" parameterType="list" resultMap="infoAll">
+  				SELECT * FROM baisee_evaluateinfo 
+  		<where>
+  			sid in
+  			<foreach collection="list" open="(" close=")" separator="," item="tx">
+  				#{tx}
+  			</foreach>
+  		</where>
+  	</select>
+	
+</mapper>

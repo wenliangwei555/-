@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.baisee.BaiseeNoticeStaffMapper">
+    <resultMap id="BaseResultMap" type="cn.baisee.oa.model.IcipBusDict">
+        <id column="DICT_ID" jdbcType="VARCHAR" property="dictId"/>
+        <result column="DICT_NAME" jdbcType="VARCHAR" property="dictName"/>
+        <result column="DICT_VALUE" jdbcType="VARCHAR" property="dictValue"/>
+        <result column="DICT_DESTINATION" jdbcType="VARCHAR" property="dictDestination"/>
+        <result column="REMARK" jdbcType="VARCHAR" property="remark"/>
+        <result column="UPDATE_TIME" jdbcType="VARCHAR" property="updateTime"/>
+        <result column="PARENT_ID" jdbcType="VARCHAR" property="parentId"/>
+        <result column="D_ID" jdbcType="VARCHAR" property="dId"/>
+        <result column="D_NAME" jdbcType="VARCHAR" property="dName"/>
+    </resultMap>
+    <update id="updateNoticeStaff">
+        update baisee_template set  t_content=#{t_content},t_title=#{t_title},update_time=#{update_time}  where t_id=#{t_id}
+    </update>
+    <update id="updateTemplate">
+        update baisee_template_record set  type1="1",update_time=#{update_time} where id =#{id};
+    </update>
+    <update id="handle1">
+        update baisee_template_record set  type1="2"  where id=#{id};
+    </update>
+    <update id="closeNotice1">
+        update baisee_template_record set  type1="3"  where id=#{id};
+    </update>
+    <delete id="deleteTemplate" parameterType="java.lang.String">
+        delete from baisee_template where t_id in
+        <foreach collection="array" open="(" close=")" item="id" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+    <delete id="deleteTemplate1">
+        delete from baisee_template_user where t_id in
+        <foreach collection="array" open="(" close=")" item="id" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="staffList" resultType="cn.baisee.oa.model.BaiseeNoticeStaff">
+        select * from baisee_template_record
+        <where>
+            (create_id = #{create_id} or USER_ID=#{create_id})
+            and (type1 = "0" or type1="1")
+            <if test="t_title != '' and t_title!=null">
+                and t_title like "%"#{t_title}"%"
+            </if>
+            order by sending_time desc
+        </where>
+    </select>
+    <select id="addTemplate" resultType="cn.baisee.oa.model.BaiseeNoticeStaff">
+        select * from baisee_template
+        <where>
+            create_id = #{create_id}
+            <if test="t_title != '' and t_title!=null">
+                and t_title like "%"#{t_title}"%"
+            </if>
+        </where>
+        order by update_time desc
+    </select>
+    <select id="select2UserList1" resultMap="BaseResultMap" parameterType="map">
+        SELECT
+        *
+        FROM
+        baisee_dictionaries
+        <where>
+            DICT_NAME = "deptRole"
+            <if test="userName != null">
+                and DICT_DESTINATION LIKE "%"#{userName}"%"
+            </if>
+            and D_ID=#{id}
+        </where>
+    </select>
+    <insert id="addNoticeStaff" parameterType="cn.baisee.oa.dao.baisee.BaiseeNoticeStaffMapper">
+        insert into baisee_template (t_id,stu_temlate_id,t_title,t_content,create_time,update_time,create_name,create_id)
+        values
+        (#{t_id},#{stu_temlate_id},#{t_title},#{t_content},#{create_time},#{update_time},#{create_name},#{create_id})
+    </insert>
+    <select id="getId" resultType="string">
+        select
+        DICT_VALUE
+        from
+        baisee_dictionaries
+        where
+        DICT_ID = #{s}
+    </select>
+    <select id="getuId" resultType="string">
+        select DICT_ID from
+        baisee_dictionaries
+        where
+        D_ID = #{id}
+    </select>
+    <select id="getUserId" resultType="string">
+        select EID from baisee_employee
+        where E_JOB=#{s1}
+    </select>
+    <insert id="addId" parameterType="java.lang.String">
+        insert into baisee_template_user (t_id,USER_ID) values (#{t_id},#{s2});
+    </insert>
+    <insert id="addrecord">
+        insert into baisee_template_record (t_title,sending_time,name,create_id,type1,t_id,user_name,user_id,update_time) values (#{t_title},#{date},#{userName},#{uId},'0',#{t_id},#{user_name},#{user_id},#{update_time});
+    </insert>
+    <select id="getList" resultMap="BaseResultMap">
+        select * from baisee_dictionaries
+        where DICT_NAME = "department"
+    </select>
+    <select id="selectTemplate" resultType="cn.baisee.oa.model.BaiseeNoticeStaff">
+        select * from baisee_template
+        where t_id = #{id}
+    </select>
+    <select id="getTid" resultType="cn.baisee.oa.model.BaiseeNoticeStaff">
+        select * from baisee_template_user where t_id = #{t_id}
+    </select>
+    <select id="getopenId" resultType="java.lang.String">
+        select * from baiseew.baisee_wechat WHERE USER_ID = #{user_id}
+    </select>
+    <select id="getUser" resultType="java.lang.String">
+        select E_NAME from baisee_employee where EID = #{user_id};
+    </select>
+    <select id="viewTemplate" resultType="cn.baisee.oa.model.BaiseeNoticeStaff">
+        select
+        btr.*,bt.t_content as t_content,btr.USER_ID as USER_ID
+        from
+         baisee_template_record btr
+         join baisee_template bt
+         on btr.t_id = bt.t_id
+         where
+         btr.id = #{id}
+    </select>
+    <select id="getAccess_token" resultType="java.lang.String">
+        select access_token from baisee_access_token
+    </select>
+
+</mapper>

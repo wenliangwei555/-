@@ -1,0 +1,366 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head th:include="commonTemplate :: header">
+<link rel="stylesheet" type="text/css" th:href="@{css/cla_list_css.css}" />
+</head>
+<body class="bgcolor-body">
+	<div id="page">
+		<div th:include="commonTemplate :: headerDiv"></div>
+		<div id="content" class="layout">
+			<div class="grid-s5m0">
+				<!-- ============================= 页面内容 开始============================= -->
+				<div class="col-main">
+					<div class="main-wrap">
+						<div class="skin-box">
+							<div class="skin-box-bd">
+								<div class="cur-position">
+									<span><a href="javascript:void(0);">信息管理</a> </span> <span>&gt;</span>
+									<span><a th:href="@{cla/toClaList.ht}">返费详情查看</a> </span>
+								</div>
+								<form th:action="@{stuRetu/toRetuList.ht}" id="frm" name="frm"
+									method="post">
+									<div class="cont-box">
+										<div class="search-box">
+											<div class="left">
+												<span class="add JsW"><a th:onclick="'toDownload()'"
+													class="ks-pop-nav" style="cursor: pointer; color: #ffffff"
+													onmouseover="javascript:this.style.color='#dbdbdb'"
+													onmouseout="javascript:this.style.color='#ffffff'">下载</a> </span>
+												</div>
+											<div class="right">
+												<div class="search-box-cont">
+													<span> <input class="button" type="submit"
+														value="搜索" />
+													</span> <span><input class="input radius3" name="sName"
+														id="sName" onkeyup="check();" 
+														type="text" th:value="${retuAO.sName}"
+														placeholder="学生姓名" style="width: 226px" /></span> <span
+														style="margin-left: 10px;">
+													</span>
+													<span> 
+														<input
+															style="width: 90px; margin-right: 30px;" type="text"
+															placeholder="入学开始时间" class="radius3 input" id="enterStartTime"
+															name="enterStartTime" th:value="${retuAO.enterStartTime}"
+															onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',readOnly:true})" />
+														<input style="width: 90px; margin-right: 30px;"
+															type="text" placeholder="入学结束时间" class="radius3 input"
+															id="enterEndTime" name="enterEndTime" th:value="${retuAO.enterEndTime}"
+															onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',readOnly:true})" />
+													</span>
+													<!-- <span> 
+														<input
+															style="width: 90px; margin-right: 30px;" type="text"
+															placeholder="试听开始时间" class="radius3 input" id="audStartTime"
+															name="audStartTime" th:value="${retuAO.audStartTime}"
+															onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',readOnly:true})" />
+														<input style="width: 90px; margin-right: 30px;"
+															type="text" placeholder="试听结束时间" class="radius3 input"
+															id="audEndTime" name="stuEndTime" th:value="${retuAO.audEndTime}"
+															onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',readOnly:true})" />
+													</span> -->
+													<span>
+														<select id="tuTypeMeaning" name="tuTypeMeaning" style="width: 150px;margin-right: 30px;margin-top: 2px;">
+															<option value="">---选择学籍---</option>
+															<option value="1" th:if="${retuAO.tuTypeMeaning eq '1'}" selected="selected">高中</option>
+															<option value="1" th:if="${retuAO.tuTypeMeaning ne '1'}">高中</option>
+															<option value="0" th:if="${retuAO.tuTypeMeaning eq '0'}"  selected="selected">初中</option>
+															<option value="0" th:if="${retuAO.tuTypeMeaning ne '0'}">初中</option>
+														</select>
+														<select id="returnStatus" name="returnStatus" style="width: 150px;margin-right: 30px;margin-top: 2px;">
+															<option value="">---返费情况---</option>
+															<option value="1" th:if="${retuAO.returnStatus eq '1'}" selected="selected">已返费</option>
+															<option value="1" th:if="${retuAO.returnStatus ne '1'}">已返费</option>
+															<option value="0" th:if="${retuAO.returnStatus eq '0'}" selected="selected">未返费</option>
+															<option value="0" th:if="${retuAO.returnStatus ne '0'}" >未返费</option>
+															<option value="2" th:if="${retuAO.returnStatus eq '2'}" selected="selected">返费中</option>
+															<option value="2" th:if="${retuAO.returnStatus ne '2'}" >返费中</option>
+														</select>
+													</span>
+													<span>
+														<select name="area" id="area" style="width: 150px;margin-right: 30px;margin-top: 2px;">
+															<option value="" selected="selected">全部区县</option>
+															<option value="130402" th:if="${retuAO.area} eq 130402"
+																selected="selected">邯山区</option>
+															<option value="130402" th:if="${retuAO.area} ne 130402">邯山区</option>
+															<option value="130403" th:if="${retuAO.area} eq 130403"
+																selected="selected">丛台区</option>
+															<option value="130404" th:if="${retuAO.area} eq 130404"
+																selected="selected">复兴区</option>
+															<option value="130406" th:if="${retuAO.area} eq 130406"
+																selected="selected">峰峰矿区</option>
+															<option value="130421" th:if="${retuAO.area} eq 130421"
+																selected="selected">邯郸县</option>
+															<option value="130423" th:if="${retuAO.area} eq 130423"
+																selected="selected">临漳县</option>
+															<option value="130424" th:if="${retuAO.area} eq 130424"
+																selected="selected">成安县</option>
+															<option value="130425" th:if="${retuAO.area} eq 130425"
+																selected="selected">大名县</option>
+															<option value="130426" th:if="${retuAO.area} eq 130426"
+																selected="selected">涉 县</option>
+															<option value="130427" th:if="${retuAO.area} eq 130427"
+																selected="selected">磁 县</option>
+															<option value="130428" th:if="${retuAO.area} eq 130428"
+																selected="selected">肥乡县</option>
+															<option value="130429" th:if="${retuAO.area} eq 130429"
+																selected="selected">永年县</option>
+															<option value="130430" th:if="${retuAO.area} eq 130430"
+																selected="selected">邱 县</option>
+															<option value="130431" th:if="${retuAO.area} eq 130431"
+																selected="selected">鸡泽县</option>
+															<option value="130432" th:if="${retuAO.area} eq 130432"
+																selected="selected">广平县</option>
+															<option value="130433" th:if="${retuAO.area} eq 130433"
+																selected="selected">馆陶县</option>
+															<option value="130434" th:if="${retuAO.area} eq 130434"
+																selected="selected">魏 县</option>
+															<option value="130435" th:if="${retuAO.area} eq 130435"
+																selected="selected">曲周县</option>
+															<option value="130481" th:if="${retuAO.area} eq 130481"
+																selected="selected">武安市</option>
+															<option value="130527" th:if="${retuAO.area} eq 130527"
+																selected="selected">南和县</option>
+															<option value="130535" th:if="${retuAO.area} eq 130535"
+																selected="selected">临西县</option>
+															<option value="410581" th:if="${retuAO.area} eq 410581"
+																selected="selected">林州市</option>
+															<option value="130403" th:if="${retuAO.area} ne 130403">丛台区</option>
+															<option value="130404" th:if="${retuAO.area} ne 130404">复兴区</option>
+															<option value="130406" th:if="${retuAO.area} ne 130406">峰峰矿区</option>
+															<option value="130421" th:if="${retuAO.area} ne 130421">邯郸县</option>
+															<option value="130423" th:if="${retuAO.area} ne 130423">临漳县</option>
+															<option value="130424" th:if="${retuAO.area} ne 130424">成安县</option>
+															<option value="130425" th:if="${retuAO.area} ne 130425">大名县</option>
+															<option value="130426" th:if="${retuAO.area} ne 130426">涉
+																县</option>
+															<option value="130427" th:if="${retuAO.area} ne 130427">磁
+																县</option>
+															<option value="130428" th:if="${retuAO.area} ne 130428">肥乡县</option>
+															<option value="130429" th:if="${retuAO.area} ne 130429">永年县</option>
+															<option value="130430" th:if="${retuAO.area} ne 130430">邱
+																县</option>
+															<option value="130431" th:if="${retuAO.area} ne 130431">鸡泽县</option>
+															<option value="130432" th:if="${retuAO.area} ne 130432">广平县</option>
+															<option value="130433" th:if="${retuAO.area} ne 130433">馆陶县</option>
+															<option value="130434" th:if="${retuAO.area} ne 130434">魏
+																县</option>
+															<option value="130435" th:if="${retuAO.area} ne 130435">曲周县</option>
+															<option value="130481" th:if="${retuAO.area} ne 130481">武安市</option>
+															<option value="130527" th:if="${retuAO.area} ne 130527">南和县</option>
+															<option value="130535" th:if="${retuAO.area} ne 130535">临西县</option>
+															<option value="410581" th:if="${retuAO.area} ne 410581">林州市</option>
+														</select>
+													</span>
+												</div>
+													<div id="mask" class="mask" onclick="hideMask()"></div>
+													<div align="center" class="msg">
+														<i  style="position: absolute;right: 20px" onclick="hideMask()">X</i>
+															<ul class="editInfos" id="myUl">
+															</ul>
+															<ul class="editInfos" id="popup1">
+															</ul>
+													</div>
+													<a href="javascript:;" rel="external nofollow" onclick="showMask()" id="refundClick"> </a><br />
+													
+											</div>
+										</div>
+										<div class="list-table">
+											<div class="list-table-cont">
+												<div class="table2">
+													<table class="ks-inputall">
+														<tr class="th">
+															<!-- <td class="col1">
+																	<div class="JsW control-checkbox" data-control-type="checkboxall">
+																		<input type="checkbox" onclick="selectAllCheckBox(document.frm.ids,document.frm.checkbox,this);" />
+																	</div>
+																</td> -->
+															<td class="col2">学生姓名</td>
+															<td class="col3">年龄</td>
+															<td class="col4">学籍（初/高）</td>
+															<td class="col4">地区</td>
+															<td class="col5">实际地区</td>
+															<td class="col5">试听时间</td>
+															<td class="col6">入学时间</td>
+															<td class="col6">已交学费</td>
+															<td class="col4" >返费状态</td>
+															<td class="col6">应返金额</td>
+															<td class="col6">返费时间</td>
+															<td class="co16">已返金额</td>
+															<td class="co16">未返金额</td>
+															<td class="co16">操作</td>
+															<!-- <td class="co16">返费备注（二）</td> -->
+														</tr>
+														<tr
+															th:if="${pageResult.list == null || pageResult.list.size() == 0}">
+
+														</tr>
+														<tr th:each="info:${pageResult.list}"
+															th:if="${pageResult.list != null &amp;&amp; pageResult.list.size() > 0}"
+															onmouseover="this.style.backgroundColor='#e3f1ff'"
+															onmouseout="this.style.backgroundColor='#ffffff'">
+															<!-- <td class="col1">
+																	<div class="JsW control-checkbox" data-control-type="checkbox">
+																		<input type="checkbox" name="ids" th:value="${info.cId}" />
+																	</div>
+																</td> -->
+															<td class="col2"><span style="cursor: pointer" th:onclick="'edit(\'' + ${info.sId} + '\')'" title="点击查看详细信息" th:text="${info.sName}"></span></td>
+															<td class="col3"><span style="cursor: pointer" th:onclick="'edit(\'' + ${info.sId} + '\')'" title="点击查看详细信息" th:text="${info.sAge}"></span></td>
+															<td class="col3"><span style="cursor: pointer" th:onclick="'edit(\'' + ${info.sId} + '\')'" title="点击查看详细信息" th:text="${info.tuTypeMeaning}"></span></td>
+															<td class="col4"><span style="cursor: pointer" th:onclick="'edit(\'' + ${info.sId} + '\')'" title="点击查看详细信息" th:text="${info.area}"></span></td>
+															<td class="col4"><span style="cursor: pointer" th:onclick="'edit(\'' + ${info.sId} + '\')'" title="点击查看详细信息" th:text="${info.realArea}"></span></td>
+															<td class="col4"><span style="cursor: pointer" th:onclick="'edit(\'' + ${info.sId} + '\')'" title="点击查看详细信息" baisee:fmt="yyyy-MM-dd,${info.sAuditionStartTime}"></span></td>
+															<td class="col5"><span style="cursor: pointer" th:onclick="'edit(\'' + ${info.sId} + '\')'" title="点击查看详细信息" baisee:fmt="yyyy-MM-dd,${info.sEnrolmentTime}"></span></td>
+															<td class="col6"><span style="cursor: pointer" th:onclick="'edit(\'' + ${info.sId} + '\')'" title="点击查看详细信息" th:text="${info.tuitionSum}"></span></td>
+															<td class="col6">
+																<span style="cursor: pointer" th:onclick="'edit(\'' + ${info.sId} + '\')'" title="点击查看详细信息" th:if="${info.returnStatus == '1'}" >已返费</span>
+																<span style="cursor: pointer" th:onclick="'edit(\'' + ${info.sId} + '\')'" title="点击查看详细信息" th:if="${info.returnStatus == '0'}" >未返费</span>
+																<span style="cursor: pointer" th:onclick="'edit(\'' + ${info.sId} + '\')'" title="点击查看详细信息" th:if="${info.returnStatus == '2'}" >返费中</span>
+															</td>
+															<td class="col6"><span style="cursor: pointer" th:onclick="'edit(\'' + ${info.sId} + '\')'" title="点击查看详细信息" th:text="${info.returnSum}"></span></td>
+															<td class="col6"><span style="cursor: pointer" th:onclick="'edit(\'' + ${info.sId} + '\')'" title="点击查看详细信息" baisee:fmt="yyyy-MM-dd,${info.returnTime}"></span></td>
+															<td class="col6"><span style="cursor: pointer" th:onclick="'edit(\'' + ${info.sId} + '\')'" title="点击查看详细信息" th:text="${info.actualSum}"></span></td>
+															<td class="col6"><span style="cursor: pointer" th:onclick="'edit(\'' + ${info.sId} + '\')'" title="点击查看详细信息" th:text="${info.notRetu}"></span></td>
+															<td class="col6"><span style="cursor: pointer;color: red;" th:onclick="'detail(\'' + ${info.sId} + '\')'" title="点击查看明细" th:text="查看明细"></span></td>
+															<!-- <td class="col6"><span style="cursor: pointer" th:onclick="'edit(\'' + ${info.sId} + '\')'" title="点击查看详细信息" th:text="${info.remarks2}"></span></td> -->
+														</tr>
+													</table>
+												</div>
+											</div>
+										</div>
+										<div th:include="commonTemplate :: pageBox"></div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- ============================= 页面内容 结束============================= -->
+				<div th:include="commonTemplate :: leftMenus"></div>
+			</div>
+		</div>
+		<div th:include="commonTemplate :: footer"></div>
+	</div>
+	<div th:include="commonTemplate :: processBar" />
+	<div id="wrapper">
+		<div class="box">
+			<div class="demo">
+				<a href="javascript:;" id="refundClick" class="flipInX"></a>
+			</div>
+			<div id="dialogBg"></div>
+			<div id="dialog" class="animated">
+				<img class="dialogIco" width="50px" height="50px"
+					th:src="@{img/popup.png}" alt="" />
+				<div class="dialogTop">
+					<a href="javascript:;" class="claseDialogBtn" id="shut"
+						th:onclick="'test()'">关闭</a>
+				</div>
+				<form method="post" id="editForm">
+					<ul class="editInfos">
+						<li style="align-content: center;" id="myUl"></li>
+					</ul>
+				</form>
+			</div>
+		</div>
+	</div>
+	
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+		function toDownload(){
+			debugger;
+			var sName=$("#sName").val();
+			var enterStartTime=$("#enterStartTime").val();
+			var enterEndTime=$("#enterEndTime").val();
+			var audStartTime=$("#audStartTime").val();
+			var audEndTime=$("#audEndTime").val();
+			var area=$("#area").val();
+			var returnStatus=$("#returnStatus").val();
+			var tuTypeMeaning=$("#tuTypeMeaning").val();
+			var url =[[@{'/stuRetu/retuDownload.ht'}]]+'?sName='+sName+'&enterStartTime='+enterStartTime
+					+'&enterEndTime='+enterEndTime+'&audStartTime='+audStartTime+'&audEndTime='+audEndTime+'&area='+area
+					+'&returnStatus='+returnStatus+'&tuTypeMeaning='+tuTypeMeaning;
+		    locationHref(url);
+		    document.getElementById('myUl').innerHTML="下载成功!";
+			document.getElementById('refundClick').click();
+		}
+	/*]]>*/
+	function test(){
+		location.href = [[@{'/stuRetu/toRetuList.ht'}]]; 
+	}
+	 function detail( id) {
+		 $.ajax({
+				url:[[@{/stu/selectStudentDetail.ht}]],
+				type: 'post', 
+				data: {stuId: id, transactionType: "返费"},
+				success:function(data){
+					var _html =  "";
+					data.forEach(function(n,i){
+						debugger;
+						if(i==0){
+							_html = "<p>&emsp;&emsp;"+"执行人 :  " + n.userID+"</p>"+
+							"<p>&emsp;&emsp;"+ "执行时间 :  " + n.time + "</p>"+
+							"<p>&emsp;&emsp;"+ "交易金额 : " +n.amount+ "</p>"+
+							"<p>&emsp;&emsp;"+"备注:"+n.remarks+"</p>" ;
+						}
+						if(i==1){
+							_html += "&emsp;&emsp;---------------------------"+
+							"<p>&emsp;&emsp;"+ "执行人 :  " + n.userID+"</p>"+
+							"<p>&emsp;&emsp;"+ "执行时间 :  " + n.time + "</p>"+
+							"<p>&emsp;&emsp;"+ "交易金额 : " +n.amount+ "</p>"+
+							"<p>&emsp;&emsp;"+"备注:"+n.remarks+"</p>";
+						}
+					});
+						document.getElementById("popup1").innerHTML=_html;
+						document.getElementById("refundClick").click();
+					}
+				}); 
+			}
+	function edit(sId) {
+		locationHref([[@{/stu/notstuJump.ht}]] + "?stuId=" + sId);
+	}
+	</script>
+<style type="text/css">
+  .mask {
+      position: absolute; top: 0px; filter: alpha(opacity=60); background-color: #777;
+      z-index: 1; left: 0px;
+      opacity:0.5; -moz-opacity:0.5;
+      display:none;
+    }
+  .msg {
+    width: 500px;
+    height: 400px;
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-radius: 4px;
+    padding: 15px;
+    position: absolute;
+    top: 70px;
+    text-align: center;
+    margin: 0 auto;
+    z-index: 999;
+    left: 42%;
+    margin-left: -150px;
+    display:none;
+    }
+</style>
+
+<script type="text/javascript">
+  //兼容火狐、IE8
+  //显示遮罩层
+  function showMask(){
+    $("#mask").css("height",$(document).height());
+    $("#mask").css("width",$(document).width());
+    $("#mask").show();
+    $(".msg").show();
+  }
+  //隐藏遮罩层
+  function hideMask(){
+    $("#mask").hide();
+    $(".msg").hide();
+    document.getElementById("popup1").innerHTML="";
+	document.getElementById('myUl').innerHTML=""; 
+  }
+</script>
+</body>
+</html>

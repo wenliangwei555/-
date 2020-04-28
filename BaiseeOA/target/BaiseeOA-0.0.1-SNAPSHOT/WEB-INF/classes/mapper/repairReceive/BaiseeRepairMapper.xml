@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.repairReceive.BaiseeRepairMapper">
+
+    <resultMap type="cn.baisee.oa.model.repairReceive.BaiseeRepair" id="results">
+       <id column="id" jdbcType="VARCHAR" property="id" />
+       <result column="c_id" jdbcType="VARCHAR" property="cId" />
+       <result column="c_name" jdbcType="VARCHAR" property="cName" />
+       <result column="dept_id" jdbcType="VARCHAR" property="deptId" />
+       <result column="dept_name" jdbcType="VARCHAR" property="deptName" />
+       <result column="goods_id" jdbcType="VARCHAR" property="goodsId" />
+       <result column="goods_name" jdbcType="VARCHAR" property="goodsName" />
+       <result column="goods_count" jdbcType="VARCHAR" property="goodsCount" />
+       <result column="goods_time" jdbcType="TIMESTAMP" property="goodsTime" />
+       <result column="img_url" jdbcType="VARCHAR" property="imgUrl" />
+       <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+       <result column="state" jdbcType="CHAR" property="state" />
+       <result column="worker_id" jdbcType="VARCHAR" property="workerId" />
+       <result column="worker_name" jdbcType="VARCHAR" property="workerName" />
+       <result column="last_person_id" jdbcType="VARCHAR" property="lastPersonId" />
+       <result column="last_person" jdbcType="VARCHAR" property="lastPerson" />
+       <result column="views" jdbcType="VARCHAR" property="views" />
+	   <result column="last_time" jdbcType="TIMESTAMP" property="lastTime" />
+	   
+    </resultMap>
+
+    <!-- 查询所有的日期分页 -->
+    <select id="selectRepairList" resultMap="results" parameterType="map">
+		select * from baisee_repair 
+		
+			<where>
+				<if test="userId != null">
+					c_id = #{userId} and
+				</if>
+				<if test="itemlableSearch != null">
+					goods_name LIKE "%"#{itemlableSearch}"%"
+				</if>
+			</where>
+		
+	</select>
+	
+	<!-- 查询所有的日期分页 -->
+	<select id="selectHandleRepairList" resultMap="results" parameterType="map">
+		select * from baisee_repair 
+		
+			<where>
+				<if test="userId != null">
+					worker_id = #{userId} and
+				</if>
+				<if test="itemlableSearch != null">
+					c_name LIKE "%"#{itemlableSearch}"%"
+				</if>
+			</where>
+		
+	</select>
+	
+	
+	<select id="getRepairById" resultMap="results" parameterType="java.lang.String">
+	    select * from baisee_repair where id=#{id}
+	 </select>
+	
+	<insert id="addRepair" parameterType="cn.baisee.oa.model.repairReceive.BaiseeRepair"> 
+	    insert into baisee_repair  (id,c_id,c_name,dept_id,dept_name,goods_id,goods_name,goods_count,goods_time,remarks,state,img_url)
+	     values 
+	     (pkval('BXID'),#{cId},#{cName},#{deptId},#{deptName},#{goodsId},#{goodsName},#{goodsCount},#{goodsTime},#{remarks},#{state},#{imgUrl})
+	</insert>
+	
+	<update id="updateRepair" parameterType="cn.baisee.oa.model.repairReceive.BaiseeRepair">
+	   update baisee_repair set 
+	   dept_id=#{deptId},
+	   dept_name=#{deptName},
+	   goods_id=#{goodsId},
+	   goods_name=#{goodsName},
+	   goods_count=#{goodsCount},
+	   <if test="imgUrl != null">
+	   		img_url=#{imgUrl},
+	   </if>
+	   goods_time=#{goodsTime},
+	   remarks=#{remarks}
+	    where id=#{id}
+	</update>
+	
+	<update id="distributeTask" parameterType="cn.baisee.oa.model.repairReceive.BaiseeRepair">
+	   update baisee_repair set 
+	   worker_id=#{workerId},
+	   worker_name=#{workerName},
+	   state=#{state}
+	    where id=#{id}
+	</update>
+	
+	<update id="repairComplete" parameterType="cn.baisee.oa.model.repairReceive.BaiseeRepair">
+	   update baisee_repair set 
+	   last_person_id=#{lastPersonId},
+	   last_person=#{lastPerson},
+	   views=#{views},
+	   state=#{state},
+	   last_time=#{lastTime}
+	    where id=#{id}
+	</update>
+	
+	<delete id="delRepair" parameterType="java.lang.String">
+	    delete from baisee_repair where id in
+	    <foreach collection="array" open="(" close=")" item="id" separator=",">
+	        #{id}
+	    </foreach>
+	</delete>
+	
+</mapper>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.msghub.msghub.mapper.WechatMapper">
+
+    <!-- 查询某权限菜单下的所有子权限菜单 -->
+    <select id="findByOpenId" resultType="String"
+            parameterType="String">
+		SELECT
+		openid
+		FROM
+		connect
+		WHERE userId= #{str}
+	</select>
+
+    <!-- 查询某权限菜单下的所有子权限菜单 -->
+    <select id="findBySendid" resultType="com.msghub.msghub.model.Msgconfig"
+            parameterType="com.msghub.msghub.model.Msgconfig">
+		SELECT
+	    *
+		FROM
+		msg_config
+		WHERE client_id= #{client_id}and affiliation=#{affiliation}
+	</select>
+
+    <!-- 暂未开放 -->
+    <select id="getTemplate" parameterType="java.lang.String" resultType="com.msghub.msghub.model.Template">
+		select
+		*
+		from
+		template
+		where
+		template_id = #{template_id} and  AND affiliation=2
+	</select>
+
+    <!-- 暂未开放 -->
+</mapper>

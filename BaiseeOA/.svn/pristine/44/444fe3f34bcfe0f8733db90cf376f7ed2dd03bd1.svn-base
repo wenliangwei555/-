@@ -1,0 +1,579 @@
+package cn.baisee.oa.service.impl;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import cn.baisee.oa.utils.DateUtil;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
+
+import cn.baisee.oa.core.context.ICIPContext;
+import cn.baisee.oa.core.file.FileDir;
+import cn.baisee.oa.core.file.FileUploadUtil;
+import cn.baisee.oa.dao.baisee.BaiseeDicMapper;
+import cn.baisee.oa.dao.baisee.BaiseeEmployeeMapper;
+import cn.baisee.oa.dao.baisee.BaiseeUserMapper;
+import cn.baisee.oa.exception.AppException;
+import cn.baisee.oa.exception.OAServiceException;
+import cn.baisee.oa.importExcel.dto.RowValidateResultDto;
+import cn.baisee.oa.importExcel.exception.InvalidExcelTemplateException;
+import cn.baisee.oa.importExcel.filter.AbstractFilterChain;
+import cn.baisee.oa.importExcel.filter.chain.EmpBaseCheckFilterChain;
+import cn.baisee.oa.importExcel.helper.ExcelToBeanConvertor;
+import cn.baisee.oa.model.BaiseeUser;
+import cn.baisee.oa.model.IcipBusDict;
+import cn.baisee.oa.model.ImportEmpModel;
+import cn.baisee.oa.model.PhoneAndID;
+import cn.baisee.oa.model.empinfo.Employee;
+import cn.baisee.oa.model.empinfo.EmployeeEducation;
+import cn.baisee.oa.model.empinfo.EmployeeFamily;
+import cn.baisee.oa.model.empinfo.EmployeeSupplement;
+import cn.baisee.oa.model.empinfo.EmployeeWork;
+import cn.baisee.oa.page.pagehelper.PageHelper;
+import cn.baisee.oa.page.pagehelper.PageInfo;
+import cn.baisee.oa.service.DictionariesService;
+import cn.baisee.oa.service.EmployeeService;
+import cn.baisee.oa.utils.ParamUtils;
+/**
+ * 员工service实现类
+ * @author LiFQ
+ *
+ */
+@Service
+public class EmployeeServiceImpl implements EmployeeService {
+	@Autowired
+	private BaiseeUserMapper baiseeUserMapper;
+	@Autowired
+	private BaiseeEmployeeMapper baiseeEmployeeMapper;
+	@Autowired
+	private BaiseeDicMapper baiseeDicMapper;
+	@Autowired
+	private DictionariesService dictionariesService;
+	
+
+	/*******************分页List（去数据库查询数据库，封装到PageInfo里面）***********************************************/
+	@Override
+	public PageInfo<Employee> selectEmployeeList(int pageNum, int pageSize,String str,String status,String empJob,String empDept,String gender) {
+
+		PageHelper.startPage(pageNum, pageSize);// 开始分页
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("itemlableSearch", str);
+		map.put("status", status);
+		map.put("empJob", empJob);
+		map.put("empDept", empDept);
+		map.put("gender", gender);
+		List<Employee> list = baiseeEmployeeMapper.selectEmployeePage(map);
+		Map<String, Object> map1 = new HashMap<String, Object>();
+		for (Employee employee : list) {
+			//兼容错误数据(老数据)， 保守写法， 避免因没有配置部门角色的员工，导致程序无法运行
+			if(StringUtils.isNotBlank(employee.getEmpJob())) {
+				map1.put("dictId", employee.getEmpJob());
+				IcipBusDict dicById = baiseeDicMapper.selectDicById(map1);
+				employee.setEmpJob(dicById.getDictDestination());
+			}
+			
+		}
+
+		PageInfo<Employee> pageInfo = new PageInfo<Employee>(list);
+
+		return pageInfo;
+	}
+
+	/***********************************修改******************************************/
+
+	@Override
+	public int updateEmployeeByID(Employee employee) {
+		return baiseeEmployeeMapper.updateEmployeeByID(employee);
+	}
+
+	@Override
+	public int updateEmployeeSupByID(EmployeeSupplement employeeSupplement) {
+		return baiseeEmployeeMapper.updateEmployeeSupByID(employeeSupplement);
+	}
+	@Override
+	public int updateEmployeeEduByID(EmployeeEducation education) {
+		return baiseeEmployeeMapper.updateEmployeeEduByID(education);
+	}
+	@Override
+	public int updateEmployeeWorkByID(EmployeeWork work) {
+		return baiseeEmployeeMapper.updateEmployeeWorkByID(work);
+	}
+	@Override
+	public int updateEmployeeFamByID(EmployeeFamily family) {
+		return baiseeEmployeeMapper.updateEmployeeFamByID(family);
+	}
+
+	/***********************************查询**************************************/
+	@Override
+	public Employee selectEmployeeById(String eid) {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("empId", eid);
+		return baiseeEmployeeMapper.selectByEmployeeId(map);
+	}
+
+	@Override
+	public EmployeeSupplement selectByEmployeeIdQuerySupplement(String eid) {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("empId", eid);
+		return baiseeEmployeeMapper.selectByEmployeeIdQuerySupplement(map);
+	}
+
+
+	@Override
+	public EmployeeEducation selectByEmployeeIdQueryEducation(String eid) {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("empId", eid);
+		return baiseeEmployeeMapper.selectByEmployeeIdQueryEducation(map);
+	}
+
+
+	@Override
+	public EmployeeWork selectByEmployeeIdQueryWork(String eid) {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("empId", eid);
+		return baiseeEmployeeMapper.selectByEmployeeIdQueryWork(map);
+	}
+
+
+	@Override
+	public EmployeeFamily selectByEmployeeIdQueryFamily(String eid) {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("empId", eid);
+		return baiseeEmployeeMapper.selectByEmployeeIdQueryFamily(map);
+	}
+
+	/*******************************添加*************************************/
+	@Override
+	public int addEmployeeSupplement(EmployeeSupplement employeeSupplement) {
+		return baiseeEmployeeMapper.addEmployeeSupplement(employeeSupplement);
+	}
+
+	@Override
+	public int addEmployee(Employee employee){
+		return baiseeEmployeeMapper.addEmployee(employee);
+	}
+
+
+	@Override
+	public int addEmployeeEducation(EmployeeEducation education) {
+		return baiseeEmployeeMapper.addEmployeeEducation(education);
+	}
+
+
+	@Override
+	public int addEmployeeWork(EmployeeWork work) {
+		return baiseeEmployeeMapper.addEmployeeWork(work);
+	}
+
+	@Override
+	public int addEmployeeFamily(EmployeeFamily family) {
+		return baiseeEmployeeMapper.addEmployeeFamily(family);
+	}
+
+	/************************************校验身份证*****************************************/
+	@Override
+	public String selectEmployeeIDNumberVerification(Employee emp) {
+		return baiseeEmployeeMapper.selectEmployeeIDNumberVerification(emp);
+	}
+	/************************************校验手机号*****************************************/
+	@Override
+	public String selectEmployeeMobileVerification(Employee emp) {
+		return baiseeEmployeeMapper.selectEmployeeMobileVerification(emp);
+	}
+
+	/*****************************批量删除*******************************/
+	@Override
+	public int deleteCheckEmployeeAll(List<String> list) {
+		int r = 0;
+		r += baiseeEmployeeMapper.deleteCheckEmployee(list);
+		r += baiseeEmployeeMapper.deleteCheckEmployeeEducation(list);
+		r += baiseeEmployeeMapper.deleteCheckEmployeeFamily(list);
+		r += baiseeEmployeeMapper.deleteCheckEmployeeSupplement(list);
+		r += baiseeEmployeeMapper.deleteCheckEmployeeWork(list);
+		return r;
+	}
+
+	/************************************************员工添加或修改方法 2018-9-7******************************************************************************************************************************************************************************************************************************/
+	public ModelAndView employeeAddAndUpdatePage(MultipartFile empHeadPhotoDir,Employee employee,EmployeeSupplement supplement,EmployeeEducation education,EmployeeWork work,EmployeeFamily family, HttpServletRequest request){
+		ModelAndView model = new ModelAndView();
+		String empTable = ParamUtils.getParameter(request, "empTable");
+		if(employee.getEmpId() != null && employee.getEmpId() != "" && employee.getEmpId().length()>10){//empId有值
+			request.getSession().setAttribute("empId",employee.getEmpId());
+		}
+		if(empTable!=null && empTable != ""){
+			if(empTable.equalsIgnoreCase("employee")){
+				if(employee.getEmpId()!=null && employee.getEmpId() != "" && employee.getEmpId().length()>10){//表示是修改
+					if(baiseeUserMapper.VerificationEmpID(employee.getEmpId())!=null){//判断用户表是否存在此员工的信息 存在则修改想对应的部门
+						BaiseeUser user=new BaiseeUser();
+						user.setUserId(employee.getEmpId());
+						if("2".equals(employee.getEmpDept())){
+							user.setUserType(null);
+							baiseeUserMapper.updateUserByID(user);
+						}else{
+						user.setUserType(employee.getEmpDept());
+						baiseeUserMapper.updateUserByID(user);
+						}
+					}
+					
+					//调用根据EID查询一下该员工的基本信息
+					//Employee employee2 = selectEmployeeById(employee.getEmpId());
+					//将身份证号放在session中
+					request.getSession().setAttribute("empIdNumber", employee.getEmpIdNumber());
+					//上传图片
+					File file;
+					try {
+						file = FileUploadUtil.getSingleFile(request);
+						if(file != null  && file.getName().length() > 0){
+							FileUploadUtil.uploadFile(file, null, FileDir.C_PICTURE_DIR, employee.getEmpId());
+							StringBuffer buffer = new StringBuffer();
+							buffer.append("/emp").append("/").append(request.getSession().getAttribute("empId")).append(file.getName().substring(file.getName().indexOf(".")));
+							employee.setEmpHeadPhotoDir(buffer.toString());
+						}
+
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					//调用根据员工主键修改员工方法
+					updateEmployeeByID(employee);
+					//再设置跳转页面是本页面
+					//employee = selectEmployeeById((String) request.getSession().getAttribute("empId"));
+					employee = selectEmployeeById(employee.getEmpId());
+					/*Employee employee = employeeService.selectEmployeeById(empId);*/
+					List<IcipBusDict> dicts = dictionariesService.selectIcipBusDictByDictName("deptRole");
+					List<IcipBusDict> empDept = dictionariesService.selectIcipBusDictByDictName("department");
+					model.addObject("empDept", empDept);
+					model.addObject("dict", dicts);
+					model.addObject("emp", employee);
+					model.setViewName("employee/empEdit_emp");
+					/*List<IcipBusDict> job = baiseeDicMapper.selectIcipBusDictByDictName("empJob");
+					List<IcipBusDict> empDept = baiseeDicMapper.selectIcipBusDictByDictName("empDept");
+					model.addObject("empDept", empDept);
+					model.addObject("dict", job);
+					model.addObject("emp", employee);
+					model.addObject("operationSuccess", "操作成功");
+					model.setViewName("employee/empEdit_emp");*/
+					return model;
+				}else{//表示是添加
+					//调用添加方法
+					employee.setEmpRegTime(DateUtil.getNow(DateUtil.DATE_FORMAT_FULL));
+					addEmployee(employee);
+					request.getSession().setAttribute("empId", employee.getEmpId());
+					//上传图片
+					File file;
+					try {
+						file = FileUploadUtil.getSingleFile(request);
+						if(file != null  && file.getName().length() > 0){
+							FileUploadUtil.uploadFile(file, null, FileDir.C_PICTURE_DIR,employee.getEmpId());
+							StringBuffer buffer = new StringBuffer();
+							buffer.append("/emp").append("/").append(request.getSession().getAttribute("empId")).append(file.getName().substring(file.getName().indexOf(".")));
+							employee.setEmpHeadPhotoDir(buffer.toString());
+							updateEmployeeByID(employee);
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+
+					//设置跳转页面是本页面
+					employee = selectEmployeeById(employee.getEmpId());
+					model.addObject("emp", employee);
+					model.addObject("operationSuccess", "操作成功");
+					model.setViewName("employee/empEdit_emp");
+					return model;
+				}
+			}else if(empTable.equalsIgnoreCase("employeeSupplement")){//员工补充信息
+				if(supplement.getPK_BESI() != null && supplement.getPK_BESI() > 0){//表示是修改
+					//修改信息
+					updateEmployeeSupByID(supplement);
+					//再进行跳转页面
+					model.addObject("sup", supplement);
+					model.addObject("operationSuccess", "操作成功");
+					model.setViewName("employee/empSupEdit_emp");
+					return model;
+				}else{
+					//身份证页面没值，添加员工补充信息
+					addEmployeeSupplement(supplement);
+					//添加信息，跳转页面
+					supplement.setPK_BESI(supplement.getPK_BESI());
+					model.addObject("sup", supplement);
+					model.addObject("operationSuccess", "操作成功");
+					model.setViewName("employee/empSupEdit_emp");
+					return model;
+				}
+			}else if(empTable.equalsIgnoreCase("employeeEducation")){//员工教育信息
+				if(education.getPK_BEGI() != null && education.getPK_BEGI() > 0){//修改方法
+					//调用修改方法
+					updateEmployeeEduByID(education);
+					//跳转页面
+					model.addObject("edu", education);
+					model.addObject("operationSuccess", "操作成功");
+					model.setViewName("employee/empEduEdit_emp");
+					return model;
+				}else{
+					//添加添加页面
+					addEmployeeEducation(education);
+					//跳转页面
+					education.setPK_BEGI(education.getPK_BEGI());
+					model.addObject("edu", education);
+					model.addObject("operationSuccess", "操作成功");
+					model.setViewName("employee/empEduEdit_emp");
+					return model;
+				}
+			}else if(empTable.equalsIgnoreCase("employeeWork")){//员工工作信息
+				if(work.getPK_BEWI() != null && work.getPK_BEWI() > 0){//修改方法
+					//调用修改方法
+					updateEmployeeWorkByID(work);
+					//跳转页面
+					model.addObject("work", work);
+					model.addObject("operationSuccess", "操作成功");
+					model.setViewName("employee/empWorkEdit_emp");
+					return model;
+				}else{
+					//添加方法
+					addEmployeeWork(work);
+					//跳转页面
+					work.setPK_BEWI(work.getPK_BEWI());
+					model.addObject("work", work);
+					model.addObject("operationSuccess", "操作成功");
+					model.setViewName("employee/empWorkEdit_emp");
+					return model;
+				}
+			}else if(empTable.equalsIgnoreCase("employeeFamily")){//员工家庭信息
+				if(family.getPK_BEFI() != null && family.getPK_BEFI() > 0){//修改方法
+					//调用修改方法
+					updateEmployeeFamByID(family);
+					//跳转页面
+					model.addObject("fam",family);
+					model.addObject("operationSuccess", "操作成功");
+					model.setViewName("employee/empFamEdit_emp");
+					return model;
+				}else{
+					//添加方法
+					addEmployeeFamily(family);
+					//跳转页面
+					family.setPK_BEFI(family.getPK_BEFI());
+					model.addObject("fam",family);
+					model.addObject("operationSuccess", "操作成功");
+					model.setViewName("employee/empFamEdit_emp");
+					return model;
+				}
+			}
+		}
+		return model;
+	}
+
+	/*******************************员工修改添加页面跳转方法**************************************/
+	@Override
+	public ModelAndView employeePageJump(HttpServletRequest request) {
+		ModelAndView model = new ModelAndView();
+		String empTable = ParamUtils.getParameter(request, "empTable");
+		if(empTable.equalsIgnoreCase("employeeEducationJump")){//员工教育跳转页面
+			String empId = (String) request.getSession().getAttribute("empId");
+			EmployeeEducation education = selectByEmployeeIdQueryEducation(empId);
+			if(education==null || education.getEmpId() == null || education.getEmpId() == ""){
+				model.addObject("edu", new EmployeeEducation(empId));
+			}else{
+				model.addObject("edu", education);
+			}
+			model.setViewName("employee/empEduEdit_emp");
+			return model;
+		}else if(empTable.equalsIgnoreCase("employeeSupplementJump")){//员工补充表跳转
+			String empId = (String) request.getSession().getAttribute("empId");
+			//String empId = ParamUtils.getParameter(request, "empId");
+			//System.err.println(empId);
+			EmployeeSupplement sup = selectByEmployeeIdQuerySupplement(empId);
+			if(sup==null || sup.getEmpId() == null || sup.getEmpId() == ""){//就是没有值
+				EmployeeSupplement empSup = new EmployeeSupplement(empId);
+				model.addObject("sup", empSup);
+			}else{
+				model.addObject("sup", sup);
+			}
+			model.setViewName("employee/empSupEdit_emp");
+			System.out.println("");
+			return model;
+		}else if(empTable.equalsIgnoreCase("employeeWorkJump")){//跳到工作履历表
+			String empId = (String) request.getSession().getAttribute("empId");
+			EmployeeWork work = selectByEmployeeIdQueryWork(empId);
+			if(work == null || work.getEmpId() == null || work.getEmpId() == ""){
+				model.addObject("work", new EmployeeWork(empId));
+			}else{
+				model.addObject("work", work);
+			}
+			model.setViewName("employee/empWorkEdit_emp");
+			return model;
+		}else if(empTable.equalsIgnoreCase("employeeFamilyJump")){//跳到家庭信息表
+			String empId = (String) request.getSession().getAttribute("empId");
+			EmployeeFamily family = selectByEmployeeIdQueryFamily(empId);
+			if(family == null || family.getEmpId() == null || family.getEmpId() == ""){
+				model.addObject("fam", new EmployeeFamily(empId));
+			}else{
+				model.addObject("fam", family);
+			}
+			model.setViewName("employee/empFamEdit_emp");
+			return model;
+		}else if(empTable.equalsIgnoreCase("employeeEmployeeJump")){//跳转到员工基本信息页面
+			String empId = (String) request.getSession().getAttribute("empId");
+			Employee employee = selectEmployeeById(empId);
+			List<IcipBusDict> job = baiseeDicMapper.selectIcipBusDictByDictName("empJob");
+			List<IcipBusDict> empDept = baiseeDicMapper.selectIcipBusDictByDictName("empDept");
+			model.addObject("empDept", empDept);
+			model.addObject("dict", job);
+			model.addObject("emp", employee);
+			model.setViewName("employee/empEdit_emp");
+			return model;
+		}
+		return model;
+	}
+
+	/**
+	 *
+	 * @param
+	 * @return
+	 */
+	@Override
+	public int updateEmployeeStatus(Employee employee) {
+		return baiseeEmployeeMapper.updateEmployeeStatus(employee)+baiseeEmployeeMapper.deleteEmployeeRole(employee);
+	}
+	/***************************************前往员工分页显示页面*****************************************************/
+	@Override
+	public ModelAndView employeeListPage(HttpServletRequest request, HttpServletResponse response) {
+		if(request.getSession().getAttribute("empId") != null){
+			request.getSession().removeAttribute("empId");
+		}
+		String itemlableSearch = "";
+		String str = ParamUtils.getParameter(request, "itemlableSearch");//前台传过来的查询值
+		String status = ParamUtils.getParameter(request, "status");
+		String empJob = ParamUtils.getParameter(request, "empJob");
+		String empDept = ParamUtils.getParameter(request, "empDept");
+		String gender = ParamUtils.getParameter(request, "gender");
+		if(str!=null){
+			itemlableSearch = str;
+		}
+		Integer pageNum = ParamUtils.getPageNumParameters(request);
+		Integer pageSize = ParamUtils.getPageSizeParameters(request);
+		PageInfo<Employee> pageInfo = selectEmployeeList(pageNum, pageSize, str, status, empJob,empDept,gender);
+		ModelAndView model = new ModelAndView();
+		List<IcipBusDict> job = baiseeDicMapper.selectIcipBusDictByDictName("empJob");
+		List<IcipBusDict> Dept = baiseeDicMapper.selectIcipBusDictByDictName("empDept");
+		model.addObject("status", status);
+		model.addObject("empJob", empJob);
+		model.addObject("Dept", Dept);
+		model.addObject("gender", gender);
+		model.addObject("dict", job);
+		model.addObject("empDept", empDept);
+		model.addObject("itemlableSearch", itemlableSearch);
+		model.addObject("pageResult", pageInfo);//设置参数pageInfo页面显示数据
+		model.setViewName("employee/emp_list");//设置跳转页面
+		return model;
+	}
+
+	@Override
+	public List<PhoneAndID> getIDAndPhone() {
+
+		return baiseeEmployeeMapper.selectPhoneAndID();
+	}
+
+	@Override
+	public Map<String, Object> doService1(InputStream inputStream) {
+
+
+		String[] titles = {"序号","员工姓名","员工性别","员工民族","出生日期","入职时间","手机号码","身份证号"};//excel中的表头
+		ExcelToBeanConvertor<ImportEmpModel> convertor = new ExcelToBeanConvertor<>();
+		// 1.读取excel数据至对象map集合中
+		/*******************************************************************/
+		Map<String, List<ImportEmpModel>> map = null;
+		try {
+			map = convertor.readToBeanMap(inputStream, titles,
+					ImportEmpModel.class);
+		} catch (InvalidExcelTemplateException e) { // 模板不正确则抛出异常
+			throw new AppException("IICIPBMS00022");
+		} catch (OAServiceException e) {
+			e.printStackTrace();
+		}
+
+		if (MapUtils.isEmpty(map))
+			return null;
+
+		Map<String, Object> returnMap = new HashMap<String, Object>();
+		// 总记录数
+		int totalCount = 0;
+		// 导入数据的校验结果集合
+		List<RowValidateResultDto> rvrDtoList = new ArrayList<RowValidateResultDto>();
+		// 循环每一个符合模板格式的sheet页
+		for (Map.Entry<String, List<ImportEmpModel>> entry : map.entrySet()) {
+			List<ImportEmpModel> list = entry.getValue();
+			totalCount += list.size();
+			/*******************************************************************/
+			// 2.准备好过滤时需要使用到的数据，放入上下文中
+			/*******************************************************************/
+			ICIPContext context = new ICIPContext();
+			/*******************************************************************/
+			// 3.校验数据
+			/*******************************************************************/
+			AbstractFilterChain<ImportEmpModel, RowValidateResultDto> filterChain = new EmpBaseCheckFilterChain(
+					context);
+			List<RowValidateResultDto> errorMsgList = filterChain
+					.doFilter(list);
+
+			if (CollectionUtils.isNotEmpty(errorMsgList))
+				rvrDtoList.addAll(errorMsgList); // 汇总经过过滤器链过滤后返回的校验结果
+
+			/*******************************************************************/
+			// 4.插入记录
+			/*******************************************************************/
+			if (CollectionUtils.isNotEmpty(list)) { // 如果拆分后的数据集合不为空
+				baiseeEmployeeMapper.insetImportExcel(list);
+			}
+		}
+		// 对校验结果集合进行排序，方便前端页面按照行号进行展示
+		Collections.sort(rvrDtoList);
+		returnMap.put("totalCount", totalCount);
+		returnMap.put("rvrDtoList", rvrDtoList);
+		returnMap.put("errorCount", rvrDtoList.size());
+		try {
+			rvrDtoList.get(0).getCvrDtoList().get(0).getErrorMsg();
+		} catch (Exception e) {
+		
+		}
+
+		returnMap.put("successCount", totalCount - rvrDtoList.size());
+		return returnMap;
+	}
+
+	@Override
+	public List<Employee> selectAllEmployees() {
+		return baiseeEmployeeMapper.selectEmps();// 查询所有的教师。
+	}
+
+	@Override
+	public List<Employee> selectEmpByType(String type) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("empType", type);
+		return baiseeEmployeeMapper.selectEmpByType(map);
+	}
+	
+	/**
+	 * 根据员工职位名称查询员工集合
+	 * @param roleName	职位名称
+	 * @return	员工集合
+	 */
+	@Override
+	public List<Employee> findDeptAndRoleEmp(String roleName) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("roleName", roleName);
+		return baiseeEmployeeMapper.findDeptAndRoleEmp(map);
+	}
+}

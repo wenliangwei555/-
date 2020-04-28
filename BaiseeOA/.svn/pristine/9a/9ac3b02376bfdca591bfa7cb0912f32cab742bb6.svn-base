@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="commonTemplate :: header">
+</head>
+  
+<body>
+<div class="lyear-layout-web">
+  <div class="lyear-layout-container">
+    <!--左侧导航-->
+   		<div th:replace="commonTemplate :: leftMenus"></div>
+    <!--End 左侧导航-->
+    
+    <!--头部信息-->
+    	<div th:replace="commonTemplate :: headerDiv"></div>
+    <!--End 头部信息-->
+    
+    <!--页面主要内容-->
+    <main class="lyear-layout-content">
+      
+      <div class="container-fluid">
+        
+        <div class="row">
+          <div class="col-md-12">
+          
+            <div class="card">
+              <div class="card-header"><h4>我的消息</h4></div>
+              <div class="card-body">
+  				<form  th:action="@{message/view.ht}"  id="frm" name="frm" method="post" >
+  				<input type="hidden" name="isReader" id="isReader" value="0" />
+                <ul id="myTabs" class="nav nav-tabs" role="tablist">
+                  <li th:class="${isReader=='0'}? 'active' : ''"><a href="#" onclick="switchTab('0')" id="no-tab" role="tab" data-toggle="tab"><i class="mdi mdi-message-alert"></i>未读消息</a></li>
+                  <li th:class="${isReader=='1'}? 'active' : ''"><a href="#" onclick="switchTab('1')" role="tab" id="yes-tab" data-toggle="tab"><i class="mdi mdi-message-outline"></i>已读消息</a></li>
+                  <li th:class="${isReader=='2'}? 'active' : ''"><a href="#" onclick="switchTab('2')" role="tab" id="yes-tab" data-toggle="tab"><i class="mdi mdi-message-outline"></i>已处理</a></li>
+                </ul>
+                <!-- <div class="toolbar-btn-action">
+                  <a th:if="${isReader=='0'}" class="btn btn-success m-r-5" href="#!"><i class="mdi mdi-check"></i> 标为已读</a>
+                  <a th:if="${isReader=='1'}" class="btn btn-warning m-r-5" href="#!"><i class="mdi mdi-block-helper"></i> 标为未读</a>
+                  <a class="btn btn-danger" href="#!"><i class="mdi mdi-window-close"></i> 删除</a>
+                </div> -->
+                <div id="myTabContent" class="tab-content">
+                  <div class="tab-pane fade active in" id="home">
+                    <!-- 表格 -->
+                     <div class="table-responsive">
+	                  <table class="table table-bordered">
+	                    <thead>
+	                      <tr>
+	                        <th>
+	                          <label class="lyear-checkbox checkbox-primary">
+	                            <input type="checkbox" id="check-all"/><span></span>
+	                          </label>
+	                        </th>
+	                        <th>id</th>
+	                        <th>标题</th>
+	                        <th>类型</th>
+	                        <th>发送人</th>
+	                       <!-- 
+	                       <th>是否已读</th> 
+	                       -->
+	                        <th>发送时间</th>
+	                        <th>操作</th>
+	                      </tr>
+	                    </thead>
+	                    <tbody>
+	                       <tr th:each="item,iterStat:${pageResult.list}" th:if="${pageResult.list != null &amp;&amp; pageResult.list.size() > 0}">
+	                        <td>
+	                          <label class="lyear-checkbox checkbox-primary">
+	                            <input type="checkbox" name="ids[]" value="1"/><span></span>
+	                          </label>
+	                        </td>
+	                        <td th:text="${iterStat.count}">索引</td>
+	                        <td >
+								<a th:href="@{message/info.ht(messageId=${item.id})}"><span th:text="${item.title}"></span></a>
+							</td>
+	                        <td th:switch="${item.type}">
+								<span th:case="'1'" th:text="系统通知"></span>
+								<span th:case="'2'" th:text="工作通知"></span>
+							</td>
+							<td th:text="${item.fromUserName}">发送人</td>
+							<!-- 
+							<td th:switch="${item.isReader}">
+								<span th:case="0" th:text="否"></span>
+								<span th:case="1" th:text="是"></span>
+							</td> 
+							-->
+	                        <td th:text="${#dates.format(item.createTime,'yyyy-MM-dd HH:mm:ss')}">发送时间</td>
+	                        <td>
+	                          <div class="btn-group">
+	                          	<a th:if="${item.isReader=='0'}" class="btn btn-xs btn-success" href="#!" th:href="@{message/changeMessageState.ht(messageId=${item.id},isReader=1)}" title="标为已读" >标为已读</a>
+	                          	<a th:if="${item.isReader=='1'}" class="btn btn-xs btn-warning" href="#!"  th:href="@{message/changeMessageState.ht(messageId=${item.id},isReader=0)}" title="标为未读" >标为未读</a>
+	                          	<a th:if="${item.isReader=='2'}" class="btn btn-xs btn-warning" href="#!"  title="已处理" >已处理</a>
+	                            <!-- <a class="btn btn-xs btn-default" href="#!" title="编辑" data-toggle="tooltip"><i class="mdi mdi-pencil"></i></a> -->
+	                           <a class="btn btn-xs btn-default"  th:href="@{message/delete.ht(messageId=${item.id},isDelete=1)}" title="删除" data-toggle="tooltip">删除</a>
+	                          </div>
+	                        </td>
+	                      </tr>
+	                    </tbody>
+	                  </table>
+	                </div>
+                	<ul class="pagination" th:if="${pageResult != null}" th:object="${pageResult}">
+             <li><a href="javascript:void(0);" th:onclick="*{hasPreviousPage} ? 'go(1)' : 'return false;'">首页</a></li>
+             <li><a href="javascript:void(0);" th:onclick="*{hasPreviousPage} ? 'go(' + *{prePage} + ')' : 'return false;'">上一页</a></li>
+             <li><a href="javascript:void(0);" th:onclick="*{hasNextPage} ? 'go(' + *{nextPage} + ')' : 'return false;'">下一页</a></li>
+             <li><a href="javascript:void(0);" th:onclick="*{hasNextPage} ? 'go(' + *{pages} + ')' : 'return false;'">末页</a></li>
+             <li><a href="javascript:void(0);" onclick="go($('#pagenumber').val());">跳转至</a></li>
+             <li><a href="javascript:void(0);"><input name="pageNum" id="pagenumber" th:value="*{pageNum}" />/<span id="_pages" th:text="*{pages == 0} ? 1 : *{pages}"></span></a></li>
+             <li><a href="javascript:void(0);">页</a></li>
+           </ul>
+                    <!-- 表格 -->
+                  </div>
+                 
+                </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+      
+    </main>
+    <!--End 页面主要内容-->
+  </div>
+</div>
+
+<script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap.min.js" th:src="@{static/js/bootstrap.min.js}"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+<script type="text/javascript" src="js/jconfirm/jquery-confirm.min.js" th:src="@{static/js/jconfirm/jquery-confirm.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+
+<script type="text/javascript">
+	function switchTab(isReader){
+		$("#isReader").val(isReader);
+		$("#frm").submit();
+	}
+</script>
+</body>
+</html>

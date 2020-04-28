@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.baiseew.BaisswScoreMapper">
+	<resultMap type="cn.baisee.oa.model.BaisswScore" id="resultScoreAll">
+		<id column="ID" property="id"/>
+		<result column="SID" property="sid"/>
+		<result column="SNAME" property="sname"/>
+		<result column="CLASSID" property="classid"/>
+		<result column="CName" property="cname"/>
+		<result column="S_TYPE" property="stype"/>
+		<result column="TERM" property="term"/>
+		<result column="SUBJECT" property="subject"/>
+		<result column="SCOER" property="scoer"/>
+		<result column="ISPUBLISH" property="ispublish"/>
+		<result column="updateTime" property="updateTime"/>
+	</resultMap>
+	
+	<select id="getTerm" parameterType="map" resultMap="resultScoreAll">
+		SELECT * FROM (SELECT *,
+			@curRank := @curRank + 1 as rank
+			FROM (SELECT s.*,t.des
+			FROM baisee_score s,baisee_term t
+			WHERE s.TERM = t.term AND s.CLASSID = t.cid AND s.classid = #{classId} AND t.term = #{term}
+			ORDER BY s.scoer DESC ) s1,(SELECT @curRank :=0) q) a WHERE a.sid = #{sid}
+	</select>
+	
+	<sql id="scoreAll">
+		ID, SID, SNAME, CLASSID, CName, S_TYPE, TERM, SUBJECT, SCOER, ISPUBLISH, updateTime
+	</sql>
+	<select id="getTermByCId" parameterType="map" resultMap="resultScoreAll">
+		 select 
+			 <include refid="scoreAll"/> 
+		 from baisee_score where CLASSID = #{cid} and term = #{term}
+		 order by  SCOER desc
+	</select>
+	<select id="getTermByCIDandTerm" parameterType="map" resultType="java.util.HashMap">
+		SET @sql = NULL;
+		SET @cid = #{cid, jdbcType=VARCHAR};
+		SET @term = #{term, jdbcType=VARCHAR};
+		SELECT
+		  GROUP_CONCAT(DISTINCT
+		    CONCAT(
+		      'MAX(IF(st.subject = ''',
+		      st.subject,
+		      ''', st.SCOER, 0)) AS ''',
+		      st.subject, ''''
+		    )
+		  ) INTO @sql
+		FROM baisee_score st where  st.CLASSID=@cid and st.term= @term ;
+		 
+		SET @sql = CONCAT('Select max(st.sname) as 姓名, ', @sql, 
+		                        ' From baisee_score  st Where st.CLASSID = ''', @cid, ''' and st.term =''',@term,''' group by st.sid  order by SUM(st.SCOER) desc ');
+		PREPARE stmt FROM @sql;
+		EXECUTE stmt;
+		DEALLOCATE PREPARE stmt
+	</select>
+	
+	
+	<insert id="addScore" parameterType="cn.baisee.oa.model.BaisswScore">
+		insert into baisee_score (SID, SNAME, CLASSID, CName, S_TYPE, TERM, SUBJECT, SCOER, ISPUBLISH, updateTime)
+			 values(#{sid}, #{sname}, #{classid}, #{cname}, #{stype}, #{term}, #{subject}, #{scoer}, #{ispublish},	DATE_FORMAT(now(),'%Y%m%d') )
+	</insert>
+	
+	<delete id="deleteScoreById" parameterType="map">
+		delete from baisee_score where CLASSID = #{classId} and  term in
+		<foreach collection="term" open="(" close=")" item="terms" separator=",">
+				#{terms, jdbcType=VARCHAR}
+		</foreach>
+		
+	</delete>
+</mapper>

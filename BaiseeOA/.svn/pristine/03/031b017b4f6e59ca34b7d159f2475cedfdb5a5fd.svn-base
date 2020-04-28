@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.baisee.BaiseeDormMapper">
+	<!-- 查询宿舍 -->
+	<select id="selectDorm" resultType="cn.baisee.oa.model.dorm.BaiseeDorm" parameterType="map">
+		select * from (select id,dorm,floor,case when gender =1 then '女' when gender = '0' then '男' else '' END as gender,
+		(select count(1) from baisee_dorm_student where dormid=e.id) as checkIn,
+		number - (select count(1) from baisee_dorm_student where dormid=e.id) as checkOut,
+		case when stype=1 then '高中' when stype = '0' then '初中' end as stype
+		 from (select a.id,a.dorm,a.floor,a.number,a.gender,a.stype from baisee_dorm a
+		left join baisee_dorm_student b on a.id=b.dormid
+		left join baisee_student c on b.stuid = c.sid
+		left join baisee_class d on c.cid = d.cid
+		<where>
+		<if test="itemlableSearch != null and itemlableSearch != '' and itemlableSearch.length()  &lt;= 3 ">
+			and (
+				c.S_NAME LIKE "%"#{itemlableSearch,jdbcType=VARCHAR}"%"
+				OR
+				d.C_NAME = #{itemlableSearch,jdbcType=VARCHAR})
+		</if>
+		<if test="choiceStuState != null and choiceStuState != ''">
+                and c.S_TYPE= #{choiceStuState,jdbcType=VARCHAR}
+        </if>
+		<if test="claStatus != null and claStatus != '' ">
+			AND a.stype = #{claStatus,jdbcType=VARCHAR}
+		</if>
+		<if test="floor != null and floor != '' ">
+			AND a.floor = #{floor,jdbcType=VARCHAR}
+		</if>
+		<if test="stype != null and stype != '' ">
+			AND a.stype = #{stype,jdbcType=VARCHAR}
+		</if>
+		</where>
+		) e ) f 
+	<where>
+		<choose>
+			<when test="dormStatus != null and dormStatus != '' and dormStatus==0 ">
+				 and f.checkOut = 0
+			</when>
+			<when test="dormStatus != null and dormStatus != '' and dormStatus==1 ">
+				 and f.checkIn = 0
+			</when>
+			<when test="dormStatus != null and dormStatus != '' and dormStatus==2 ">
+				 and f.checkOut != 0 and f.checkIn != 0
+			</when>
+		</choose >
+	</where>
+	 group by id order by floor,dorm asc
+	</select>
+	<select id="selectDormStu" resultType="cn.baisee.oa.model.dorm.BaiseeStudorm" parameterType="map">
+		select a.stuid, b.dorm,b.floor,c.S_NAME as sname,C_NAME as cname,e.E_NAME as ename,
+		case 
+		when C_STATUS = '1' then '高中' 
+		when C_STATUS = '2' then '高中开发' 
+		when C_STATUS = '3' then '高中测试' 
+		when C_STATUS = '0' then '高中' 
+		end as stype
+		from baisee_dorm_student a 
+		LEFT JOIN baisee_dorm b on a.dormid = b.id
+		LEFT JOIN baisee_student c on a.stuid = c.sid 
+		LEFT JOIN baisee_class d on c.CID = d.CID 
+		LEFT JOIN baisee_employee e on d.C_TEACHER_NUMBER =e.EID where dormid=#{dormid}
+	</select>
+	<select id="selectCheckStu" resultType="cn.baisee.oa.model.student.BaiseeStudent" parameterType="map">
+		SELECT
+			a.sid as stuId,
+		  b.c_name as claName,
+			a.s_name as stuName,
+			CASE
+		WHEN a.S_SEX = 1 THEN
+			'女'
+		WHEN a.S_SEX = 0 THEN
+			'男'
+		ELSE
+			'' end as stuSex,
+		 YEAR (NOW()) - substring(a.S_ID_NUMBER, 7, 4) AS stuAge
+		FROM
+			baisee_student a
+		LEFT JOIN baisee_class b ON a.CID = b.CID
+		<where> not exists (select stuid from baisee_dorm_student d where a.sid = d.stuid)
+		and a.S_SEX = (select gender from baisee_dorm where id =#{dormid})
+		<if test="itemlableSearch != null and itemlableSearch != '' and itemlableSearch.length()  &lt;= 3 ">
+				and (
+				a.S_NAME LIKE "%"#{itemlableSearch,jdbcType=VARCHAR}"%"
+				OR
+				b.C_NAME = #{itemlableSearch,jdbcType=VARCHAR})
+		</if>
+		and a.s_status in ('0','1','2')
+		</where>
+	</select>
+	<!-- 入住-->
+	<insert id="insertDormStu" parameterType="java.lang.String">
+		insert into baisee_dorm_student(stuid, dormid) VALUES(#{stuId, jdbcType=VARCHAR},#{dormid, jdbcType=VARCHAR})
+	</insert>
+	<!-- 退宿 -->
+	<delete id="delDormStu" parameterType="map">
+		<if test="stuId !=null">
+			delete from baisee_dorm_student 
+			<where>
+				stuid=#{stuId, jdbcType=VARCHAR}
+			</where>
+		</if>
+	</delete>
+	<delete id="delDorm" parameterType="map">
+		<if test="dormid !=null">
+			delete from baisee_dorm
+			<where>
+				id=#{dormid, jdbcType=VARCHAR}
+			</where>
+		</if>
+	</delete>
+	<insert id="insertDorm" parameterType="cn.baisee.oa.model.dorm.BaiseeDorm" useGeneratedKeys="true" keyProperty="id"> 
+	INSERT INTO baisee_dorm (dorm, floor, number, gender, stype) 
+	values 
+	(#{dorm, jdbcType=VARCHAR},
+	#{floor, jdbcType=VARCHAR},
+	#{number, jdbcType=VARCHAR},
+	#{gender, jdbcType=VARCHAR},
+	#{stype, jdbcType=VARCHAR}) 
+	</insert>
+	<update id="updateDorm" parameterType="cn.baisee.oa.model.dorm.BaiseeDorm">
+		UPDATE baisee_dorm SET  dorm=#{dorm, jdbcType=VARCHAR},
+		floor=#{floor, jdbcType=VARCHAR}, number=#{number, jdbcType=VARCHAR}, 
+		gender=#{gender, jdbcType=VARCHAR}, stype=#{stype, jdbcType=VARCHAR} WHERE id=#{id, jdbcType=VARCHAR};
+	</update>
+	<select id="queryDorm" resultType="cn.baisee.oa.model.dorm.BaiseeDorm"  parameterType="java.lang.String">
+		select id,dorm,floor,number,gender,stype from baisee_dorm where id = #{dormid}
+	</select>
+	<select id="queryDormNum" resultType="cn.baisee.oa.model.dorm.BaiseeDorm"  parameterType="java.lang.String">
+		select id,dorm,floor,number,gender,stype from baisee_dorm where dorm = #{dorm}
+	</select>
+</mapper>

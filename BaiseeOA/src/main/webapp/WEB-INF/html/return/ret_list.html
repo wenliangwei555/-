@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head th:include="commonTemplate :: header">
+<link rel="stylesheet" type="text/css" th:href="@{css/cla_list_css.css}" />
+</head>
+<body class="bgcolor-body">
+	<div id="page">
+		<div th:include="commonTemplate :: headerDiv"></div>
+		<div id="content" class="layout">
+			<div class="grid-s5m0">
+				<!-- ============================= 页面内容 开始============================= -->
+				<div class="col-main">
+					<div class="main-wrap">
+						<div class="skin-box">
+							<div class="skin-box-bd">
+								<div class="cur-position">
+									<span><a href="javascript:void(0);">信息管理</a> </span> <span>&gt;</span>
+									<span><a th:href="@{retu/toReturnList.ht}">返费规则管理</a> </span>
+								</div>
+								<form th:action="@{retu/toReturnInfo.ht}" id="frm" name="frm"
+									method="post">
+									<div class="cont-box">
+										<div class="search-box">
+											<div class="left">
+												<span class="add JsW"><a
+													th:href="@{retu/toReturnInfo.ht}" baisee:ctrl="FFGL_FFXZ"
+													class="ks-pop-nav" title="添加返费规则"
+													style="cursor: pointer; color: #ffffff"
+													onmouseover="javascript:this.style.color='#dbdbdb'"
+													onmouseout="javascript:this.style.color='#ffffff'">新增</a> </span>
+												<!-- <span class="del"><a bms:ctrl="busDict.delDict" href="javascript:void(0);" th:onclick="'del(\'frm\', \''+ @{/cla/delAllCla.ht} + '\')'" title="删除班级" style="cursor:pointer;color: #ffffff" 
+													onmouseover="javascript:this.style.color='#dbdbdb'" 
+													onmouseout="javascript:this.style.color='#ffffff'">删除</a> </span> -->
+											</div>
+
+											<!-- <div class="right">
+													<div class="search-box-cont" >
+														<span> <input class="button" type="submit" value="搜索" /> </span>
+														<span><input class="input radius3" name="remark" id="remark" onkeyup="check();" type="text" placeholder="备注" style="width: 226px"/></span>
+													</div>
+												</div> -->
+										</div>
+										<div class="list-table">
+											<div class="list-table-cont">
+												<div class="table2">
+													<table class="ks-inputall">
+														<tr class="th">
+															<!-- <td class="col1">
+																	<div class="JsW control-checkbox" data-control-type="checkboxall">
+																		<input type="checkbox" onclick="selectAllCheckBox(document.frm.ids,document.frm.checkbox,this);" />
+																	</div>
+																</td> -->
+															<td class="col3">规则名称</td>
+															<td class="col4">缴费金额</td>
+															<td class="col5">时间(月数)</td>
+															<td class="col5">返费金额</td>
+															<td class="col6">更新时间</td>
+															<td class="col5">创建人</td>
+															<td class="col1" baisee:ctrl="FFGL_FFSC">删除</td>
+														</tr>
+														<tr
+															th:if="${pageResult.list == null || pageResult.list.size() == 0}">
+
+														</tr>
+														<tr th:each="info:${pageResult.list}"
+															th:if="${pageResult.list != null &amp;&amp; pageResult.list.size() > 0}"
+															onmouseover="this.style.backgroundColor='#e3f1ff'"
+															onmouseout="this.style.backgroundColor='#ffffff'">
+															<td class="col3"><span style="cursor: pointer"
+																title="点击可编辑"
+																th:onclick="'edit(\'' + ${info.rtId} + '\')'"
+																th:text="${info.rName}"></span></td>
+															<td class="col4"><span style="cursor: pointer"
+																title="点击可编辑"
+																th:onclick="'edit(\'' + ${info.rtId} + '\')'"
+																th:text="${info.returnRule.paymentAmount}"></span></td>
+															<td class="col5"><span style="cursor: pointer"
+																title="点击可编辑"
+																th:onclick="'edit(\'' + ${info.rtId } + '\')'"
+																th:text="${info.returnRule.returnTime}"></span></td>
+															<td class="col5"><span style="cursor: pointer"
+																title="点击可编辑"
+																th:onclick="'edit(\'' + ${info.rtId} + '\')'"
+																th:text="${info.returnRule.returnSum}"></span></td>
+															<td class="col6"><span style="cursor: pointer"
+																title="点击可编辑"
+																th:onclick="'edit(\'' + ${info.rtId} + '\')'"
+																baisee:fmt="yyyy-MM-dd hh:mm:ss,${info.returnRule.upDate}"></span>
+															</td>
+															<td class="col5"><span style="cursor: pointer"
+																title="点击可编辑"
+																th:onclick="'edit(\'' + ${info.rtId} + '\')'"
+																th:text="${info.createUser}"></span></td>
+															<td class="col1" baisee:ctrl="FFGL_FFSC"><span
+																style="cursor: pointer" title="点击删除"
+																th:onclick="'delRetu(\'' + ${info.rtId } + '\')'"><font
+																	color="#ff0000">删除该返费规则</font></span></td>
+														</tr>
+													</table>
+												</div>
+											</div>
+										</div>
+										<div th:include="commonTemplate :: pageBox"></div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- ============================= 页面内容 结束============================= -->
+				<div th:include="commonTemplate :: leftMenus"></div>
+			</div>
+		</div>
+		<div th:include="commonTemplate :: footer"></div>
+	</div>
+	<div th:include="commonTemplate :: processBar" />
+
+	<script th:inline="javascript">
+		function delRetu(rtId ){
+			debugger;
+			var logUrl = [[@{'/retu/delReturn.ht?rtId='}]] + rtId ;
+			layer.confirm('确定删除该吗？', {
+	            btn : [ '确定', '取消' ]//按钮
+	        }, function(index) {
+	            layer.close(index);
+	            //此处请求后台程序，下方是成功后的前台处理……
+	            //var index = layer.load(0,{shade: [0.7, '#393D49']}, {shadeClose: true}); //0代表加载的风格，支持0-2
+			$.ajax({
+				url: logUrl,
+				type:'post',
+				success:function(data){
+					if (data.flag == "success") {
+						var succ=[[@{'/retu/toReturnList.ht'}]];
+						locationHref(succ);
+						_alert("删除成功！！！");
+					} else if (data.flag == "undeletable") {
+						_alert("该返费规则与学费关联，删除可能导致学费规则出现错误");
+					}else {
+						_alert("删除失败！！！");
+					}
+				}
+			})
+	        });
+		};  
+	</script>
+	<script th:inline="javascript">
+		function edit(id){
+			locationHref([[@{/retu/toReturnInfo.ht}]] + "?rtId=" + id);
+		} 
+	</script>
+
+</body>
+</html>

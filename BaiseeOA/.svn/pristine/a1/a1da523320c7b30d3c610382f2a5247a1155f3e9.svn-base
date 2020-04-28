@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="commonTemplate :: header">
+	<meta http-equiv="Content-Type" content="text/html; charset='utf-8'" />
+</head>
+<body>
+<div class="lyear-layout-web">
+	<div class="lyear-layout-container">
+		<!--左侧导航-->
+		<div th:replace="commonTemplate :: leftMenus"></div>
+		<!--End 左侧导航-->
+
+		<!--头部信息-->
+		<div th:replace="commonTemplate :: headerDiv"></div>
+		<!--End 头部信息-->
+
+		<!--页面主要内容-->
+		<main class="lyear-layout-content">
+			<!-- ==================================== 页面内容开始 ============================= -->
+			<div class="container-fluid">
+				<!--<form id="busTypeForm" th:action="@{repair/dictionaries/addType.ht}" autocomplete="off"  method="post" th:object="${info}" >-->
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="card">
+								<div class="card-body">
+									<ul id="myTabs" class="nav nav-tabs" role="tablist">
+										<li ><a href="" id="profile-tab" role="tab" onclick="queryDorm();" data-toggle="tab">宿舍信息</a></li>
+										<li class="active"><a role="tab" id="home-tab" data-toggle="tab">入住\退宿</a></li>
+									</ul>
+									<input type="hidden" name="dictId"  />
+									<div class="container-fluid">
+										<form  th:action="@{dorm/checklist.ht}" id="frm" name="frm" method="post">
+											<div class="row">
+												<div class="col-lg-12">
+													<div class="card">
+														<input name="dormId" id="dormId" type="hidden" th:value="${dormId}" />
+														<div class="card-toolbar clearfix " >
+															<div class="toolbar-btn-action">
+																<a class="btn btn-danger"
+																   href="javascript:void(0);"
+																   th:onclick="'del(\'frm\', \''+ @{/dorm/delCheckForStu.ht} + '\', \''+是否退宿+ '\')'"
+																   title="批量退宿"
+																   onmouseover="javascript:this.style.color='#dbdbdb'"
+																   onmouseout="javascript:this.style.color='#ffffff'">
+																	退宿
+																</a>
+																<a class="btn btn-info"
+																   th:onclick="'add(\'' + ${dormId} + '\')'"
+																   title="入住" style="cursor: pointer; color: #ffffff"
+																   onmouseover="javascript:this.style.color='#dbdbdb'"
+																   onmouseout="javascript:this.style.color='#ffffff'">
+																	入住
+																</a>
+															</div>
+														</div>
+														<div class="card-body">
+
+															<div class="table-responsive">
+																<table class="table table-bordered">
+																	<tr class="th">
+																		<td class="col1">
+																			<div class="JsW control-checkbox"
+																				 data-control-type="checkboxall">
+																				<input type="checkbox"
+																					   onclick="selectAllCheckBox(document.frm.ids,document.frm.checkbox,this);" />
+																			</div>
+																		</td>
+																		<td class="col3">宿舍<input type="hidden"
+																								  name="operationSuccess" id="operationSuccess"
+																								  th:value="${operationSuccess}" />
+																		</td>
+																		<td class="col5">所在楼层</td>
+																		<td class="col6">学生姓名</td>
+																		<td class="col8">班级</td>
+																		<td class="col9">班主任</td>
+																		<td class="col10">学籍</td>
+																		<td class="col10">操作</td>
+																	</tr>
+																	<tr th:if="${list == null || list.size() == 0}">
+																	</tr>
+
+																	<tr th:each="info:${list}"
+																		th:if="${list != null &amp;&amp; list.size() > 0}"
+																		onmouseover="this.style.backgroundColor='#e3f1ff'"
+																		onmouseout="this.style.backgroundColor='#ffffff'">
+																		<td class="col1">
+																				<input type="checkbox" name="ids"
+																					   th:value="${info.stuid}" />
+																		</td>
+																		<td class="col3"><span style="cursor: pointer"
+																							   th:text="${info.dorm}"></span></td>
+																		<td class="col5"><span style="cursor: pointer"
+																							   th:text="${info.floor}"></span></td>
+																		<td class="col6"><span style="cursor: pointer"
+																							   th:text="${info.sname}"></span></td>
+																		<td class="col8"><span style="cursor: pointer"
+																							   th:text="${info.cname}"></span></td>
+																		<td class="col9"><span style="cursor: pointer"
+																							   th:text="${info.ename}"></span></td>
+																		<td class="col10"><span style="cursor: pointer"
+																								th:text="${info.stype}"></span></td>
+																		<td class="col10">
+																			<a class="btn btn-danger"
+																			   baisee:ctrl="XSSSGl_RZ"
+																			   href="javascript:void(0);"
+																			   th:onclick="'delt(\'' + ${info.stuid} + '\')'">
+																				退宿
+																			</a>
+																		</td>
+																	</tr>
+																</table>
+															</div>
+
+														</div>
+													</div>
+												</div>
+
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				<!--</form>-->
+			</div>
+			<!-- ============================= 页面内容 结束 ============================= -->
+		</main>
+		<!-- END 页面主要内容  -->
+	</div>
+</div>
+
+<script type="text/javascript" th:src="@{js/jquery-1.11.3.min.js}"></script>
+<script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+<script type="text/javascript" th:src="@{js/public-obj.js}"></script>
+<script type="text/javascript" th:src="@{js/bind.js}"></script>
+<script type="text/javascript" th:src="@{js/controls.js}"></script>
+<script type="text/javascript" th:src="@{js/slide.js}"></script>
+<script type="text/javascript" th:src="@{js/switch.js}"></script>
+<script type="text/javascript" th:src="@{js/initial.js}"></script>
+<script type="text/javascript" th:src="@{js/printhtml.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/My97DatePicker/WdatePicker.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/file/uploadify/jquery.uploadify.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/layer/layer.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/select2/i18n/zh-CN.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/treeview/jquery.treeview.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/form/jquery.form.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/ztree/jquery.ztree.core-3.5.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/ztree/jquery.ztree.excheck-3.5.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/constant.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/comm/appconstans.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/bmsAjax.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/validata.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/validate/jquery.validate.min.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/validate/localization/messages_zh.min.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/validate/regValidate.js}"></script>
+<script type="text/javascript" th:src="@{js/popup_layer.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/kxbdmarquee/js/jquery.kxbdmarquee.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/textScroll.js}"></script>
+<script type="text/javascript" th:src="@{js/app.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/layer/layui.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+	/*<![CDATA[*/
+	var basePath = /*[[@{/}]]*/;
+	/*]]>*/
+</script>
+<script th:inline="javascript">
+	$(function(){
+
+		var operationSuccess = $("#operationSuccess").val();
+		/*if(operationSuccess != ""){
+			_alert(operationSuccess);
+		}*/
+	});
+	
+	function delt(stuId){
+		layer.confirm ("确定要退宿吗！", {
+			btn : [
+				'确定', '取消'
+			]}, function (index) {
+			$.post(basePath+"/dorm/deletStu.ht",{'stuId':stuId},function(result){
+				_alert("退宿成功!");
+				/*<![CDATA[*/
+				locationHref(basePath + "/dorm/check.ht?dormId=" + [[${dormId}]]+ "&&number=" + [[${number}]]);
+				/*]]>*/
+			})
+		})
+	}
+	function delt(stuId){
+		layer.confirm ("确定要退宿吗！", {
+			btn : [
+				'确定', '取消'
+			]}, function (index) {
+			$.post(basePath+"/dorm/deletStu.ht",{'stuId':stuId},function(result){
+				_alert("退宿成功!");
+				/*<![CDATA[*/
+				locationHref(basePath + "/dorm/check.ht?dormId=" + [[${dormId}]]+ "&&number=" + [[${number}]]);
+				/*]]>*/
+			})
+		})
+	}
+	function add(dorm){
+		var number = [[${number}]];
+		alert('number'+ number)
+		var size = [[${list.size()}]];
+		if(number-size>0){
+			layer.open({
+				type : 2,
+				title : "办理入住",
+				shadeClose : true,
+				shade : 0.8,
+				area : [ '1000px', '455px' ],
+				content:
+				/*<![CDATA[*/
+						basePath + "/dorm/checklist.ht?dormId=" + dorm+ "&&number=" + number +"&&size=" + size,
+					/*]]>*/
+
+					end: function () {
+				/*<![CDATA[*/
+				locationHref(basePath + "/dorm/check.ht?dormId=" + dorm+ "&&number=" + number);
+				/*]]>*/
+			}
+		});
+		}else{
+			_alert("床位不足，请先退宿！")
+		}
+
+	}
+
+	function queryDorm(){
+		/*location.href = basePath+"/dorm/detail.ht?id=" + [[${dormId}]]*/
+		/*<![CDATA[*/
+		locationHref( basePath + "/dorm/detail.ht?id=" +[[${dormId}]]);
+		/*]]>*/
+	};
+
+</script>
+</body>
+</html>

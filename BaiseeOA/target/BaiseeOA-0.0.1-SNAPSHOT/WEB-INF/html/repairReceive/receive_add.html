@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="commonTemplate :: header">
+</head>
+<body>
+<div class="lyear-layout-web">
+	<div class="lyear-layout-container">
+		 <!--左侧导航-->
+	    	<div th:replace="commonTemplate :: leftMenus"></div>
+	     <!--End 左侧导航-->
+	    
+	    <!--头部信息-->
+	    	<div th:replace="commonTemplate :: headerDiv"></div>
+	    <!--End 头部信息-->
+	    
+	    <!--页面主要内容-->
+		<main class="lyear-layout-content">
+		<!-- ==================================== 页面内容开始 ============================= -->
+			<div class="container-fluid">
+				<form  id="busReceiveForm" th:action="@{receive/addReceive.ht}" autocomplete="off"  method="post" th:object="${info}" >
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="card">
+								<div class="card-body">
+									<input type="hidden" name="dictId"  />
+									<table class="table table-hover">
+										<tr>
+											<td align="center">
+												<span style="color:red">*</span>
+												<span>所属部门：</span>
+											</td>
+											<td>
+												<div class="control-css3select css3select-icon-hide">
+													<select class="form-control" id="deptId" name="deptId" onchange="changeDeptVal()" disabled="disabled">
+														<option value = "0" 
+														th:selected="${deptId == '0'}">初中部</option>
+														<option value = "1" 
+														th:selected="${deptId == '1'}">高中部</option>
+														 <option value = "2" 
+														th:selected="${deptId == '2'}">百思部</option>
+													</select>
+												</div>
+												<input type="hidden" id="deptName" name="deptName" />
+											</td>
+										</tr>
+										<tr>
+											<td align="center">
+												<span style="color:red">*</span>
+												<span>选择物品类型：</span>
+											</td>
+											<td>
+												<div>
+													<select id="typeId" name="typeId"  class="form-control" onchange="changeVal()">
+														<option></option>
+														<option th:each="info:${goodsTypes}" th:value="${info.typeId}" th:text="${info.typeName}"></option>
+													</select>
+												</div>
+												&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+												<span id="typeMes" style="display: none"></span>
+											</td>
+										</tr>
+										<tr>
+											<td align="center">
+												<span style="color:red">*</span>
+												<span>选择领取物品：</span>
+											</td>
+											<td>
+												<div class="control-css3select css3select-icon-hide">
+													<select id="goodsId" name="goodsId"  class="form-control" onchange="changeSonVal(this)">
+														<option></option>
+														<option th:each="info:${repertorys}" th:attr="data=${info.goodsNum}" th:value="${info.goodsId}" th:text="${info.goodsName}"></option>
+													</select>
+													<input type="hidden" id="goodsName" name="goodsName" />
+													<input type="hidden" id="repertoryNum" name="repertoryNum" />
+												</div>
+												&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="goodsMes" style="display: none"></span>
+											</td>
+										</tr>	
+										<tr>
+											<td align="center">
+												<span style="color:red">*</span>
+												<span>领取数量：</span>
+											</td>
+											<td>
+												<span>
+													<input type="text" placeholder="请填写数字" onblur="checkRepertoryNum()" class="form-control" onkeyup="value=value.replace(/\D|^[0]+/g,'')" maxlength="4" name="goodsNum"  id="goodsNum" />
+												</span>
+												&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+												<span id="message" style="display: none"></span>
+											</td>
+										</tr>
+										<tr>
+											<td align="center">
+												<span>备注：</span>
+											</td>
+											<td>
+												<span>
+													<textarea rows="3" cols="32" name="views" id="views" class="form-control"></textarea>
+												</span>
+											</td>
+										</tr>					
+									</table>
+									<div align="center">
+										<input value="保存" type="button" onclick="submitForm();"  class="btn btn-info btn-w-md" />
+										<input value="取消" type="button" onclick="returnBack();" class="btn btn-warning btn-w-md"/>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		<!-- ============================= 页面内容 结束 ============================= -->
+		</main>
+	    <!-- END 页面主要内容  -->
+	</div>
+</div>
+<link rel="stylesheet" href="css/select2/select2.css" th:href="@{css/select2/select2.css}"/>
+<script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+<script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/layer/layer.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/bmsAjax.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/form/jquery.form.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/validate/jquery.validate.min.js}"></script>
+<script type="text/javascript">
+$(function(){
+	setValidate($("#busReceiveForm"),{
+		rules: {
+			goodsId:{required: true, maxlength: 50}
+		},
+		messages:{
+			goodsId:{required: "必选",maxlength: "超过50，太长"}
+		}
+	});
+});	
+
+function returnBack(){
+	var url = basePath+'/receive/receiveList.ht';
+	window.location.href=url;
+}
+changeDeptVal();
+function changeDeptVal() {
+	$("#deptName").val($("#deptId option:selected").text());
+};
+//changeVal();
+function changeVal() {
+	var id = $("#typeId").val();
+	$.ajax({
+		url: basePath+'/receive/findGoodsTypeById.ht',
+		data:{"id":id},
+		type:'get',
+		success:function(data){
+			//清空选择
+			$("#goodsId").val(null).trigger("change");
+			$("#goodsId").val("请选择申领物品").trigger("change");//或者
+			$("#goodsId").empty();
+			var newRepertorys = data.repertorys;
+			var s2 = "";
+			var s3 = "请选择申领物品";
+			$("#goodsId").append("<option value="+s2+">"+s3+"</option>");
+			 $.each(newRepertorys, function (index, item) {
+				 var option = "<option data="+item.goodsNum+" value="+item.goodsId+">"+item.goodsName+"</option>";
+				 $("#goodsId").append(option);
+			 });
+			 $("#goodsName").val($("#goodsId option:selected").text());
+			 changeSonVal();
+		}
+	})		
+};
+
+changeSonVal();
+//改变选择领取物品时改变物品名称
+function changeSonVal() {
+	$("#repertoryNum").val($("#goodsId option:selected").attr('data'));
+	$("#goodsName").val($("#goodsId option:selected").text());
+};
+
+
+function checkRepertoryNum() {
+	var repertoryNum = $("#repertoryNum").val();
+	var goodsNum = $("#goodsNum").val();
+	if (eval(repertoryNum)>0) {
+		if (eval(repertoryNum)>=eval(goodsNum)) {
+			$("#message").hide();
+			lastNum = eval(repertoryNum) - eval(goodsNum);
+		}else {
+			$("#message").show();
+			$("#message").text("库存数量不足！");
+			$("#message").css("color","red");
+			return;
+		}	
+	}else {
+		$("#message").show();
+		$("#message").text("库存数量不足！");
+		$("#message").css("color","red");
+		return;
+	}
+	
+}
+
+function submitForm() {
+	typeId
+	if ($("#typeId").val()) {
+		$("#typeMes").hide();
+	}else {
+		$("#typeMes").show();
+		$("#typeMes").text("请选择物品物品类型！");
+		$("#typeMes").css("color","red");
+		return;
+	}
+	goodsId
+	if ($("#goodsId").val()) {
+		$("#goodsMes").hide();
+	}else {
+		$("#goodsMes").show();
+		$("#goodsMes").text("请选择申领物品！");
+		$("#goodsMes").css("color","red");
+		return;
+	}
+	goodsId
+	if ($("#goodsId").val()) {
+		$("#goodsMes").hide();
+	}else {
+		$("#goodsMes").show();
+		$("#goodsMes").text("请选择申领物品！");
+		$("#goodsMes").css("color","red");
+		return;
+	}
+	goodsNum
+	if ($("#goodsNum").val()) {
+		$("#message").hide();
+	}else {
+		$("#message").show();
+		$("#message").text("必填！");
+		$("#message").css("color","red");
+		return;
+	}
+	
+	$.ajax({
+		url: basePath + '/receive/getRepertoryNum.ht?goodsId='+$("#goodsId").val(),
+		type:'GET',
+	    dataType: "json",//预期服务器返回的数据类型
+	    data: {"assignmentPersonId": $("#assignmentPersonId").val()},
+		success:function(data){
+			var repertoryNum = data.repertoryNum;
+			var goodsNum = $("#goodsNum").val();
+			if ($("#goodsId").val()) {
+				$("#goodsMes").hide();
+			}else {
+				$("#goodsMes").show();
+				$("#goodsMes").text("请选择申领物品！");
+				$("#goodsMes").css("color","red");
+				return;
+			}
+			if (goodsNum) {
+				$("#message").hide();
+			}else {
+				$("#message").show();
+				$("#message").text("必填");
+				$("#message").css("color","red");
+				return;
+			}
+			if (eval(repertoryNum)>0) {
+				if (eval(repertoryNum)>=eval(goodsNum)) {
+					$("#message").hide();
+					lastNum = eval(repertoryNum) - eval(goodsNum);
+				}else {
+					$("#message").show();
+					$("#message").text("库存数量不足！");
+					$("#message").css("color","red");
+					return;
+				}	
+			}else {
+				$("#message").show();
+				$("#message").text("库存数量不足！");
+				$("#message").css("color","red");
+				return;
+			}
+			$("#deptId").removeAttr("disabled");
+			var form = $('#busReceiveForm').serialize();
+			console.log(form)
+			$.ajax({
+				url: basePath + '/receive/addReceive.ht',
+				type:'POST',
+			    dataType: "json",//预期服务器返回的数据类型
+			    data: $('#busReceiveForm').serialize(),
+				success:function(data){
+					
+				}
+			});
+			returnBack();
+			returnBack();
+		}
+	});
+	alert("添加成功")
+}
+
+$(function(){
+	$("#typeId").select2({
+		placeholder : "请选择物品类型"
+	});
+	$("#goodsId").select2({
+		placeholder : "请选择申领物品"
+	});
+	
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="commonTemplate :: header">
+</head>
+<body>
+<div class="lyear-layout-web">
+	<div class="lyear-layout-container">
+		<!--左侧导航-->
+		<div th:replace="commonTemplate :: leftMenus"></div>
+		<!--End 左侧导航-->
+
+		<!--头部信息-->
+		<div th:replace="commonTemplate :: headerDiv"></div>
+		<!--End 头部信息-->
+
+		<!--页面主要内容-->
+		<main class="lyear-layout-content">
+			<!-- ==================================== 页面内容开始 ============================= -->
+			<div class="container-fluid">
+				<form id="busTypeForm" th:action="@{dorm/view.ht}" autocomplete="off"  method="post" th:object="${info}" >
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="card">
+								<div class="card-body">
+									<ul id="myTabs" class="nav nav-tabs" role="tablist">
+										<li class="active"><a href="#home" id="home-tab" role="tab" data-toggle="tab">宿舍信息</a></li>
+										<li><a onclick="checkIn()" role="tab" id="profile-tab" data-toggle="tab">入住\退宿</a></li>
+									</ul>
+									<input type="hidden" name="dictId"  />
+									<table class="table table-hover">
+										<tr>
+											<td align="right" width="25%">
+												<span style="color:red">*</span>
+												<span>楼层：</span>
+											</td>
+											<td>
+												<span><input type="hidden" id="id" name="id"
+															 th:value="${dorm.id}" /><input type="text"
+																							class="form-control" id="floor" name="floor"
+																							th:value="${dorm.floor}" /> </span>
+											</td>
+										</tr>
+										<tr>
+											<td  align="right" width="25%">
+												<span style="color:red">*</span>
+												<span>宿舍编号：</span>
+											</td>
+											<td>
+													<span><input type="text"
+																 class="form-control" id="dorm" name="dorm"
+																 th:value="${dorm.dorm}" /></span>
+											</td>
+										</tr>
+										<tr>
+											<td  align="right" width="25%">
+												<span style="color:red">*</span>
+												<span>床位：</span>
+											</td>
+											<td>
+												<span><input type="text"
+															 class="form-control" id="number" name="number"
+															 th:value="${dorm.number}" /></span>
+											</td>
+										</tr>
+										<tr>
+											<td  align="right" width="25%">
+												<span style="color:red">*</span>
+												<span>男/女：</span>
+											</td>
+											<td>
+												<select name="gender" id="gender" class="form-control">
+													<option>--请选择--</option>
+													<option value="1" th:if="${dorm.gender == '1'}"
+															selected="selected">女</option>
+													<option value="1" th:if="${dorm.gender != '1'}">女</option>
+													<option value="0" th:if="${dorm.gender == '0'}"
+															selected="selected">男</option>
+													<option value="0" th:if="${dorm.gender != '0'}">男</option>
+												</select>
+											</td>
+										</tr>
+										<tr>
+											<td  align="right" width="25%">
+												<span style="color:red">*</span>
+												<span>学籍：</span>
+											</td>
+											<td>
+												<select name="stype" id="stype" class="form-control">
+													<option>--请选择--</option>
+													<option value="1" th:if="${dorm.stype == '1'}"
+															selected="selected">高中</option>
+													<option value="1" th:if="${dorm.stype != '1'}">高中</option>
+													<option value="0" th:if="${dorm.stype == '0'}"
+															selected="selected">初中</option>
+													<option value="0" th:if="${dorm.stype != '0'}">初中</option>
+												</select>
+											</td>
+										</tr>
+									</table>
+									<div align="center">
+										<input value="返回上一级"  onclick="returnBack();" type="button" class="btn btn-info btn-w-md" />
+										<input value="保存" type="submit" class="btn btn-warning btn-w-md"/>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<!-- ============================= 页面内容 结束 ============================= -->
+		</main>
+		<!-- END 页面主要内容  -->
+	</div>
+</div>
+
+<script type="text/javascript" th:src="@{js/jquery-1.11.3.min.js}"></script>
+<script type="text/javascript" th:src="@{js/public-obj.js}"></script>
+<script type="text/javascript" th:src="@{js/bind.js}"></script>
+<script type="text/javascript" th:src="@{js/controls.js}"></script>
+<script type="text/javascript" th:src="@{js/slide.js}"></script>
+<script type="text/javascript" th:src="@{js/switch.js}"></script>
+<script type="text/javascript" th:src="@{js/initial.js}"></script>
+<script type="text/javascript" th:src="@{js/printhtml.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/My97DatePicker/WdatePicker.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/file/uploadify/jquery.uploadify.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/layer/layer.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/select2/i18n/zh-CN.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/treeview/jquery.treeview.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/form/jquery.form.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/ztree/jquery.ztree.core-3.5.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/ztree/jquery.ztree.excheck-3.5.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/constant.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/comm/appconstans.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/bmsAjax.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/validata.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/validate/jquery.validate.min.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/validate/localization/messages_zh.min.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/validate/regValidate.js}"></script>
+<script type="text/javascript" th:src="@{js/popup_layer.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/kxbdmarquee/js/jquery.kxbdmarquee.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/textScroll.js}"></script>
+<script type="text/javascript" th:src="@{js/app.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/layer/layui.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+	/*<![CDATA[*/
+	var basePath = /*[[@{/}]]*/;
+	/*]]>*/
+</script>
+<script th:inline="javascript">
+
+	$(function(){
+		var operationSuccess = $("#operationSuccess").val();
+		if(operationSuccess != ""){
+// 			_alert(operationSuccess);
+		}
+
+		var stuFamRelation = $("#stuFamRelation").val();
+		var OtherRelation=document.getElementById("OtherRelation");
+		if(stuFamRelation == "其他"){
+			OtherRelation.style.display = '';
+		}
+
+		$("#stuId").val($("#sId").val());
+	});
+	$(function(){
+		setValidate($("#basefrm"),{
+			rules: {
+				stuFamName:{required: true,number: false,stuName: true, maxlength: 21,minlength:2},
+				stuFamTel:{required: true,phone_number:true},
+				stuFamSex:{required: true},
+				stuFamRelation:{required: true},
+				stuFamOtherRelation:{required: true}
+			},
+			messages:{
+				stuFamName:{required: "*请输入姓名!",number:"*输入正确的姓名!",maxlength: "*长度最大21位字符!",minlength:"*长度最小2位字符!"},
+				stuFamTel:{required: "*请输入手机号!"},
+				stuFamSex:{required: "*请选择性别!"},
+				stuFamRelation:{required: "*请选择家人关系!"},
+				stuFamOtherRelation:{required: "*请输入其他家人关系!"}
+
+			}
+		});
+		/* =========================================手机号码校验======================================================= */
+		$.validator.addMethod("phone_number", function(value, element) {
+			var length = value.length;
+			var phone_number = /^((1[0-9][0-9]))\d{8}$/;
+			//var phone_number = /^((13[0-9])|(14[5,7,9])|(15[^4])|(18[0-9])|(17[0,1,3,5,6,7,8]))\d{8}$/
+			return this.optional(element) || (phone_number.test(value)); }, "*手机号码格式错误!");
+		/*=====================================姓名验证=============================================*/
+		$.validator.addMethod("stuName", function(value, element) {
+			var length = value.length;
+			var stuName =  /^[\u4E00-\u9FA5A-Za-z]+$/
+
+			return this.optional(element) || (stuName.test(value));
+		}, "*姓名只能输入中文和英文!");
+
+		$("#Sex").select2({
+			placeholder : "请选择性别"
+		});
+		$("#Relation").select2({
+			placeholder : "请选择家人关系"
+		});
+	});
+
+	//其他家人关系触发事件
+	function stuOtherRelation(stuOtherRelation){
+		var OtherRelation=document.getElementById("OtherRelation");
+		var stuFamOtherRelation=document.getElementById("stuFamOtherRelation");
+		if(stuOtherRelation == '其他'){
+			_alert("请输入其他家人关系");
+			OtherRelation.style.display = '';
+		}else{
+			stuFamOtherRelation.value="";
+			OtherRelation.style.display = 'none';
+		}
+	};
+
+	//单机家人事件
+	function edit(pkBefi,stuId,stuFamName,stuFamSex,stuFamTel,stuFamIdNumber,stuFamRelation,stuFamOtherRelation){
+		document.getElementById("addFam").style.display = 'none';
+		document.getElementById("updateFam").style.display = '';
+		$("#pkBefi").val(pkBefi);
+		$("#stuId").val(stuId);
+		$("#stuFamName").val(stuFamName);
+		$("#stuFamSex").val(stuFamSex);
+		$("#stuFamTel").val(stuFamTel);
+		$("#stuFamIdNumber").val(stuFamIdNumber);
+		$("#stuFamRelation").val(stuFamRelation);
+		if (stuFamRelation == '其他') {
+			$("#stuFamOtherRelation").val(stuFamOtherRelation);
+			document.getElementById("OtherRelation").style.display = '';
+		}else{
+			$("#stuFamOtherRelation").val("");
+			document.getElementById("OtherRelation").style.display = 'none';
+		}
+		//_alert(pkBefi);
+	}
+
+	function notSupJump(){
+		locationHref(basePath+'/stu/stuPageJump.ht' + "?stuTable=forStudentSupplementJump");
+	};
+	function notEduJump(){
+		locationHref(basePath+'/stu/stuPageJump.ht' + "?stuTable=forStudentEducationJump");
+	};
+
+	function notstuJump(){
+		locationHref(basePath+'/stu/stuPageJump.ht' + "?stuTable=forStudentJump");
+	};
+
+	function returnBack(){
+		var url = basePath+'/stu/toForStuList.ht';
+		locationHref(url);
+	};
+</script>
+</body>
+</html>

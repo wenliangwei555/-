@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.baisee.BaiseeMessageTemplateMapper">
+	
+	<resultMap type="cn.baisee.oa.model.message.BaiseeMessageTemplate" id="BaiseeMessageTemplate">
+		<id column="id" property="id"/>
+		<result column="title" property="title"/>
+		<result column="content" property="content"/>
+		<result column="create_time" property="createTime"/>
+		<result column="send_success_count" property="sendSuccessCount"/>
+		<result column="send_fail_count" property="sendFailCount"/>
+		<result column="is_send_wechat" property="isSendWechat"/>
+		<result column="is_send_email" property="isSendEmail"/>
+		<result column="is_send_pc" property="isSendPc"/>
+		<result column="type" property="type"/>
+		<result column="send_count" property="sendCount"/>
+		<result column="send_dept_list" property="sendDeptList"/>
+		<result column="send_role_list" property="sendRoleList"/>
+		<result column="send_user_list" property="sendUserList"/>
+		<result column="from_user_id" property="fromUserId"/>
+		<result column="from_user_name" property="fromUserName"/>
+	</resultMap>
+	<select id="selectById" resultMap="BaiseeMessageTemplate">
+		SELECT
+    		id,
+			title,
+			content,
+			create_time,
+			send_success_count,
+			send_fail_count,
+			is_send_wechat,
+			is_send_email,
+			is_send_pc,
+			type,
+			send_count,
+			send_dept_list,
+			send_role_list,
+			send_user_list,
+			from_user_id,
+			from_user_name
+    	FROM baisee_message_template
+    	WHERE id = #{id}
+	</select>
+    <select id="selectlist" resultMap="BaiseeMessageTemplate" parameterType="cn.baisee.oa.model.message.BaiseeMessageTemplate">
+    	SELECT
+    		id,
+			title,
+			content,
+			create_time,
+			send_success_count,
+			send_fail_count,
+			is_send_wechat,
+			is_send_email,
+			is_send_pc,
+			type,
+			send_count,
+			send_dept_list,
+			send_role_list,
+			send_user_list,
+			from_user_id,
+			from_user_name
+    	FROM baisee_message_template
+    	<where>
+    	    1=1
+    		<if test="baiseeMessageTemplate.fromUserId != null">AND from_user_id=#{baiseeMessageTemplate.fromUserId}</if>
+    		<if test="baiseeMessageTemplate.fromUserName != null">AND from_user_name like '%#{baiseeMessageTemplate.fromUserName}%'</if>
+    		<if test="baiseeMessageTemplate.title != null">AND title like '%#{baiseeMessageTemplate.title}%'</if>
+    		<if test="baiseeMessageTemplate.type != null">AND type=#{baiseeMessageTemplate.type}</if>
+    	</where>
+    </select>
+	
+	<update id="updateById" parameterType="cn.baisee.oa.model.message.BaiseeMessageTemplate">
+		UPDATE baisee_message_template
+		<set>
+			<if test="baiseeMessageTemplate.title != null">title=#{baiseeMessageTemplate.title},</if>
+    		<if test="baiseeMessageTemplate.content != null">content=#{baiseeMessageTemplate.content},</if>
+    		<if test="baiseeMessageTemplate.sendSuccessCount != null">send_success_count=#{baiseeMessageTemplate.sendSuccessCount},</if>
+    		<if test="baiseeMessageTemplate.sendFailCount != null">send_fail_count=#{baiseeMessageTemplate.sendFailCount},</if>
+    		<if test="baiseeMessageTemplate.isSendWechat != null">is_send_wechat = #{baiseeMessageTemplate.isSendWechat},</if>
+    		<if test="baiseeMessageTemplate.isSendEmail != null">is_send_email=#{baiseeMessageTemplate.isSendEmail},</if>
+    		<if test="baiseeMessageTemplate.isSendPc != null">is_send_pc = #{baiseeMessageTemplate.isSendPc},</if>
+    		<if test="baiseeMessageTemplate.type != null">type = #{baiseeMessageTemplate.type},</if>
+    		<if test="baiseeMessageTemplate.sendCount != null">send_count = #{baiseeMessageTemplate.sendCount},</if>
+    		<if test="baiseeMessageTemplate.sendDeptList != null">send_dept_list = #{baiseeMessageTemplate.sendDeptList},</if>
+    		<if test="baiseeMessageTemplate.sendRoleList != null">send_role_list = #{baiseeMessageTemplate.sendRoleList},</if>
+    		<if test="baiseeMessageTemplate.sendUserList != null">send_user_list = #{baiseeMessageTemplate.sendUserList},</if>
+    		<if test="baiseeMessageTemplate.fromUserId != null">from_user_id = #{baiseeMessageTemplate.fromUserId},</if>
+    		<if test="baiseeMessageTemplate.fromUserName != null">from_user_name = #{baiseeMessageTemplate.fromUserName},</if>
+		</set>
+		WHERE id=#{baiseeMessageTemplate.id}
+	</update>
+	
+	<delete id="deleteById">
+		DELETE FROM baisee_message_template WHERE id=#{id}
+	</delete>
+	<insert id="insert" useGeneratedKeys="true" keyProperty="baiseeMessageTemplate.id" parameterType="cn.baisee.oa.model.message.BaiseeMessageTemplate">
+		INSERT INTO baisee_message_template(
+			title,
+			content,
+			create_time,
+			send_success_count,
+			send_fail_count,
+			is_send_wechat,
+			is_send_email,
+			is_send_pc,
+			type,
+			send_count,
+			send_dept_list,
+			send_role_list,
+			send_user_list,
+			from_user_id,
+			from_user_name
+		)VALUES(
+			#{baiseeMessageTemplate.title},
+			#{baiseeMessageTemplate.content},
+			#{baiseeMessageTemplate.createTime},
+			#{baiseeMessageTemplate.sendSuccessCount},
+			#{baiseeMessageTemplate.sendFailCount},
+			#{baiseeMessageTemplate.isSendWechat},
+			#{baiseeMessageTemplate.isSendEmail},
+			#{baiseeMessageTemplate.isSendPc},
+			#{baiseeMessageTemplate.type},
+			#{baiseeMessageTemplate.sendCount},
+			#{baiseeMessageTemplate.sendDeptList},
+			#{baiseeMessageTemplate.sendRoleList},
+			#{baiseeMessageTemplate.sendUserList},
+			#{baiseeMessageTemplate.fromUserId},
+			#{baiseeMessageTemplate.fromUserName}
+		)
+	</insert>
+</mapper>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="commonTemplate :: header">
+</head>
+<body>
+    <div class="lyear-layout-web">
+        <div class="lyear-layout-container">
+            <!-- 左侧导航开始 -->
+            <div th:replace="commonTemplate :: leftMenus"></div>
+            <!-- 左侧导航结束 -->
+            <!-- 头部信息 -->
+            <div th:replace="commonTemplate :: headerDiv"></div>
+            <!-- 头部信息结束 -->
+            <!-- 页面主要内容 -->
+            <!--页面主要内容-->
+            <main class="lyear-layout-content">
+
+                <div class="container-fluid">
+                    <form th:action="@{notice/addTemplate.ht}" id="frm" name="frm" method="post">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="card">
+                                    <div class="card-toolbar clearfix " >
+                                        <div class="pull-right search-bar" >
+                                            <div class="input-group">
+                                                <input type="text"  name="t_title" th:value="${t_title}" class="form-control" value="" placeholder="请输入模板名称"/>
+                                                <div class="input-group-btn">
+                                                    <button class="btn btn-success" id="search-btn1" type="submit" aria-haspopup="true" aria-expanded="false">
+                                                        查询
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="toolbar-btn-action">
+                                            <a class="btn btn-success m-r-5" th:href="@{notice/toAddTemplate.ht}"
+                                               style="cursor: pointer; color: #ffffff"
+                                               onmouseover="javascript:this.style.color='#dbdbdb'"
+                                               onmouseout="javascript:this.style.color='#ffffff'"
+                                            ><i class="mdi mdi-plus"></i>新增</a>
+
+                                            <button type="button" th:onclick="'delRepairItem(\'frm\', \''+ @{/notice/deleteTemplate.ht} + '\')'"
+                                                    class="btn btn-danger" data-toggle="modal" data-target="#exampleModal"
+                                                    data-whatever="@mdo">
+                                                <i class="mdi mdi-delete-forever"></i>删除
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-body">
+
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>
+                                                            <label class="lyear-checkbox checkbox-primary">
+                                                                <input type="checkbox" id="check-all"/><span></span>
+                                                            </label>
+                                                        </th>
+                                                        <th>模板标题</th>
+                                                        <th>模板内容</th>
+                                                        <th>创建时间</th>
+                                                        <th>更新时间</th>
+                                                        <th>创建人</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr th:if="${pageResult.list == null || pageResult.list.size() == 0}">
+                                                    </tr>
+                                                    <tr th:each="info:${pageResult.list}"
+                                                        th:if="${pageResult.list != null &amp;&amp; pageResult.list.size() > 0}"
+                                                        onmouseover="this.style.backgroundColor='#e3f1ff'"
+                                                        onmouseout="this.style.backgroundColor='#ffffff'">
+                                                        <td>
+                                                            <label class="lyear-checkbox checkbox-primary">
+                                                                <input type="checkbox" name="ids[]" value="1"/><span></span>
+                                                            </label>
+                                                        </td>
+                                                        <td>
+                                                            <span style="cursor: pointer" title="点击可编辑"
+                                                                  th:onclick="'edit(\'' + ${info.t_id} + '\')'" th:text="${info.t_title}"></span></td>
+                                                        <td><span title="点击可编辑"
+                                                                  th:onclick="'edit(\'' + ${info.t_id} + '\')'" th:text="${info.t_content}"></span></td>
+                                                        <td>
+                                                            <span title="点击可编辑"
+                                                                  th:onclick="'edit(\'' + ${info.t_id} + '\')'" th:text="${#dates.format(info.create_time,'yyyy-MM-dd HH:mm:dd')}"></span></td>
+                                                        <td>
+                                                            <span title="点击可编辑"
+                                                                  th:onclick="'edit(\'' + ${info.t_id} + '\')'" th:text="${#dates.format(info.update_time,'yyyy-MM-dd HH:mm:dd')}"></span></td>
+                                                        <td>
+                                                            <span title="点击可编辑"
+                                                                  th:onclick="'edit(\'' + ${info.t_id} + '\')'"  th:text="${info.create_name}"></span>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <ul class="pagination" th:if="${pageResult != null}" th:object="${pageResult}">
+                                            <li><a href="javascript:void(0);" th:onclick="*{hasPreviousPage} ? 'go(1)' : 'return false;'">首页</a></li>
+                                            <li><a href="javascript:void(0);" th:onclick="*{hasPreviousPage} ? 'go(' + *{prePage} + ')' : 'return false;'">上一页</a></li>
+                                            <li><a href="javascript:void(0);" th:onclick="*{hasNextPage} ? 'go(' + *{nextPage} + ')' : 'return false;'">下一页</a></li>
+                                            <li><a href="javascript:void(0);" th:onclick="*{hasNextPage} ? 'go(' + *{pages} + ')' : 'return false;'">末页</a></li>
+                                            <li><a href="javascript:void(0);" onclick="go($('#pagenumber').val());">跳转至</a></li>
+                                            <li><a href="#1"><input name="pageNum" id="pagenumber" th:value="*{pageNum}" />/<span id="_pages" th:text="*{pages == 0} ? 1 : *{pages}"></span></a></li>
+                                            <li><a href="#1">页</a></li>
+                                        </ul>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </main>
+        </div>
+    </div>
+<!--<div id="page">
+    <div th:include="commonTemplate :: headerDiv"></div>
+    <div id="content" class="layout">
+        <div class="grid-s5m0">
+            &lt;!&ndash; ============================= 正式学生页面内容 开始============================= &ndash;&gt;
+            <div class="col-main">
+                <div class="main-wrap">
+                    <div class="skin-box">
+                        <div class="skin-box-bd">
+                            <div class="cur-position">
+                                <span><a href="javascript:void(0);">系统通知</a> </span> <span>&gt;</span>
+                                <span><a th:href="@{notice/staffList.ht}">员工通知</a> </span> <span>&gt;</span>
+                                <span><a th:href="@{notice/addTemplate.ht}">创建模板</a> </span>
+                            </div>
+                            <form th:action="@{notice/addTemplate.ht}" id="frm" name="frm"
+                                  method="post">
+                                <div class="cont-box">
+                                    <div class="search-box">
+                                        <div class="left">
+												    <span class="add JsW"><a th:href="@{notice/toAddTemplate.ht}" class="ks-pop-nav" title="添加模板" style="cursor:pointer;color: #ffffff"
+                                                                             onmouseover="javascript:this.style.color='#dbdbdb'"
+                                                                             onmouseout="javascript:this.style.color='#ffffff'">新增</a> </span>
+                                            <span class="del"><a bms:ctrl="busDict.delDict" href="javascript:void(0);"
+                                                                 th:onclick="'delRepairItem(\'frm\', \''+ @{/notice/deleteTemplate.ht} + '\')'" title="删除模板" style="cursor:pointer;color: #ffffff"
+                                                                 onmouseover="javascript:this.style.color='#dbdbdb'"
+                                                                 onmouseout="javascript:this.style.color='#ffffff'">删除</a> </span>
+                                        </div>
+                                        <input type="hidden" name="operationSuccess" id="operationSuccess" th:value="${#httpServletRequest.getAttribute('operationSuccess')}"/>
+                                        <div class="right">
+                                            <div class="search-box-cont">
+                                                <span> <input class="button" type="submit" value="搜索" /> </span>
+                                                <span>
+                                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                    <input
+                                                            class="input radius3" name="t_title"
+                                                            th:value="${t_title}" id="t_title"
+                                                            type="text" placeholder="模板标题" style="width: 126px" />
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="list-table">
+                                        <div class="list-table-cont">
+                                            <div class="tablestu">
+                                                <table class="ks-inputall">
+                                                    <tr class="th">
+                                                        <td class="col1">
+                                                            <div class="JsW control-checkbox" data-control-type="checkboxall">
+                                                                <input type="checkbox" onclick="selectAllCheckBox(document.frm.ids,document.frm.checkbox,this);" />
+                                                            </div>
+                                                        </td>
+                                                        <td class="col3">模板标题</td>
+                                                        <td class="col4">模板内容</td>
+                                                        <td class="col5">创建时间</td>
+                                                        <td class="co25">更新时间</td>
+                                                        <td class="co25">创建人</td>
+                                                    </tr>
+                                                    <tr
+                                                            th:if="${pageResult.list == null || pageResult.list.size() == 0}">
+
+                                                    </tr>
+                                                    <tr th:each="info:${pageResult.list}"
+                                                        th:if="${pageResult.list != null &amp;&amp; pageResult.list.size() > 0}"
+                                                        onmouseover="this.style.backgroundColor='#e3f1ff'"
+                                                        onmouseout="this.style.backgroundColor='#ffffff'">
+
+                                                        <td class="col1">
+                                                            <div class="JsW control-checkbox" data-control-type="checkbox">
+                                                                <input type="checkbox" name="ids" class="states" th:value="${info.t_id}" />
+                                                            </div>
+                                                        </td>
+
+
+                                                        <td class="col3"><span style="cursor: pointer"
+                                                                               title="点击可编辑"
+                                                                               th:onclick="'edit(\'' + ${info.t_id} + '\')'" th:text="${info.t_title}"></span></td>
+                                                        <td class="col4"><span style="cursor: pointer"
+                                                                               title="点击可编辑"
+                                                                               th:onclick="'edit(\'' + ${info.t_id} + '\')'" th:text="${info.t_content}"></span></td>
+                                                        <td class="col7"><span title="点击可编辑"
+                                                                               th:onclick="'edit(\'' + ${info.t_id} + '\')'" th:text="${#dates.format(info.create_time,'yyyy-MM-dd HH:mm:dd')}"></span></td>
+                                                        <td class="col8"><span title="点击可编辑"
+                                                                               th:onclick="'edit(\'' + ${info.t_id} + '\')'" th:text="${#dates.format(info.update_time,'yyyy-MM-dd HH:mm:dd')}"></span></td>
+                                                        <td class="co20" style="width: 205px;white-space: nowrap;text-overflow: ellipsis;overflow: hidden;">
+                                                            <span style="cursor:pointer" title="点击可编辑"
+                                                                  th:onclick="'edit(\'' + ${info.t_id} + '\')'"  th:text="${info.create_name}"></span>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div th:include="commonTemplate :: pageBox"></div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            &lt;!&ndash; ============================= 页面内容 结束============================= &ndash;&gt;
+            <div th:include="commonTemplate :: leftMenus"></div>
+        </div>
+    </div>
+</div>-->
+
+<script th:inline="javascript">
+    function delRepairItem(formId, _url, msg) {
+        del(formId, _url);
+    }
+    //跳转编辑页面
+    function edit(id) {
+        // locationHref([[@{/notice/selectTemplate.ht}]] + "?id=" + id);
+        location.href=basePath+"/notice/selectTemplate.ht?id="+id;
+    }
+</script>
+<script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap.min.js" th:src="@{static/js/bootstrap.min.js}"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+    <script type="text/javascript" src="js/plugins/layer/layer.js" th:src="@{js/plugins/layer/layer.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+
+</body>
+</html>

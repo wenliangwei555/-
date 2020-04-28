@@ -1,0 +1,40 @@
+package cn.baisee.oa.service;
+
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.web.servlet.ModelAndView;
+
+import cn.baisee.oa.model.student.BaiseeStudentRefund;
+/**
+ * 退费规则管理的Service接口
+ * @author WANGBAOXIANG
+ *
+ */
+public interface RefundService {
+	/**
+	 * 分页查询所有的退费规则
+	 * @return
+	 */
+	 ModelAndView getRefundInfo(HttpServletRequest request);
+	/**
+	 * 根据id删除退费规则
+	 * @param request
+	 * @return
+	 */
+	 Map<String, Object> delRefund(HttpServletRequest request);
+	/**
+	 * 根据ID查询要修改的退费规则
+	 * @param request
+	 * @return
+	 */
+	 ModelAndView toRefundInfo(HttpServletRequest request);
+	
+	/**
+	 * 添加或修改退费规则
+	 * @param refund
+	 * @return
+	 */
+	 ModelAndView saveOrUpdate(HttpServletRequest request,BaiseeStudentRefund refund);
+}

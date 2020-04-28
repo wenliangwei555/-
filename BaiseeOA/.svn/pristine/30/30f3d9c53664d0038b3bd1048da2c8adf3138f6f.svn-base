@@ -1,0 +1,259 @@
+package cn.baisee.oa.controller;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import cn.baisee.oa.annotation.Role;
+import cn.baisee.oa.model.BaiseeUser;
+import cn.baisee.oa.model.message.BaiseeMessage;
+import cn.baisee.oa.model.message.BaiseeMessageTemplate;
+import cn.baisee.oa.page.pagehelper.PageInfo;
+import cn.baisee.oa.service.BaiseeMessageService;
+import cn.baisee.oa.service.BaiseeMessageTemplateService;
+import cn.baisee.oa.service.UserService;
+import cn.baisee.oa.utils.ParamUtils;
+import cn.baisee.oa.utils.RedisUtils;
+import cn.baisee.oa.utils.SessionUtil;
+
+/**
+ * 消息
+ *
+ */
+@Controller
+@RequestMapping("/message")
+public class BaiseeMessageController {
+	
+	private static final Logger log = LoggerFactory.getLogger(BaiseeMessageController.class);
+	
+	@Autowired
+	private BaiseeMessageService baiseeMessageService;
+	@Autowired
+	private BaiseeMessageTemplateService baiseeMessageTemplateService;
+	
+	@Resource(name = "redisUtils")
+	private RedisUtils redisUtils;
+	@Autowired
+    private UserService userService;
+	
+	/**
+	 * 消息页面
+	 * @param request
+	 * @param isReader 是否已读： 0否、1是
+	 * @return
+	 */
+	@RequestMapping("/view")
+	@Role(value = "XTTZ_TZLB")
+	public String view(HttpServletRequest request ,@RequestParam(value="isReader",required = false,defaultValue = "0") String isReader, Model model) {
+		try {
+			
+			BaiseeUser currUser = (BaiseeUser) SessionUtil.getUserInfo(request);
+			Integer pageNum = ParamUtils.getPageNumParameters(request);
+	        Integer pageSize = ParamUtils.getPageSizeParameters(request);
+	        
+	        log.info(String.format("消息页面：USER_ID=%s , pageNum=%s , pageSize=%s", currUser.getUserId(),pageNum,pageSize));
+	        
+	        //未读
+	        BaiseeMessage baiseeMessage = new BaiseeMessage();
+	        baiseeMessage.setReceiveUserId(currUser.getUserId());
+	        baiseeMessage.setIsReader(isReader);
+	        PageInfo<BaiseeMessage> page = baiseeMessageService.findPage(pageNum, pageSize, baiseeMessage);
+	        model.addAttribute("pageResult", page);//设置参数pageInfo页面显示数据
+	        
+	        model.addAttribute("isReader", isReader);//是否已读： 0否、1是
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		 
+		return "message/view";
+	}
+	/**
+	 * 消息内容
+	 * @param request
+	 * @param messageId
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping("/info")
+	@Role(value = "XTTZ_TZCK")
+	public String messageInfo(HttpServletRequest request ,Long messageId, Model model) {
+		BaiseeMessage message = baiseeMessageService.findById(messageId);
+		model.addAttribute("messageInfo", message);
+		
+		//标记为已读
+		message.setIsReader("1");
+		baiseeMessageService.updateById(message);
+		
+		return "message/message_info_view";
+	}
+	
+	/**
+	 * 更改消息阅读状态
+	 * @param request
+	 * @param messageId
+	 * @param model
+	 * @param isReader
+	 * @return
+	 */
+	@RequestMapping("/changeMessageState")
+	@Role(value = "XTTZ_TZCK")
+	public String changeMessageState(HttpServletRequest request ,Long messageId, Model model,String isReader) {
+		BaiseeMessage message = baiseeMessageService.findById(messageId);
+		model.addAttribute("messageInfo", message);
+		
+		//标记为已读
+		message.setIsReader(isReader);
+		baiseeMessageService.updateById(message);
+		
+		return "redirect:message/view.ht";
+	}
+	/**
+	 * 未读消息数据
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/notReaderData")
+	@Role(ignore = true)
+	@ResponseBody
+	public Map<String, Object> notReaderData(HttpServletRequest request) {
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			
+			BaiseeUser currUser = (BaiseeUser) SessionUtil.getUserInfo(request);
+	        
+	        //未读
+	        BaiseeMessage baiseeMessage = new BaiseeMessage();
+	        baiseeMessage.setReceiveUserId(currUser.getUserId());
+	        baiseeMessage.setIsReader("0");
+	        List<BaiseeMessage> data = baiseeMessageService.findlist(baiseeMessage);
+	        resultMap.put("code", "SUCCESS");
+	        resultMap.put("data", data);
+	        resultMap.put("length", data.size());
+	        resultMap.put("msg", "操作成功");
+	        return resultMap;
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultMap.put("code", "FAIL");
+			resultMap.put("msg", "操作失败-" + e.getMessage());
+			return resultMap;
+		}
+		 
+		
+	}
+	/**
+	 * 添加模板）
+	 * @return
+	 */
+	@RequestMapping("/template/addView")
+	@Role(value = "XTTZ_TZCK")
+	public String templateAddView(HttpServletRequest request ,BaiseeMessageTemplate baiseeMessageTemplate) {
+		return "message/template/add_view";
+	}
+	@RequestMapping("/template/updateView")
+	@Role(value = "XTTZ_TZCK")
+	public String templateUpdateView(HttpServletRequest request ,Long templateId, Model model) {
+		BaiseeMessageTemplate messageTemplate = baiseeMessageTemplateService.findById(templateId);
+		model.addAttribute("messageTemplate", messageTemplate);
+		return "message/template/update_view";
+	}
+	/**
+	 * 添加模板）
+	 * @return
+	 */
+	@RequestMapping("/template/add")
+	@Role(value = "XTTZ_TZCK")
+	public String templateAdd(HttpServletRequest request ,BaiseeMessageTemplate baiseeMessageTemplate) {
+		BaiseeUser currUser = (BaiseeUser) SessionUtil.getUserInfo(request);
+			baiseeMessageTemplate.setFromUserId(currUser.getUserId());
+			baiseeMessageTemplate.setFromUserName(currUser.getUserName());
+			baiseeMessageTemplate.setSendCount(0);
+			baiseeMessageTemplate.setSendFailCount(0);
+			baiseeMessageTemplate.setSendSuccessCount(0);
+			
+		baiseeMessageTemplateService.insert(baiseeMessageTemplate);
+		
+		baiseeMessageTemplateService.send(baiseeMessageTemplate);
+		return "redirect:message/template/view.ht";
+	}
+	
+	@RequestMapping("/template/update")
+	@Role(value = "XTTZ_TZCK")
+	public String templateUpdate(HttpServletRequest request ,BaiseeMessageTemplate baiseeMessageTemplate) {
+		BaiseeUser currUser = (BaiseeUser) SessionUtil.getUserInfo(request);
+//		baiseeMessageTemplate.setFromUserId(currUser.getUserId());
+//		baiseeMessageTemplate.setFromUserName(currUser.getUserName());
+		baiseeMessageTemplateService.updateById(baiseeMessageTemplate);
+		return "redirect:message/template/view.ht";
+	}
+	
+	/**
+	 * 删除模板
+	 * @param request
+	 * @param templateId
+	 * @return
+	 */
+	@RequestMapping("/template/delete")
+	@Role(value = "XTTZ_TZCK")
+	public String templateDelete(HttpServletRequest request ,Long templateId) {
+		baiseeMessageTemplateService.deleteById(templateId);
+		return "redirect:message/template/view.ht";
+	}
+	/**
+	 * 保存并发送
+	 * @param request
+	 * @param templateId
+	 * @return
+	 */
+	@RequestMapping("/template/addAndSend")
+	@Role(value = "XTTZ_TZCK")
+	public String templateAddAndSend(HttpServletRequest request ,BaiseeMessageTemplate baiseeMessageTemplate) {
+		BaiseeUser currUser = (BaiseeUser) SessionUtil.getUserInfo(request);
+			baiseeMessageTemplate.setFromUserId(currUser.getUserId());
+			baiseeMessageTemplate.setFromUserName(currUser.getUserName());
+			baiseeMessageTemplate.setSendCount(0);
+			baiseeMessageTemplate.setSendFailCount(0);
+			baiseeMessageTemplate.setSendSuccessCount(0);
+			
+		baiseeMessageTemplateService.insert(baiseeMessageTemplate);
+		
+		baiseeMessageTemplateService.send(baiseeMessageTemplate);
+		return "redirect:message/template/view.ht";
+	}
+	
+	/**
+	 * 返回模板页面
+	 * @return
+	 */
+	@RequestMapping("/template/view")
+	@Role(value = "XTTZ_TZCK")
+	public String templateView(HttpServletRequest request, Model model) {
+		try {
+			BaiseeUser currUser = (BaiseeUser) SessionUtil.getUserInfo(request);
+			Integer pageNum = ParamUtils.getPageNumParameters(request);
+	        Integer pageSize = ParamUtils.getPageSizeParameters(request);
+	        
+	        BaiseeMessageTemplate baiseeMessageTemplate = new BaiseeMessageTemplate();
+	        baiseeMessageTemplate.setFromUserId(currUser.getUserId());
+	        PageInfo<BaiseeMessageTemplate> page = baiseeMessageTemplateService.findPage(pageNum, pageSize, baiseeMessageTemplate);
+	        
+	        model.addAttribute("pageResult", page);//设置参数pageInfo页面显示数据
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "message/template/view";
+	}
+}

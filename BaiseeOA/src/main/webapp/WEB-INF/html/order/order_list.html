@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head th:include="commonTemplate :: header">
+</head>
+<body class="bgcolor-body">
+	<div id="page">
+		<div th:include="commonTemplate :: headerDiv"></div>
+		<div id="content" class="layout">
+			<div class="grid-s5m0">
+				<!-- ============================= 页面内容 开始============================= -->
+				<div class="col-main">
+					<div class="main-wrap">
+						<div class="skin-box">
+							<div class="skin-box-bd">
+								<div class="cur-position">
+									<span><a href="javascript:void(0);">学生信息管理</a> </span> <span>&gt;</span>
+									<span><a th:href="@{order/getOrder.ht}">预约试听</a>
+									</span>
+								</div>
+								<form th:action="@{order/getOrder.ht}" id="frm" name="frm"
+									method="post">
+									<!-- <input type="hidden" name="id" value="${info.id}" /> -->
+									<div class="cont-box">
+										<div class="search-box">
+											 
+											<div class="right">
+												<div class="search-box-cont">
+													<span> <input class="button" type="submit" value="搜索" /> </span>
+													<span> <input class="input radius3" onkeyup="chek();" id="itemlableSearch" name="itemlableSearch" th:value="${itemlableSearch}" type="text" placeholder="输入用户名或手机" style="width: 150px"/> </span>
+													<span><select name="orderOld" class="radius3"
+														id="orderOld"
+														style="width: 150px; margin-right: 30px; margin-top: 2px;">
+															<option value="" selected="selected">--选择状态--</option>
+															<option value="1" th:if="${contact} eq '1'"
+																selected="selected">已联系</option>
+															<option value="1" th:if="${contact} ne '1'">已联系</option>
+															<option value="0" th:if="${contact} eq '0'"
+																selected="selected">未联系</option>
+															<option value="0" th:if="${contact} ne '0'">未联系</option>
+													</select></span>
+												</div>
+											</div>
+										</div>
+										<div class="list-table">
+											<div class="list-table-cont">
+												<div class="table2">
+													<table class="ks-inputall">
+														<tr class="th">
+															<td class="col1" baisee:ctrl="YYST">
+																<div class="JsW control-checkbox"
+																	data-control-type="checkboxall" baisee:ctrl="YYST">
+																	<input type="checkbox"
+																		onclick="selectAllCheckBox(document.frm.ids,document.frm.checkbox,this);" />
+																</div>
+															</td>
+															<td class="col2"><span style="cursor: pointer"
+																th:text="姓名"></span></td>
+															<td class="col2"><span style="cursor: pointer"
+																th:text="手机号"></span></td>
+															<td class="col3"><span style="cursor: pointer"
+																th:text="QQ"></span></td>
+															<td class="col3"><span style="cursor: pointer"
+																th:text="创建时间"></span></td>
+															<td class="col3"><span style="cursor: pointer"
+																th:text="咨询课程"></span></td>
+															<td class="col3"><span style="cursor: pointer"
+																th:text="是否联系"></span></td>
+														</tr>
+														<tr th:each="info:${pageResult.list}" th:if="${pageResult.list != null &amp;&amp; pageResult.list.size() > 0}" onmouseover="this.style.backgroundColor='#e3f1ff'" onmouseout="this.style.backgroundColor='#ffffff'">
+															<td class="col1" baisee:ctrl="YYST">
+																<div class="JsW control-checkbox"
+																	data-control-type="checkbox">
+																	<input type="checkbox" name="ids"
+																		th:value="${info.openId}" />
+																</div>
+															</td>
+															<td class="co12"><span style="cursor: pointer"
+																th:text="${info.orderName}"></span></td>
+															<td class="co12"><span style="cursor: pointer"
+																th:text="${info.orderPhone}"></span></td>
+															<td class="co13" ><span style="cursor: pointer"
+																th:text="${info.orderQQ}" ></span></td>	
+															<td class="co12"><span style="cursor: pointer"
+																th:text="${info.oderDate}"></span></td>
+															<td class="co12"><span style="cursor: pointer"
+																th:text="${info.orClassEs}"></span></td>			
+															<td class="co13" th:if="${info.orderOld == '1'}" ><span style="cursor: pointer"
+																 >已联系</span></td>
+															<td class="col3" th:if="${info.orderOld != '1'}"><span
+																style="cursor: pointer">未联系(<a href="javascript:void(0);"
+																	th:onclick="'Informed(\'' + ${info.id} + '\')'"
+																	style="text-indent: 0px;">设置为已联系</a>)</span></td>
+														</tr>
+													</table>
+												</div>
+											</div>
+										</div>
+										<div th:include="commonTemplate :: pageBox"></div>
+										<br />
+
+										<div class="list-table" style="display: none;" id="dis">
+											<div class="list-table-cont">
+												<div class="table2">
+													<table class="ks-inputall" id="detaileds">
+													</table>
+												</div>
+											</div>
+										</div>
+
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- ============================= 页面内容 结束============================= -->
+				<div th:include="commonTemplate :: leftMenus"></div>
+			</div>
+		</div>
+		<div th:include="commonTemplate :: footer"></div>
+	</div>
+	<div th:include="commonTemplate :: processBar" />
+
+	<script th:inline="javascript">
+		$(function(){
+			$("td a").click(function(){
+				$("td a").css("color","")
+				$(this).css("color","red")
+			})
+		})
+		/*判断输入的字符*/
+		function chek(){ 
+			var itemlableSearch=$("#itemlableSearch").val();
+			var Correct = /^[A-Za-z0-9\u4e00-\u9fa5]+$/;
+			if(itemlableSearch != ""){
+				if (!Correct.test(itemlableSearch)){
+					_alert("含有非法字符，请正确输入！");
+					$("#itemlableSearch").val("");
+				} 
+			}
+		} 
+		
+		/*已通知*/
+		function Informed(id){
+			locationHref([[@{/order/orderOldInformed.ht}]] + "?id=" + id);  
+		}
+	</script>
+</body>
+</html>

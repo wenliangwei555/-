@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head th:include="commonTemplate :: header">
+<link rel="stylesheet" type="text/css" th:href="@{css/cla_list_css.css}" />
+</head>
+<body class="bgcolor-body">
+	<div id="page">
+		<div th:include="commonTemplate :: headerDiv"></div>
+		<div id="content" class="layout">
+			<div class="grid-s5m0">
+				<!-- ============================= 页面内容 开始============================= -->
+				<div class="col-main">
+					<div class="main-wrap">
+						<div class="skin-box">
+							<div class="skin-box-bd">
+								<div class="cur-position">
+									<span><a href="javascript:void(0);">信息管理</a> </span> <span>&gt;</span>
+									<span><a th:href="@{disc/toDisList.ht}">退费规则管理</a> </span>
+								</div>
+								<form th:action="@{disc/toDisList.ht}" id="frm" name="frm"
+									method="post">
+									<div class="cont-box">
+										<div class="search-box">
+											<div class="left">
+												<span class="add JsW"><a
+													th:href="@{refund/toRefundInfo.ht}" baisee:ctrl="TFGL_TFXZ"
+													class="ks-pop-nav" title="添加退费规则"
+													style="cursor: pointer; color: #ffffff"
+													onmouseover="javascript:this.style.color='#dbdbdb'"
+													onmouseout="javascript:this.style.color='#ffffff'">新增</a> </span>
+											</div>
+										</div>
+										<div class="list-table">
+											<div class="list-table-cont">
+												<div class="table2">
+													<table class="ks-inputall">
+														<tr class="th">
+															<!-- <td class="col1">
+																	<div class="JsW control-checkbox" data-control-type="checkboxall">
+																		<input type="checkbox" onclick="selectAllCheckBox(document.frm.ids,document.frm.checkbox,this);" />
+																	</div>
+																</td> -->
+															<td class="col3">规则名称</td>
+															<td class="col4">退费公式</td>
+															<td class="col5">公式描述</td>
+															<td class="col6">更新时间</td>
+															<td class="col6">失效时间</td>
+															<td class="col1" baisee:ctrl="TFGL_TFSC">删除</td>
+														</tr>
+														<tr
+															th:if="${pageResult.list == null || pageResult.list.size() == 0}">
+
+														</tr>
+														<tr th:each="info:${pageResult.list}"
+															th:if="${pageResult.list != null &amp;&amp; pageResult.list.size() > 0}"
+															onmouseover="this.style.backgroundColor='#e3f1ff'"
+															onmouseout="this.style.backgroundColor='#ffffff'">
+															<!-- <td class="col1">
+																	<div class="JsW control-checkbox" data-control-type="checkbox">
+																		<input type="checkbox" name="ids" th:value="${info.cId}" />
+																	</div>
+																</td> -->
+															<!-- <td class="col2">
+																<span style="cursor:pointer" title="点击可编辑" th:onclick="'edit(\'' + ${info.discId} + '\')'" th:text="${info.cName}"></span>
+																</td> -->
+															<td class="col3">
+																	<span style="cursor:pointer" title="点击可编辑" th:onclick="'edit(\'' + ${info.rId} + '\')'"  th:text="${info.rName}"></span>
+																	
+																</td>
+															<td class="col4"><span style="cursor: pointer"
+																title="点击可编辑"
+																th:onclick="'edit(\'' + ${info.rId} + '\')'"
+																th:text="${info.refundFormula}"></span></td>
+															<td class="col5"><span style="cursor: pointer"
+																title="点击可编辑"
+																th:onclick="'edit(\'' + ${info.rId} + '\')'"
+																th:text="${info.formulaDescribe}"></span></td>
+															<td class="col6"><span style="cursor: pointer"
+																title="点击可编辑"
+																th:onclick="'edit(\'' + ${info.rId} + '\')'"
+																baisee:fmt="yyyy-MM-dd HH:mm:ss,${info.updateTime }"></span>
+															</td>
+															<td class="col6"><span style="cursor: pointer"
+																title="点击可编辑"
+																th:onclick="'edit(\'' + ${info.rId} + '\')'"
+																baisee:fmt="yyyy-MM-dd HH:mm:ss,${info.invalidTime }"></span>
+															</td>
+															<td class="col1" baisee:ctrl="TFGL_TFSC"><span
+																style="cursor: pointer" title="点击删除"
+																th:onclick="'delRefu(\'' + ${info.rId} + '\')'"><font
+																	color="#ff0000">删除该规则</font></span></td>
+														</tr>
+													</table>
+												</div>
+											</div>
+										</div>
+										<div th:include="commonTemplate :: pageBox"></div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- ============================= 页面内容 结束============================= -->
+				<div th:include="commonTemplate :: leftMenus"></div>
+			</div>
+		</div>
+		<div th:include="commonTemplate :: footer"></div>
+	</div>
+	<div th:include="commonTemplate :: processBar" />
+
+	<script th:inline="javascript">
+		function delRefu(rId){
+			var logUrl = [[@{'/refund/delRefund.ht?rId='}]] + rId;
+			layer.confirm('确定删除该规则吗？', {
+	            btn : [ '确定', '取消' ]//按钮
+	        }, function(index) {
+	            layer.close(index);
+	            //此处请求后台程序，下方是成功后的前台处理……
+	            //var index = layer.load(0,{shade: [0.7, '#393D49']}, {shadeClose: true}); //0代表加载的风格，支持0-2
+			$.ajax({
+				url: logUrl,
+				type:'post',
+				success:function(data){
+					if (data.flag == "success") {
+						var succ=[[@{'/refund/toRefundList.ht'}]];
+						locationHref(succ);
+						_alert("删除成功！！！");
+					} else if (data.flag =="notDel") {
+						_alert("不可删除");
+					}else {
+						_alert("删除失败！！！");
+					}
+				}
+			})
+	        });
+		};  
+	</script>
+	<script th:inline="javascript">
+		function edit(id){
+			locationHref([[@{/refund/toRefundInfo.ht}]] + "?rId=" + id);
+		} 
+	</script>
+
+</body>
+</html>

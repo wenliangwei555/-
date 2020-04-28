@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="commonTemplate :: header">
+</head>
+<body>
+<div class="lyear-layout-web">
+	<div class="lyear-layout-container">
+		<!--左侧导航-->
+		<div th:replace="commonTemplate :: leftMenus"></div>
+		<!--End 左侧导航-->
+
+		<!--头部信息-->
+		<div th:replace="commonTemplate :: headerDiv"></div>
+		<!--End 头部信息-->
+
+		<!--页面主要内容-->
+		<main class="lyear-layout-content">
+			<!-- ==================================== 页面内容开始 ============================= -->
+			<div class="container-fluid">
+				<form id="basefrm" th:action="@{emp/toSaveEmps.ht(empTable=employeeWork)}" autocomplete="off" enctype="multipart/form-data" method="post">
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="card">
+								<div class="card-body">
+									<ul id="myTabs" class="nav nav-tabs" role="tablist">
+										<li >
+											<a href="javascript:void(0)"> <span onclick="notEmpJump();">基本信息</span> <span class="separator"></span> </a>
+										</li>
+										<li>
+											<a href="javascript:void(0)" > <span onclick="notSupJump();">附加信息</span> <span class="separator"></span> </a>
+										</li>
+										<li>
+											<a href="javascript:void(0)"> <span onclick="notEduJump();">教育信息</span> <span class="separator"></span> </a>
+										</li>
+										<li class="active">
+											<a href="javascript:void(0)"> <span>履历信息</span> <span class="separator"></span> </a>
+										</li>
+										<li>
+											<a href="javascript:void(0)"> <span onclick="notFamJump();">家庭信息</span> <span class="separator"></span> </a>
+										</li>
+									</ul>
+									<table class="table table-hover">
+										<tr>
+											<td align="right" width="25%">
+												<span style="color:red">*</span>
+												<span>工作开始时间：</span>
+											</td>
+											<td>
+												<span>
+																						<input type="hidden" id="PK_BEWI" name="PK_BEWI" th:value="${work.PK_BEWI}" />
+																						<input type="hidden" id="empId" name="empId" th:value="${work.empId}" />
+																						<input type="hidden" name="operationSuccess" id="operationSuccess" th:value="${operationSuccess}"/>
+																						<input class="form-control js-datepicker m-b-10" type="text" id="workStartTime" name="workStartTime" placeholder="工作开始时间" th:value="${work.workStartTime}" data-date-format="yyyy-mm-dd" />
+												</span>
+											</td>
+										</tr>
+										<tr>
+											<td align="right" width="25%">
+												<span style="color:red">*</span>
+												<span>工作结束时间：</span>
+											</td>
+											<td>
+												<input class="form-control js-datepicker m-b-10" type="text" id="workEndTime" name="workEndTime" placeholder="工作结束时间" th:value="${work.workEndTime}" data-date-format="yyyy-mm-dd" />
+											</td>
+										</tr>
+										<tr>
+											<td align="right" width="25%">
+												<span style="color:red">*</span>
+												<span>公司名称：</span>
+											</td>
+											<td>
+												<input type="text" class="form-control" id="empHisCompany" name="empHisCompany" th:value="${work.empHisCompany}"  placeholder="输入公司名称"  />
+											</td>
+										</tr>
+										<tr>
+											<td align="right" width="25%">
+												<span style="color:red">*</span>
+												<span>在公司职务：</span>
+											</td>
+											<td>
+												<input type="text" class="form-control" id="empPosition" name="empPosition" th:value="${work.empPosition}" placeholder="输入在公司职务"  />
+											</td>
+										</tr>
+									</table>
+									<div align="center">
+										<span class="grey"> <input value="返回上级"
+																   type="button" onclick="returnBack();"
+																   class="btn btn-warning	" />
+																</span> <span> <input value="确定保存" type="submit"
+																					  class="btn btn-success" />
+																</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<!-- ============================= 页面内容 结束 ============================= -->
+		</main>
+		<!-- END 页面主要内容  -->
+	</div>
+</div>
+
+<script type="text/javascript" th:src="@{js/jquery-1.11.3.min.js}"></script>
+<script type="text/javascript" th:src="@{js/public-obj.js}"></script>
+<script type="text/javascript" th:src="@{js/bind.js}"></script>
+<script type="text/javascript" th:src="@{js/controls.js}"></script>
+<script type="text/javascript" th:src="@{js/slide.js}"></script>
+<script type="text/javascript" th:src="@{js/switch.js}"></script>
+<script type="text/javascript" th:src="@{js/initial.js}"></script>
+<script type="text/javascript" th:src="@{js/printhtml.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/My97DatePicker/WdatePicker.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/file/uploadify/jquery.uploadify.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/layer/layer.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/select2/i18n/zh-CN.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/treeview/jquery.treeview.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/form/jquery.form.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/ztree/jquery.ztree.core-3.5.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/ztree/jquery.ztree.excheck-3.5.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/constant.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/comm/appconstans.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/bmsAjax.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/validata.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/validate/jquery.validate.min.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/validate/localization/messages_zh.min.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/validate/regValidate.js}"></script>
+<script type="text/javascript" th:src="@{js/popup_layer.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/plugins/kxbdmarquee/js/jquery.kxbdmarquee.js}"></script>
+<script type="text/javascript"
+		th:src="@{js/textScroll.js}"></script>
+<script type="text/javascript" th:src="@{js/app.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/layer/layui.js}"></script>
+<script type="text/javascript" th:src="@{js/bootstrap-datepicker.min.js}"></script>
+<script type="text/javascript" th:src="@{js/bootstrap-datepicker.zh-CN.min.js}"></script>
+<script type="text/javascript" th:src="@{js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{js/main.min.js}"></script>
+<script type="text/javascript" th:src="@{js/perfect-scrollbar.min.js}"></script>
+<script th:inline="javascript">
+	$(function(){
+		var operationSuccess = $("#operationSuccess").val();
+		if(operationSuccess != ""){
+			_alert(operationSuccess);
+		}
+	});
+
+	$(function(){
+		setValidate($("#basefrm"),{
+			rules: {
+				workStartTime:{required:true},
+				workEndTime:{required:true,ValidateWorkEndTime:true},
+				empHisCompany:{required:true,minlength:5},
+				empPosition:{required:true,minlength:2}
+			},
+			messages:{
+				workStartTime:{required:"*请输入工作开始时间"},
+				workEndTime:{required:"*请输入工作结束时间"},
+				empHisCompany:{required:"*请输入公司名称",minlength:"最少填写5个字符"},
+				empPosition:{required:"*请输入在公司所干职务",minlength:"最少填写两个字符"}
+
+			}
+		});
+		/*===========================================校验开始时间不得超过结束时间===========================================================*/
+		$.validator.addMethod("ValidateWorkEndTime", function(value, element) {
+			if(value == ""){
+				return true;
+			}
+			var beginDate = $("#workStartTime").val();
+			var endDate = value;
+			if(beginDate==null){
+				return false;
+			}
+			//开始时间
+			var OneMonth = beginDate.substring(5,beginDate.lastIndexOf ("-"));
+			var OneDay = beginDate.substring(beginDate.length,beginDate.lastIndexOf ("-")+1);
+			var OneYear = beginDate.substring(0,beginDate.indexOf ("-"));
+			//结束时间
+			var TwoMonth = endDate.substring(5,endDate.lastIndexOf ("-"));
+			var TwoDay = endDate.substring(endDate.length,endDate.lastIndexOf ("-")+1);
+			var TwoYear = endDate.substring(0,endDate.indexOf ("-"));
+			if(Date.parse(TwoMonth+"/"+TwoDay+"/"+TwoYear) > Date.parse(OneMonth+"/"+OneDay+"/"+OneYear)){
+				return true;
+			}else{
+				return false;
+			}
+		},"*开始已超过结束时间");
+
+	});
+	function notSupJump(){
+		var empId = document.getElementById("empId").value;
+		if(empId==null || empId == ""){
+			_alert("请先保存当前页面");
+		}else {
+			locationHref(basePath+'/emp/empPageJump.ht'+ "?empTable=employeeSupplementJump");
+		}
+	};
+	function notEduJump(){
+		var empId = document.getElementById("empId").value;
+		if(empId==null || empId == ""){
+			_alert("请先保存当前页面");
+		}else {
+			locationHref(basePath+'/emp/empPageJump.ht' + "?empTable=employeeEducationJump");
+		}
+	};
+	function notEmpJump(){
+		var empId = document.getElementById("empId").value;
+		if(empId==null || empId == ""){
+			_alert("请先保存当前页面");
+		}else {
+			locationHref(basePath+'/emp/empPageJump.ht' + "?empTable=employeeEmployeeJump");
+		}
+	};
+
+	function notWorkJump(){
+		var empId = document.getElementById("empId").value;
+		if(empId==null || empId == ""){
+			_alert("请先保存当前页面");
+		}else {
+			locationHref(basePath+'/emp/empPageJump.ht' + "?empTable=employeeWorkJump");
+		}
+	};
+	function notFamJump(){
+		var empId = document.getElementById("empId").value;
+		if(empId==null || empId == ""){
+			_alert("请先保存当前页面");
+		}else {
+			locationHref(basePath+'/emp/empPageJump.ht'+ "?empTable=employeeFamilyJump");
+		}
+	};
+
+	function returnBack(){
+		var url = basePath+'/emp/toEmpList.ht';
+		locationHref(url);
+	};
+
+</script>
+</body>
+</html>

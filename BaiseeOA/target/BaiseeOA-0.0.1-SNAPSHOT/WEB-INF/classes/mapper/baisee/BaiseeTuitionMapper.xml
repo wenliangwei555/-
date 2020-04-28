@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.baisee.BaiseeTuitionMapper">
+
+	<!-- ========================学费规则表  (LiFQ)========================================== -->
+	<resultMap type="cn.baisee.oa.model.tuition.TuitionRule" id="TuitionRuleMap">
+		<id column="TU_ID" property="tuId"  jdbcType="VARCHAR" />
+		<result column="TU_TYPE" property="tuType" jdbcType="VARCHAR"/>
+		<!-- 学费类型含义 -->
+		<result column="TU_TYPE_MEANING" property="tuTypeMeaning" jdbcType="VARCHAR"/>
+		<result column="TU_REFUND" property="tuRefund" jdbcType="VARCHAR"/>
+		<result column="TU_BY_STAGES" property="tuByStages" jdbcType="VARCHAR"/>
+		<result column="TU_DISCOUNT" property="tuDiscount" jdbcType="VARCHAR"/>
+		<result column="TU_MONET" property="tuMonet" jdbcType="VARCHAR"/>
+		<result column="UPDATE_TIME" property="tuUpdateTime" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<!-- ========================学费分期表========================================== -->
+	<resultMap type="cn.baisee.oa.model.tuition.TuitionStages" id="TuitionStagesMap">
+		<id column="TU_ST_ID" property="tuStId"  jdbcType="VARCHAR" />
+		<!-- 此学费分了几期 -->
+		<result column="TU_ST_CYCLE" property="tuStCycle" jdbcType="VARCHAR"/>
+		<!-- 学费主键id -->
+		<result column="TU_ID" property="tuId" jdbcType="VARCHAR"/>
+		<result column="UPDATE_TIME" property="tuStUpdateTime" jdbcType="VARCHAR"/>
+	</resultMap>
+	<!-- ========================学费分期规则表========================================== -->
+	<resultMap type="cn.baisee.oa.model.tuition.TuitionStagesRule" id="TuitionStagesRuleMap">
+		<id column="TU_ST_RULE_ID" property="tuStRuleId"  jdbcType="VARCHAR" />
+		<result column="TU_ST_ID" property="tuStId" jdbcType="VARCHAR"/>
+		<result column="TU_ST_RULE_MINIMUM_TUITION" property="tuStRuleMinimumTuition" jdbcType="VARCHAR"/>
+		<result column="TU_ST_RULE_HIGHEST_TUITION" property="tuStRuleHighestTuition" jdbcType="VARCHAR"/>
+		<result column="TU_ST_RULE_TIME_LIMIT" property="tuStRuleTimeLimit" jdbcType="VARCHAR"/>
+		<result column="UPDATE_TIME" property="tuStRuleUpdateTime" jdbcType="VARCHAR"/>
+		<!-- 学费分了几期 -->
+		<result column="TU_ST_CYCLE" property="tuStCycle" jdbcType="VARCHAR"/>
+		<!-- 学费中 第一期、第二期、第三期等 -->
+		<result column="TU_ST_RULE_PERIOD" property="tuStRulePeriod" jdbcType="VARCHAR"/>
+		<!-- 学费主键 -->
+		<result column="TU_ID" property="tuId"  jdbcType="VARCHAR" />
+	</resultMap>
+	<!-- ========================学费优惠表========================================== -->
+	<resultMap type="cn.baisee.oa.model.tuition.TuitionDiscount" id="TuitionDiscountMap">
+		<id column="TU_DI_ID" property="tuDiId"  jdbcType="VARCHAR" />
+		<!-- 学费主键id -->
+		<result column="TU_ID" property="tuId" jdbcType="VARCHAR"/>
+		<result column="TU_DI_NAME" property="tuDiName"/>
+		<result column="TU_DI_TYPE" property="tuDiType" jdbcType="VARCHAR"/>
+		<result column="TU_DI_THING" property="tuDiThing" jdbcType="VARCHAR"/>
+		<!-- 优惠多少钱，物质就是零元 -->
+		<result column="TU_DI_REDUCE" property="tuDiReduce" jdbcType="VARCHAR"/>
+		<result column="UPDATE_TIME" property="tuDiUpdateTime" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<!-- 
+		查询所有的学费规则
+	 -->
+	<select id="selectTuitionRuleList" resultMap="TuitionRuleMap" >
+		SELECT
+			*
+		FROM
+			baisee_tuition_rule
+	</select>
+	<!-- 
+		根据数据学费主键查询此条信息
+	 -->
+	 <select id="selectTuitionRuleById" resultMap="TuitionRuleMap" parameterType="map">
+	 	SELECT
+			*
+		FROM
+			baisee_tuition_rule
+			<where>
+				<if test="tuId != null and tuId != '' ">
+					baisee_tuition_rule.TU_ID = #{tuId, jdbcType=VARCHAR} 
+				</if>
+			</where>
+	 </select>
+	<!-- 
+		根据学费主键查询学费的优惠条件
+	 -->
+	 <select id="selectTuitionDiscountById" resultMap="TuitionDiscountMap" parameterType="map">
+	 	
+	 	SELECT
+			baisee_tuition_rule.TU_ID,
+			baisee_tuition_discount.*
+		FROM
+			baisee_tuition_rule,
+			baisee_tuition_discount,
+			baisee_tuition_rule_discount
+			<where>
+				<if test="tuId != null and tuId != '' ">
+						baisee_tuition_rule.TU_ID = baisee_tuition_rule_discount.TU_ID
+					AND baisee_tuition_discount.TU_DI_ID = baisee_tuition_rule_discount.TU_DI_ID
+					AND baisee_tuition_rule.TU_ID = #{tuId, jdbcType=VARCHAR}
+				</if>
+			</where>
+		ORDER BY baisee_tuition_rule.TU_ID
+	 </select>
+	 <!-- 根据学费的主键查询这个学费可分期的周期信息 -->
+	 <select id="selectTuitionStagesById" resultMap="TuitionStagesMap" parameterType="map">
+		 SELECT
+			baisee_tuition_rule.TU_ID,
+			baisee_tuition_by_stages.*
+		FROM
+			baisee_tuition_rule,
+			baisee_tuition_by_stages,
+			baisee_tuition_rule_stages
+		<where>
+			<if test="tuId != null and tuId != '' ">
+					baisee_tuition_rule.TU_ID = baisee_tuition_rule_stages.TU_ID
+				AND baisee_tuition_by_stages.TU_ST_ID = baisee_tuition_rule_stages.TU_ST_ID
+				AND baisee_tuition_rule.TU_ID = #{tuId, jdbcType=VARCHAR} 
+			</if>
+		</where>
+		ORDER BY
+			baisee_tuition_rule.TU_ID
+	 </select>
+	 <!-- 
+	 	根据学费周期id，获取学费的详细分期信息
+	  -->
+	 <select id="selectTuitionStagesDetailedById" resultMap="TuitionStagesRuleMap" parameterType="map">
+	 	SELECT
+			*
+		FROM
+			baisee_tuition_by_stages_rule
+		<where>
+			<if test="tuStId != null and tuStId != '' ">
+				baisee_tuition_by_stages_rule.TU_ST_ID = #{tuStId, jdbcType=VARCHAR} 
+			</if>
+		</where>
+	 </select>
+	 <!-- 
+	 	根据优惠主键获取这个优惠的内容   详细
+	  -->
+	  <select id="selectTuitionDiscountDetailedById" resultMap="TuitionDiscountMap" parameterType="map">
+	  	SELECT
+			*
+		FROM
+			baisee_tuition_discount
+		<where>
+			<if test="TuDiId != null and TuDiId != '' ">
+				baisee_tuition_discount.TU_DI_ID = #{TuDiId, jdbcType=VARCHAR} 
+			</if>
+		</where>
+	  </select>
+	 
+	 <!-- 
+	 	根据选择班级的所属学籍，查询相对应的学费
+	  -->
+	 <select id="selectTuitionByClaStatus" resultMap="TuitionRuleMap" parameterType="string">
+	 	SELECT
+			*
+		FROM
+			baisee_tuition_rule
+		<where>
+			<if test="_parameter != null and _parameter != '' ">
+				TU_TYPE = #{_parameter, jdbcType=VARCHAR} 
+			</if>
+		</where>
+	 </select>
+	 <!-- 
+	 	查询分期表中都有哪些 分期  期数，去掉重复
+	  -->
+	  <select id="selectTuitionStagesNumber" resultMap="TuitionStagesMap" >
+	  	SELECT DISTINCT
+			TU_ST_CYCLE 
+		FROM
+			baisee_tuition_by_stages;
+	  </select>
+	  <!-- 
+	  	根据分期id，期数，查询期数之前的总学费
+	   -->
+	   <select id="selectTotalTutitonLessThanPeriodByTuStId" parameterType="java.lang.String" resultType="java.lang.String">
+		   	SELECT
+				sum( TU_ST_RULE_HIGHEST_TUITION ) 
+			FROM
+				baisee_tuition_by_stages_rule 
+			<where>
+				<if test="tuStId != null and tuStId != ''">
+					TU_ST_ID = #{tuStId,jdbcType=VARCHAR}
+				</if>
+				<if test="stagesNumber != null and stagesNumber != ''">
+					AND TU_ST_RULE_PERIOD &lt;= #{stagesNumber,jdbcType=VARCHAR}
+				</if>
+			</where>
+	   </select>
+	  <!-- 
+	  	根据分期id，期数，查询本期总学费
+	   -->
+	   <select id="selectTotalTutitonCurrentPeriodByTuStId" parameterType="java.lang.String" resultType="java.lang.String">
+		  	SELECT
+				TU_ST_RULE_HIGHEST_TUITION 
+			FROM
+				baisee_tuition_by_stages_rule 
+			<where>
+				<if test="tuStId != null and tuStId != ''">
+					TU_ST_ID = #{tuStId,jdbcType=VARCHAR}
+				</if>
+				<if test="stagesNumber != null and stagesNumber != ''">
+					AND TU_ST_RULE_PERIOD = #{stagesNumber,jdbcType=VARCHAR}
+				</if>
+			</where>
+	   </select>
+	   <!-- 删除学费对应的优惠信息int deleteDiscounts(Map<String, Object> map);  -->
+	   <delete id="deleteDiscounts" parameterType="map">
+	   DELETE FROM baisee_tuition_rule_discount
+	    WHERE TU_ID=#{tuId} AND TU_DI_ID=#{tuDiId}
+	   </delete>
+	  
+	  <select id="getRefundById" parameterType="java.lang.String" resultType="cn.baisee.oa.model.student.BaiseeStudentRefund">
+	  	select R_ID as rId, TR_ID as trId from baisee_student_refund where R_id = (
+			select R_id from baisee_tuition_refund where tu_id=#{tuid}
+		)
+	  </select>
+	  
+</mapper>

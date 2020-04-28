@@ -1,0 +1,284 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head th:include="commonTemplate :: header">
+</head>
+<style>
+    .row-manage  ul li{
+        float: left;
+        margin-left: 10px;
+    }
+    .row-manage{
+        background-color: #666666;
+    }
+    .row-manage ul{
+        height: 30px;
+        line-height: 30px;
+        list-style: none;
+    }
+
+
+</style>
+<body>
+	<form th:action="@{file/view.ht}" id="frm" name="frm" method="post">
+		<!--<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel" id="gridSystemModal" style="display:block">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header" style="height: 40px;line-height: 40px;">
+						<h4 class="modal-title" id="gridSystemModalLabel" style="font-size: 15px;">档案管理</h4>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<ul>
+								<li> <a  href="javascript:void(0);"
+										 th:onclick="'ExportAgreement(\'' + ${stuId} + '\')'"
+										 title="协议">协议</a> </li>
+								<li> <a  href="javascript:void(0);"
+										 th:onclick="'Export(\'' + ${stuId} + '\')'"
+										 title="档案" >档案</a> </li>
+								<li> <a  href="javascript:void(0);"
+										 th:onclick="'ExportStuAssess(\'' + ${stuId} + '\')'"
+										 title="评定">评定</a> </li>
+								<li> <a href="javascript:void(0);"
+										th:onclick="'ExportApply(\'' + ${stuId} + '\',\''+1+'\')'"
+										title="退学">退学</a> </li>
+								<li> <a  href="javascript:void(0);"
+										 th:onclick="'ExportApply(\'' + ${stuId} + '\',\''+2+'\')'"
+										 title="休学">休学</a> </li>
+								<li> <a href="javascript:void(0);"
+										th:onclick="'ExportApply(\'' + ${stuId} + '\',\''+3+'\')'"
+										title="离校" >离校</a> </li>
+								<li style="float: right"> <a th:onclick="'selectFile(\'' + ${stuId} + '\')'">导入</a> </li>
+							</ul>
+						</div>
+						<div class="row">
+							<table class="table table-bordered" width="94%" style="width: 94%;margin-left: 3%">
+								<thead>
+								<tr>
+									<th>学生姓名</th>
+									<th>文档类型</th>
+									<th>上传时间</th>
+									<th>操作</th>
+								</tr>
+								</thead>
+								<tbody>
+								<tr th:each="info:${pageResult.list}"
+									th:if="${pageResult.list != null &amp;&amp; pageResult.list.size() > 0}"
+									onmouseover="this.style.backgroundColor='#e3f1ff'"
+									onmouseout="this.style.backgroundColor='#ffffff'">
+									&lt;!&ndash; <td class="col1">
+                                        <div class="JsW control-checkbox" data-control-type="checkbox">
+                                            <input type="checkbox" name="ids" th:value="${info.stuId}" />
+                                        </div>
+                                    </td> &ndash;&gt;
+									<td class="col4"><span style="cursor: pointer" title=""
+														   th:text="${info.sname}"></span></td>
+									<td class="col4"><span style="cursor: pointer" title=""
+														   th:text="${info.fileType}"></span></td>
+									<td class="col4"><span style="cursor: pointer" title=""
+														   th:text="${info.updateTime}"></span></td>
+									<td class="col4">
+									<span style="cursor: pointer; color: red;"
+										  title="查看" th:onclick="'showImg(\'' + ${info.filePath} + '\')'"
+										  th:text="查看"> </span>
+										<span style="cursor: pointer; color: red;"
+											  title="下载" th:onclick="'dowmload(\'' + ${info.filePath} + '\',\''+${info.fileType}+'\',\''+${info.sname}+'\')'"
+											  th:text="下载"> </span>
+										<span baisee:ctrl="XSDAGL_SC" style="cursor: pointer; color: red;"
+											  title="删除" th:onclick="'delet(\'' + ${info.id} + '\',\''+${info.filePath}+'\')'"
+											  th:text="删除"> </span>
+									</td>
+								</tr>
+								</tbody>
+							</table>
+						</div>
+						<div class="row">
+
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+					</div>
+				</div>
+			</div>
+		</div>-->
+        <div>
+            <div class="row-manage">
+                <ul style="margin-right: 30px">
+                    <li> <a href="javascript:void(0);" th:onclick="'ExportAgreement(\'' + ${stuId} + '\')'" title="协议">协议</a> </li>
+                    <li> <a href="javascript:void(0);" th:onclick="'Export(\'' + ${stuId} + '\')'" title="档案">档案</a> </li>
+                    <li> <a href="javascript:void(0);" th:onclick="'ExportStuAssess(\'' + ${stuId} + '\')'" title="评定">评定</a> </li>
+                    <li> <a href="javascript:void(0);" th:onclick="'ExportApply(\'' + ${stuId} + '\',\''+1+'\')'" title="退学">退学</a>
+                    </li>
+                    <li> <a href="javascript:void(0);" th:onclick="'ExportApply(\'' + ${stuId} + '\',\''+2+'\')'" title="休学">休学</a>
+                    </li>
+                    <li> <a href="javascript:void(0);" th:onclick="'ExportApply(\'' + ${stuId} + '\',\''+3+'\')'" title="离校">离校</a>
+                    </li>
+                    <li style="float: right"> <a th:onclick="'selectFile(\'' + ${stuId} + '\')'">导入</a> </li>
+                </ul>
+            </div>
+            <div style="height: 350px">
+                <table class="table table-bordered" width="94%" style="width: 94%;margin-left: 3%;">
+                    <thead>
+                    <tr>
+                        <th>学生姓名</th>
+                        <th>文档类型</th>
+                        <th>上传时间</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="info:${pageResult.list}" th:if="${pageResult.list != null &amp;&amp; pageResult.list.size() > 0}"
+                        onmouseover="this.style.backgroundColor='#e3f1ff'" onmouseout="this.style.backgroundColor='#ffffff'">
+                        <td class="col4"><span style="cursor: pointer" title="" th:text="${info.sname}"></span></td>
+                        <td class="col4"><span style="cursor: pointer" title="" th:text="${info.fileType}"></span></td>
+                        <td class="col4"><span style="cursor: pointer" title="" th:text="${info.updateTime}"></span></td>
+                        <td class="col4">
+									<span style="cursor: pointer; color: red;" title="查看" th:onclick="'showImg(\'' + ${info.filePath} + '\')'"
+                                          th:text="查看"> </span>
+                            <span style="cursor: pointer; color: red;" title="下载" th:onclick="'dowmload(\'' + ${info.filePath} + '\',\''+${info.fileType}+'\',\''+${info.sname}+'\')'"
+                                  th:text="下载"> </span>
+                            <span baisee:ctrl="XSDAGL_SC" style="cursor: pointer; color: red;" title="删除" th:onclick="'delet(\'' + ${info.id} + '\',\''+${info.filePath}+'\')'"
+                                  th:text="删除"> </span>
+                        </td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+           <!-- <div class="row" style="margin-left: 3%">
+                <ul class="pagination" th:if="${pageResult != null}"
+                    th:object="${pageResult}">
+                    <li><a href="javascript:void(0);"
+                           th:onclick="*{hasPreviousPage} ? 'go(1)' : 'return false;'">首页</a></li>
+                    <li><a href="javascript:void(0);"
+                           th:onclick="*{hasPreviousPage} ? 'go(' + *{prePage} + ')' : 'return false;'">上一页</a></li>
+                    <li><a href="javascript:void(0);"
+                           th:onclick="*{hasNextPage} ? 'go(' + *{nextPage} + ')' : 'return false;'">下一页</a></li>
+                    <li><a href="javascript:void(0);"
+                           th:onclick="*{hasNextPage} ? 'go(' + *{pages} + ')' : 'return false;'">末页</a></li>
+                    <li><a href="javascript:void(0);"
+                           onclick="go($('#pagenumber').val());">跳转至</a></li>
+                    <li><a href="#1"><input name="pageNum"
+                                            id="pagenumber" th:value="*{pageNum}" />/<span id="_pages"
+                                                                                           th:text="*{pages == 0} ? 1 : *{pages}"></span></a></li>
+                    <li><a href="#1">页</a></li>
+                </ul>
+            </div>-->
+
+
+        </div>
+
+
+
+	</form>
+    <script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+	<script th:inline="javascript">
+		/*导出试听生就业保障协议书*/
+
+        $(function(){
+            $(".navbar").css("display","none")
+        })
+
+		function ExportAgreement(id){
+			$(location).attr('href', [[@{/file/studentAgreement.ht}]]+'?stuId='+id);
+			$(window.top.document).find("#_proccesBar").css("visibility", "hidden");
+		}
+		function Export(id){
+			$(location).attr('href', [[@{/file/studentword.ht}]]+'?stuId='+id);
+			$(window.top.document).find("#_proccesBar").css("visibility", "hidden");
+		}
+		/* 导出学生在校评定  */
+		function ExportStuAssess(id){
+			$(location).attr('href', [[@{/file/studentAssess.ht}]]+'?stuId='+id);
+			$(window.top.document).find("#_proccesBar").css("visibility", "hidden");
+		}
+		/* 导出申请  学生Id,档案编号*/
+		function ExportApply(id,num){
+			/*<![CDATA[*/
+			var url = [[@{/file/exportApply.ht}]]+'?stuId='+id+'&no='+num;
+			location.href=url;
+			$(window.top.document).find("#_proccesBar").css("visibility", "hidden");
+			/*]]>*/
+		}
+		function selectFile(stuId){
+			layer.open({
+				type : 2,
+				title : "档案上传",
+				shadeClose : true,
+				shade : 0.8,
+				area : [ '700px', '400px' ],
+				content :
+				/*<![CDATA[*/
+						[[@{/file/selFile.ht}]]+"?stuId="+stuId,
+					/*]]>*/
+					end: function () {
+				/*<![CDATA[*/
+				locationHref([[@{/file/view.ht}]] + "?stuId="+stuId);
+				$(window.top.document).find("#_proccesBar").css("visibility", "hidden");
+				/*]]>*/
+			}
+		});
+		}
+		function dowmload(lst,type,sname){
+			/*<![CDATA[*/
+			$(location).attr('href', [[@{/file/download.ht}]]+"?fileList="+lst
+			+"&&fileType="+type+"&&sname="+sname);
+			/*]]>*/
+		}
+
+
+		function delet(id,fileList){
+			layer.confirm ("确定要删除吗！", {
+				btn : [
+					'确定', '取消'
+				]}, function (index) {
+				$.post([[@{/file/delet.ht}]],{"id":id,"fileList":fileList},function(result){
+					layer.msg("删除成功!");
+					/*<![CDATA[*/
+					locationHref([[@{/file/view.ht}]] + "?stuId="+[[${stuId}]]);
+					/*]]>*/
+				})
+			})
+		}
+		function showImg(str){
+			//alert(url);
+			var img_infor ="";
+			var lst =str.split(",");
+			var fileServerIp = [[${#sysCache.getSysParam('FILE_SERVER_IP')}]].paramValue;
+			var fileServerAlias = [[${#sysCache.getSysParam('FILE_SERVER_ALIAS')}]].paramValue;
+			$(lst).each(function(i,n){
+				/*<![CDATA[*/
+				img_infor += "<a href='http://"+fileServerIp + fileServerAlias+ n + "' target='view_window'><img style='width:120px ;height:120px ' src='http://" + fileServerIp + fileServerAlias+ n + "' /></a>"
+				/*]]>*/
+			})
+			layer.open({
+				type: 1,
+				closeBtn: 1,
+				shade: false,
+				title: false, //不显示标题
+				shadeClose: false,
+				area:[ '500px', '300px' ],
+				content: img_infor
+			});
+		}
+	</script>
+
+</body>
+
+<script type="text/javascript" src="js/jquery.min.js" th:src="@{static/js/jquery.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"  th:src="@{static/js/bootstrap.min.js}"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{static/js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap-datepicker.min.js" th:src="@{js/bootstrap-datepicker.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap-datepicker.zh-CN.min.js" th:src="@{js/bootstrap-datepicker.zh-CN.min.js}"></script>
+<script type="text/javascript" src="js/main.min.js" th:src="@{static/js/main.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/common.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/layer/layer.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/comm/bmsAjax.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/select2/select2.full.min.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/form/jquery.form.js}"></script>
+<script type="text/javascript" th:src="@{js/plugins/validate/jquery.validate.min.js}"></script>
+<script type="text/javascript"
+        th:src="@{js/plugins/My97DatePicker/WdatePicker.js}"></script>
+
+</html>

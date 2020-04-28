@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.baisee.oa.dao.baisee.BaiseeOALogMapper">
+	<insert id="insertLog" parameterType="cn.baisee.oa.model.BaiseeOALog">
+		INSERT INTO baisee_log
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="logOperator != null">
+				LOG_OPERATOR,
+			</if>
+			<if test="logResource != null">
+				LOG_RESOURCE,
+			</if>
+			<if test="logOperate != null">
+				LOG_OPERATE,
+			</if>
+			<if test="logParameter != null">
+				LOG_PARAMETER,
+			</if>
+				UPDATE_TIME
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="logOperator != null">
+				#{logOperator, jdbcType=VARCHAR},
+			</if>
+			<if test="logResource != null">
+				#{logResource, jdbcType=VARCHAR},
+			</if>
+			<if test="logOperate != null">
+				#{logOperate, jdbcType=VARCHAR},
+			</if>
+			<if test="logParameter != null">
+				#{logParameter, jdbcType=VARCHAR},
+			</if>
+				DATE_FORMAT(now(),'%Y%m%d')
+		</trim>
+	</insert>
+	
+</mapper>
